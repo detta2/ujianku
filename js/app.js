@@ -117,6 +117,26 @@
   function bankById(id) {
     return (window.QBANK && window.QBANK[id]) || null;
   }
+  /* bank soal dimuat malas: file data/<id>.js diambil saat dibutuhkan,
+     biar halaman awal tetap ringan walau total ribuan soal */
+  var bankPromises = {};
+  function loadBank(id) {
+    if (window.QBANK && window.QBANK[id]) return Promise.resolve(window.QBANK[id]);
+    if (!bankPromises[id]) {
+      bankPromises[id] = new Promise(function (res, rej) {
+        var s = document.createElement("script");
+        s.src = "data/" + id + ".js";
+        s.onload = function () { res(window.QBANK[id] || null); };
+        s.onerror = function () { rej(new Error("gagal memuat " + id)); };
+        document.head.appendChild(s);
+      });
+    }
+    return bankPromises[id];
+  }
+  function ensureLevel(level) {
+    var cat = catOf(level);
+    return Promise.all(cat.banks.map(function (b) { return loadBank(b.id); }));
+  }
   function catalogBank(level, subject) {
     var out = null;
     window.CATALOG.forEach(function (c) {
@@ -131,7 +151,6 @@
     var grid = $("level-grid");
     grid.innerHTML = "";
     window.CATALOG.forEach(function (c) {
-      var ready = c.banks.filter(function (b) { return bankById(b.id); }).length;
       var btn = document.createElement("button");
       btn.className = "level-card theme-" + c.level;
       btn.innerHTML =
@@ -140,7 +159,7 @@
         '<span class="mascot mx-bounce"><svg><use href="#m-' + c.mascot + '"/></svg></span>' +
         "<h3>" + esc(c.level) + "</h3>" +
         "<p>" + esc(c.friend) + "</p>" +
-        "<p>" + ready + "/" + c.banks.length + " pelajaran</p>" +
+        "<p>" + c.banks.length + " pelajaran</p>" +
         '<span class="go">Bertanding →</span>';
       btn.addEventListener("click", function () { openSubjects(c.level); });
       grid.appendChild(btn);
@@ -149,9 +168,13 @@
 
   /* ---------- subjects ---------- */
   var SUB_ICONS = {
-    "Matematika": "🔢", "IPA": "🔬", "Fisika": "⚛️", "Kimia": "🧪", "Biologi": "🧬",
-    "Bahasa Indonesia": "📝", "Bahasa Inggris": "🔤",
-    "Matematika Dasar": "🔢", "Fisika Dasar": "⚛️",
+    "Matematika": "🔢", "IPA": "🔬", "IPS": "🌏", "Fisika": "⚛️", "Kimia": "🧪", "Biologi": "🧬",
+    "Bahasa Indonesia": "📝", "Bahasa Inggris": "🔤", "PPKn": "🏛️", "Pendidikan Agama": "🕌",
+    "PJOK": "⚽", "Seni": "🎨", "Koding & AI": "🤖", "Informatika": "💻", "Prakarya": "🛠️",
+    "Ekonomi": "💰", "Geografi": "🗺️", "Sosiologi": "👥", "Sejarah": "📜",
+    "Matematika Dasar": "🔢", "Fisika Dasar": "⚛️", "Kimia Dasar": "🧪", "Statistika": "📊",
+    "Pengantar Ekonomi": "💹", "Akuntansi Dasar": "🧾", "Bahasa Inggris Akademik": "🎓",
+    "Pengetahuan Umum": "🌟", "Logika & Teka-teki": "🧩",
   };
   function openSubjects(level) {
     state.level = level;
@@ -160,6 +183,14 @@
     setMascot("subjects-mascot-use", cat);
     $("subjects-title").textContent = "Pelajaran " + level;
     $("subjects-sub").textContent = cat.tagline + " — " + cat.mascotName + " jadi pelatihmu di arena.";
+    var grid = $("subject-grid");
+    grid.innerHTML = '<p class="loading-note">⏳ Memuat soal...</p>';
+    go("subjects");
+    ensureLevel(level).then(function () { renderSubjectCards(cat); }, function () {
+      grid.innerHTML = '<p class="loading-note">Gagal memuat soal. Cek koneksi lalu coba lagi.</p>';
+    });
+  }
+  function renderSubjectCards(cat) {
     var grid = $("subject-grid");
     grid.innerHTML = "";
     cat.banks.forEach(function (b) {
@@ -177,7 +208,6 @@
       if (bank) btn.addEventListener("click", function () { requireAuth(b.id); });
       grid.appendChild(btn);
     });
-    go("subjects");
   }
 
   /* ---------- auth: nama & identitas pemain ---------- */
@@ -190,9 +220,13 @@
     return !!(window.Auth && (Auth.user() || localStorage.getItem("ujianku_guest")));
   }
   function requireAuth(bankId) {
-    if (isIdentified()) { openStart(bankId); return; }
-    state.pendingBank = bankId;
-    go("login");
+    loadBank(bankId).then(function () {
+      if (isIdentified()) { openStart(bankId); return; }
+      state.pendingBank = bankId;
+      go("login");
+    }, function () {
+      toast("Gagal memuat soal. Cek koneksi lalu coba lagi.");
+    });
   }
   function renderIdentity() {
     var box = $("start-identity");
@@ -336,6 +370,7 @@
 
   /* ---------- quiz ---------- */
   var SESSION_Q = 15; // soal per sesi, diacak dari bank biar tiap main beda
+  var SEC_PER_Q = 30; // 30 detik per soal
   function shuffleArr(a) {
     for (var i = a.length - 1; i > 0; i--) {
       var j = Math.floor(Math.random() * (i + 1));
@@ -345,7 +380,7 @@
   }
   function sessionCount(bank) { return Math.min(SESSION_Q, bank.questions.length); }
   function sessionDur(bank) {
-    return Math.round(bank.duration * sessionCount(bank) / bank.questions.length);
+    return sessionCount(bank) * SEC_PER_Q;
   }
   // acak urutan soal + acak urutan opsi (jawaban ikut dipetakan ulang)
   function buildSession(bank) {
@@ -713,6 +748,17 @@
 
   renderLevels();
   renderMarquee();
+  /* pra-muat semua bank di latar belakang (berurutan, biar ringan),
+     jadi pas user buka pelajaran soalnya sudah siap */
+  setTimeout(function () {
+    var ids = [];
+    (window.CATALOG || []).forEach(function (c) {
+      c.banks.forEach(function (b) { ids.push(b.id); });
+    });
+    ids.reduce(function (p, id) {
+      return p.then(function () { return loadBank(id).catch(function () {}); });
+    }, Promise.resolve());
+  }, 1500);
   if (window.Auth) {
     updateAuthUI();
     Auth.initGoogleButton("gbtn");
