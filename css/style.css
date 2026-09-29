@@ -94,7 +94,8 @@ img{max-width:100%}
 }
 .brand-mark svg{width:100%;height:100%;display:block}
 .brand-name{font-family:var(--font-d);font-weight:700;font-size:22px;color:var(--ink)}
-.topbar-right{display:flex;align-items:center;gap:10px}
+.topbar-right{display:flex;align-items:center;gap:10px;min-width:0}
+.topnav{display:flex;gap:8px;align-items:center;flex-shrink:0}
 .navbtn{
   border:var(--bd);background:#fff;border-radius:999px;padding:8px 16px;
   font-weight:800;font-size:14px;color:var(--ink);box-shadow:0 3px 0 var(--ink);
@@ -318,8 +319,9 @@ img{max-width:100%}
 
 /* ============ QUIZ ============ */
 .quiz-top{margin:14px 0}
-.quiz-info{display:flex;justify-content:space-between;font-weight:800;font-size:14px;margin-bottom:8px;gap:8px}
-.quiz-info #quiz-progress{background:#fff;border:2px solid var(--ink);border-radius:999px;padding:2px 12px;white-space:nowrap}
+.quiz-info{display:flex;justify-content:space-between;align-items:center;font-weight:800;font-size:14px;margin-bottom:8px;gap:8px}
+.quiz-info #quiz-bank-label{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;min-width:0}
+.quiz-info #quiz-progress{background:#fff;border:2px solid var(--ink);border-radius:999px;padding:2px 12px;white-space:nowrap;flex-shrink:0}
 .timerbar{height:16px;background:#fff;border:var(--bd);border-radius:999px;overflow:hidden;box-shadow:0 3px 0 var(--ink)}
 .timerfill{
   height:100%;width:100%;border-radius:999px;
@@ -563,10 +565,15 @@ img{max-width:100%}
   .result-actions{flex-direction:column}
   .level-grid{grid-template-columns:repeat(2,1fr)}
   .subject-grid{grid-template-columns:repeat(2,1fr)}
-  .brand-name{font-size:19px}
-  .avatar-name{display:none}
+  .brand{gap:8px}
+  .brand-name{font-size:17px;white-space:nowrap}
   /* buddy jadi baris super-ringkas di atas soal biar tombol kelihatan */
   .quiz-stage{flex-direction:column;gap:6px;margin-top:8px;align-items:stretch}
+  .topbar{padding:8px 10px}
+  .brand-mark{width:36px;height:36px;border-radius:12px}
+  .topbar-right{gap:6px}
+  .topnav{gap:6px}
+  .navbtn{padding:6px 10px;font-size:11px;white-space:nowrap}
   .quiz-top{margin:10px 0}
   .buddy-side{
     width:100%;position:static;flex-direction:row;justify-content:flex-start;align-items:center;gap:8px;
