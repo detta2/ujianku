@@ -20,7 +20,20 @@
     if (name === "badges") renderBadges();
     if (name === "admin") renderAdmin();
     if (name === "ranked") refreshRankedStamina();
+    /* BGM: ranked -> track tegang, selain itu track chill */
+    if (window.Bgm) {
+      if (name === "quiz") Bgm.play(state.mode === "ranked" ? "ranked" : "chill");
+      else Bgm.play("chill");
+    }
     window.scrollTo({ top: 0, behavior: "smooth" });
+  }
+  /* animasi kartu soal: picu ulang tiap ganti soal */
+  function qcardEnter() {
+    var qc = document.querySelector("#screen-quiz .qcard");
+    if (!qc) return;
+    qc.classList.remove("q-enter");
+    void qc.offsetWidth;
+    qc.classList.add("q-enter");
   }
   document.querySelectorAll("[data-go]").forEach(function (el) {
     el.addEventListener("click", function () {
@@ -620,6 +633,7 @@
       updateRankedTimerUI();
       if (state.qTimeLeft <= 0) { lockRankedAnswer(-1); }
     }, 1000);
+    qcardEnter();
   }
   function lockRankedAnswer(i) {
     if (state.qLock) return;
@@ -699,6 +713,7 @@
   }
   function showRankedResult() {
     var r = state.result;
+    $("result-card").classList.remove("tier-up");
     var level = state.rankedLevel;
     var cat = catOf(level);
     setMascot("result-mascot-use", cat);
@@ -810,7 +825,12 @@
           if (rs && !rs.querySelector("[data-rating]")) {
             rs.insertAdjacentHTML("beforeend", '<div class="stat" data-rating><b>' + b.tier.icon + " " + b.rating + "</b><span>" + esc(b.tier.name) + "</span></div>");
           }
-          if (b.tierUp) { toast("🎉 Naik tier ke " + b.tier.icon + " " + b.tier.name + "!"); confetti($("result-card"), 90); }
+          if (b.tierUp) {
+            toast("🎉 Naik tier ke " + b.tier.icon + " " + b.tier.name + "!");
+            confetti($("result-card"), 90);
+            var rc = $("result-card");
+            if (rc) { rc.classList.remove("tier-up"); void rc.offsetWidth; rc.classList.add("tier-up"); }
+          }
           else if (b.tierDown) { toast("😅 Turun ke " + b.tier.icon + " " + b.tier.name + " — gas lagi!"); }
           if (state.screen === "ranked") renderRankedCards();
         }
@@ -1268,6 +1288,7 @@
     $("btn-prev").disabled = state.qi === 0;
     $("btn-prev").style.opacity = state.qi === 0 ? 0.4 : 1;
     $("btn-next").style.display = state.qi === state.qs.length - 1 ? "none" : "";
+    qcardEnter();
   }
 
   $("btn-prev").addEventListener("click", function () {
@@ -1347,6 +1368,7 @@
   function showResult() {
     var r = state.result;
     if (r.ranked) { showRankedResult(); return; }
+    $("result-card").classList.remove("tier-up");
     $("result-score-max").textContent = "/ 100";
     var cat = catOf(state.bank.level);
     setMascot("result-mascot-use", cat);

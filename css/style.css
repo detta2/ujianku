@@ -708,3 +708,48 @@ img{max-width:100%}
 .fld{display:block;font-weight:800;font-size:14px;margin:10px 0;text-align:left}
 .fld-in{width:100%;border:var(--bd);border-radius:12px;padding:10px 12px;font-size:15px;font-weight:700;margin-top:6px;box-sizing:border-box;background:#fff;color:var(--ink)}
 .pill-dim{background:#f1f5f9;border-style:dashed}
+
+/* ============ CHILL MOTION PACK (opsi 3): lembut, tidak mengganggu ============ */
+/* transisi antar-layar versi kalem */
+.screen.active{animation:screen-in-chill .5s ease-out}
+@keyframes screen-in-chill{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+
+/* kartu soal meluncur pelan tiap ganti soal */
+.qcard.q-enter{animation:q-in .45s ease-out}
+@keyframes q-in{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:none}}
+
+/* opsi jawaban muncul berurutan, halus */
+#q-opts .opt{animation:opt-in .35s ease-out backwards}
+#q-opts .opt:nth-child(2){animation-delay:.05s}
+#q-opts .opt:nth-child(3){animation-delay:.1s}
+#q-opts .opt:nth-child(4){animation-delay:.15s}
+#q-opts .opt:nth-child(5){animation-delay:.2s}
+@keyframes opt-in{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+
+/* feedback benar / salah yg lembut */
+#q-opts .opt.correct{animation:soft-pop .45s ease-out}
+@keyframes soft-pop{0%{transform:scale(1)}40%{transform:scale(1.025)}100%{transform:scale(1)}}
+#q-opts .opt.wrong{animation:soft-shake .4s ease-out}
+@keyframes soft-shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-4px)}75%{transform:translateX(4px)}}
+
+/* kilau emas lembut pas naik tier */
+#result-card.tier-up{position:relative;overflow:hidden}
+#result-card.tier-up::after{content:"";position:absolute;inset:0;pointer-events:none;
+  background:linear-gradient(115deg,transparent 42%,rgba(255,215,0,.35) 50%,transparent 58%);
+  animation:tier-shimmer 1.8s ease-out 2}
+@keyframes tier-shimmer{from{transform:translateX(-110%)}to{transform:translateX(110%)}}
+
+/* tombol musik di topbar */
+.bgm-btn{width:40px;height:40px;border-radius:50%;border:3px solid var(--ink,#0b2a6b);
+  background:#fff;font-size:18px;line-height:1;cursor:pointer;flex:0 0 auto;
+  box-shadow:0 3px 0 var(--ink,#0b2a6b);transition:transform .15s ease,box-shadow .15s ease,opacity .2s ease}
+.bgm-btn:active{transform:translateY(2px);box-shadow:0 1px 0 var(--ink,#0b2a6b)}
+.bgm-btn.off{opacity:.55;filter:grayscale(.7)}
+
+/* hormati preferensi gerak minimal */
+@media (prefers-reduced-motion:reduce){
+  *,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}
+}
+
+/* kredit musik sukarela di footer */
+.music-credit{font-size:11px;opacity:.65;margin-top:4px}
