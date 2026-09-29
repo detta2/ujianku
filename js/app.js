@@ -1495,19 +1495,7 @@
   }
 
   /* ---------- init ---------- */
-  function renderMarquee() {
-    var names = [];
-    (window.CATALOG || []).forEach(function (c) {
-      c.banks.forEach(function (b) { names.push(b.subject); });
-    });
-    var track = $("marquee-track");
-    if (!track || !names.length) return;
-    var html = names.map(function (n) { return '<span class="mq-chip">📚 ' + esc(n) + "</span>"; }).join("");
-    track.innerHTML = html + html; /* duplikat biar loop mulus */
-  }
-
   renderLevels();
-  renderMarquee();
   $("hero-ranked").addEventListener("click", function () {
     renderRankedLevels();
     go("ranked");
