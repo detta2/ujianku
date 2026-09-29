@@ -1084,6 +1084,7 @@
     state.answers = state.qs.map(function () { return -1; });
     state.timeLeft = sessionDur(state.bank);
     state.startTime = Date.now();
+    state.continued = false;
     applyTheme(state.bank.level);
     setMascot("quiz-buddy-use", catOf(state.bank.level));
     buddyCheer(false);
@@ -1094,13 +1095,41 @@
     $("btn-quiz-menu").style.display = "";
     renderQuestion();
     updateTimerUI();
+    tickTimer();
+    go("quiz");
+  }
+
+  function tickTimer() {
     clearInterval(state.timerId);
     state.timerId = setInterval(function () {
       state.timeLeft -= 1;
       updateTimerUI();
-      if (state.timeLeft <= 0) { finishQuiz(true); }
+      if (state.timeLeft <= 0) { onTimeUp(); }
     }, 1000);
-    go("quiz");
+  }
+
+  /* waktu habis ala game: kasih kesempatan lanjut sekali, bukan langsung mati */
+  function onTimeUp() {
+    clearInterval(state.timerId);
+    if (state.continued) { finishQuiz(true); return; }
+    var un = state.answers.filter(function (a) { return a < 0; }).length;
+    if (un === 0) { finishQuiz(true); return; }
+    var bonus = un * 30;
+    $("modal-title").textContent = "⏱️ Waktu Habis!";
+    $("modal-text").textContent = "Tenang, kayak game beneran — kamu bisa lanjut! Dapat +" + bonus + " detik (" + un + " soal belum dijawab × 30 detik). Kesempatan sekali aja, gas!";
+    $("modal-ok").textContent = "▶ Lanjut";
+    $("modal-cancel").textContent = "Selesai";
+    $("modal-cancel").style.display = "";
+    $("modal-ok").onclick = function () {
+      $("modal").classList.add("hidden");
+      state.continued = true;
+      state.timeLeft = bonus;
+      updateTimerUI();
+      tickTimer();
+      toast("Gas, lanjutin! 🔥");
+    };
+    $("modal-cancel").onclick = function () { $("modal").classList.add("hidden"); finishQuiz(true); };
+    $("modal").classList.remove("hidden");
   }
 
   function updateTimerUI() {
@@ -1178,6 +1207,7 @@
   $("btn-submit").addEventListener("click", function () {
     var un = state.answers.filter(function (a) { return a < 0; }).length;
     $("modal-ok").textContent = "OK";
+    $("modal-cancel").textContent = "Batal";
     $("modal-cancel").style.display = "";
     $("modal-title").textContent = "Kumpulkan jawaban?";
     $("modal-text").textContent = un > 0
