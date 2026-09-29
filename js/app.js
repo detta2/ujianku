@@ -864,7 +864,20 @@
     admWireOnce();
     admLoadPlayers();
     admLoadFlags();
+    admLoadOnline();
   }
+  function admLoadOnline() {
+    var el = $("adm-online-n");
+    if (!el) return;
+    srvApi("/api/admin/online").then(function (r) {
+      var b = r.body || {};
+      el.textContent = (b.ok && typeof b.online === "number") ? b.online : "?";
+    }).catch(function () { el.textContent = "?"; });
+  }
+  /* refresh angka online tiap 20 dtk selama di layar admin */
+  setInterval(function () {
+    if (state.screen === "admin" && state.isAdmin) admLoadOnline();
+  }, 20000);
   function admWireOnce() {
     if (state._admWired) return;
     state._admWired = true;
