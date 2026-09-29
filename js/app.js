@@ -3,7 +3,7 @@
   "use strict";
 
   var $ = function (id) { return document.getElementById(id); };
-  var screens = ["home", "ranked", "subjects", "login", "start", "quiz", "result", "review", "profile", "leaderboard"];
+  var screens = ["home", "ranked", "subjects", "login", "start", "quiz", "result", "review", "profile", "leaderboard", "badges"];
   var state = {
     level: null, bankId: null, bank: null,
     mode: "normal", rankedLevel: null,
@@ -17,6 +17,7 @@
     state.screen = name;
     screens.forEach(function (s) { $("screen-" + s).classList.toggle("active", s === name); });
     if (name === "home") applyTheme(null);
+    if (name === "badges") renderBadges();
     window.scrollTo({ top: 0, behavior: "smooth" });
   }
   document.querySelectorAll("[data-go]").forEach(function (el) {
@@ -578,7 +579,12 @@
     state.result.rank = rank;
     state.result.totalPlayers = arr.length;
     state.result.allPoints = t.points;
+    var freshR = recordProgress({
+      xp: pts, ranked: true, correct: correct, total: qs.length,
+      bankId: catOf(state.rankedLevel).banks.map(function (b) { return b.id; })
+    });
     showResult();
+    if (freshR.length) showBadgeModal(freshR);
   }
   function showRankedResult() {
     var r = state.result;
@@ -618,6 +624,167 @@
       " — peringkat #" + r.rank + " dari " + r.totalPlayers + " pemain di Divisi " + level + ".";
     go("result");
     if (r.points >= 200) confetti($("result-card"), 70);
+  }
+
+  /* ---------- lencana & level ---------- */
+  var LEVELS = [
+    { xp: 0, name: "Pemula 🌱" },
+    { xp: 500, name: "Petarung ⚔️" },
+    { xp: 1500, name: "Ksatria 🛡️" },
+    { xp: 3000, name: "Master 🎖️" },
+    { xp: 6000, name: "Legenda 👑" }
+  ];
+  function loadProgress() {
+    try {
+      var p = JSON.parse(localStorage.getItem("ujianku_progress") || "{}");
+      return {
+        xp: p.xp || 0, badges: p.badges || {}, days: p.days || [],
+        subjects: p.subjects || [], matches: p.matches || 0,
+        rankedMatches: p.rankedMatches || 0, golds: p.golds || 0,
+        perfects: p.perfects || 0, ranked25: p.ranked25 || 0
+      };
+    } catch (e) {
+      return { xp: 0, badges: {}, days: [], subjects: [], matches: 0, rankedMatches: 0, golds: 0, perfects: 0, ranked25: 0 };
+    }
+  }
+  function saveProgress(p) {
+    try { localStorage.setItem("ujianku_progress", JSON.stringify(p)); } catch (e) {}
+  }
+  function todayStr() {
+    var d = new Date();
+    return d.getFullYear() + "-" + (d.getMonth() + 1) + "-" + d.getDate();
+  }
+  function dayStreak(days) {
+    var set = {};
+    days.forEach(function (d) { set[d] = 1; });
+    var d = new Date();
+    var key = function (dt) { return dt.getFullYear() + "-" + (dt.getMonth() + 1) + "-" + dt.getDate(); };
+    if (!set[key(d)]) d.setDate(d.getDate() - 1);
+    var s = 0;
+    while (set[key(d)]) { s++; d.setDate(d.getDate() - 1); }
+    return s;
+  }
+  function buildBadgeCtx() {
+    var me = displayName();
+    var total = 0, champ = false;
+    (window.CATALOG || []).forEach(function (c) {
+      total += rankedTotals(c.level).points;
+      var arr = rankedLb(c.level);
+      if (arr.length && arr[0].name === me) champ = true;
+    });
+    return { totalRanked: total, champion: champ };
+  }
+  var BADGES = [
+    { id: "first", icon: "🌱", name: "Langkah Pertama", desc: "Selesaikan 1 kuis",
+      test: function (p) { return p.matches >= 1; },
+      prog: function (p) { return Math.min(p.matches, 1) + "/1"; } },
+    { id: "streak3", icon: "🔥", name: "Semangat Membara", desc: "Main 3 hari beruntun",
+      test: function (p) { return dayStreak(p.days) >= 3; },
+      prog: function (p) { return Math.min(dayStreak(p.days), 3) + "/3 hari"; } },
+    { id: "streak7", icon: "⚡", name: "Kilat 7 Hari", desc: "Main 7 hari beruntun",
+      test: function (p) { return dayStreak(p.days) >= 7; },
+      prog: function (p) { return Math.min(dayStreak(p.days), 7) + "/7 hari"; } },
+    { id: "perfect", icon: "🎯", name: "Penembak Jitu", desc: "Semua benar di mode normal",
+      test: function (p) { return p.perfects > 0; },
+      prog: function () { return "jawab 15/15 benar"; } },
+    { id: "gold", icon: "🥇", name: "Pemburu Emas", desc: "Raih medali emas (nilai ≥ 85)",
+      test: function (p) { return p.golds > 0; },
+      prog: function () { return "nilai 85+"; } },
+    { id: "explorer", icon: "📚", name: "Petualang", desc: "Mainkan 10 pelajaran berbeda",
+      test: function (p) { return p.subjects.length >= 10; },
+      prog: function (p) { return Math.min(p.subjects.length, 10) + "/10 pelajaran"; } },
+    { id: "ranked10", icon: "⚔️", name: "Petarung Ranked", desc: "Main 10 match ranked",
+      test: function (p) { return p.rankedMatches >= 10; },
+      prog: function (p) { return Math.min(p.rankedMatches, 10) + "/10 match"; } },
+    { id: "ranked25", icon: "👑", name: "Dewa Ranked", desc: "25+ benar dalam 1 match ranked",
+      test: function (p) { return p.ranked25 > 0; },
+      prog: function () { return "25+/30 benar"; } },
+    { id: "collector", icon: "⭐", name: "Kolektor 1000", desc: "Kumpulkan 1000 poin ranked",
+      test: function (p, ctx) { return ctx.totalRanked >= 1000; },
+      prog: function (p, ctx) { return Math.min(ctx.totalRanked, 1000) + "/1000 poin"; } },
+    { id: "champion", icon: "🏆", name: "Juara Sejati", desc: "Peringkat #1 ranked di sebuah divisi",
+      test: function (p, ctx) { return ctx.champion; },
+      prog: function () { return "jadi #1 di divisi"; } }
+  ];
+  function recordProgress(opts) {
+    var p = loadProgress();
+    p.matches += 1;
+    p.xp += opts.xp || 0;
+    var t = todayStr();
+    if (p.days.indexOf(t) < 0) p.days.push(t);
+    var ids = opts.bankId ? (Array.isArray(opts.bankId) ? opts.bankId : [opts.bankId]) : [];
+    ids.forEach(function (id) { if (p.subjects.indexOf(id) < 0) p.subjects.push(id); });
+    if (!opts.ranked) {
+      if (opts.correct === opts.total && opts.total > 0) p.perfects += 1;
+      if (opts.score >= 85) p.golds += 1;
+    } else {
+      p.rankedMatches += 1;
+      if (opts.correct >= 25) p.ranked25 += 1;
+    }
+    var ctx = buildBadgeCtx();
+    var fresh = [];
+    BADGES.forEach(function (b) {
+      if (!p.badges[b.id] && b.test(p, ctx)) { p.badges[b.id] = Date.now(); fresh.push(b); }
+    });
+    saveProgress(p);
+    return fresh;
+  }
+  function showBadgeModal(fresh) {
+    $("modal-title").textContent = "🎖️ Lencana Baru!";
+    $("modal-text").innerHTML = fresh.map(function (b) {
+      return b.icon + " <b>" + esc(b.name) + "</b> — " + esc(b.desc);
+    }).join("<br>");
+    $("modal-ok").textContent = "Keren!";
+    $("modal-ok").onclick = function () {
+      $("modal").classList.add("hidden");
+      $("modal-ok").textContent = "OK";
+    };
+    $("modal-cancel").style.display = "none";
+    $("modal").classList.remove("hidden");
+    confetti($("modal").querySelector(".modal-card"), 40);
+  }
+  function levelOf(xp) {
+    var cur = LEVELS[0];
+    LEVELS.forEach(function (l) { if (xp >= l.xp) cur = l; });
+    return cur;
+  }
+  function nextLevel(xp) {
+    for (var i = 0; i < LEVELS.length; i++) if (LEVELS[i].xp > xp) return LEVELS[i];
+    return null;
+  }
+  function fmtBadgeDate(ts) {
+    try { return "didapat " + new Date(ts).toLocaleDateString("id-ID", { day: "numeric", month: "short" }); }
+    catch (e) { return ""; }
+  }
+  function renderBadges() {
+    var p = loadProgress();
+    var lvl = levelOf(p.xp);
+    var nx = nextLevel(p.xp);
+    $("badge-level-name").textContent = lvl.name;
+    $("badge-level-xp").textContent = p.xp + " XP";
+    if (nx) {
+      $("badge-xp-fill").style.width = ((p.xp - lvl.xp) / (nx.xp - lvl.xp)) * 100 + "%";
+      $("badge-level-next").textContent = (nx.xp - p.xp) + " XP lagi ke " + nx.name;
+    } else {
+      $("badge-xp-fill").style.width = "100%";
+      $("badge-level-next").textContent = "Level maksimal! Kamu legenda!";
+    }
+    var ctx = buildBadgeCtx();
+    var grid = $("badge-grid");
+    grid.innerHTML = "";
+    BADGES.forEach(function (b) {
+      var got = p.badges[b.id];
+      var div = document.createElement("div");
+      div.className = "badge-card" + (got ? " got" : "");
+      div.innerHTML =
+        '<span class="badge-icon">' + b.icon + "</span>" +
+        "<b>" + esc(b.name) + "</b>" +
+        "<p>" + esc(b.desc) + "</p>" +
+        (got
+          ? '<span class="badge-date">' + esc(fmtBadgeDate(got)) + "</span>"
+          : '<span class="badge-prog">' + esc(b.prog(p, ctx)) + '</span><span class="badge-lock">🔒 terkunci</span>');
+      grid.appendChild(div);
+    });
   }
 
   /* ---------- start ---------- */
@@ -802,6 +969,8 @@
 
   $("btn-submit").addEventListener("click", function () {
     var un = state.answers.filter(function (a) { return a < 0; }).length;
+    $("modal-ok").textContent = "OK";
+    $("modal-cancel").style.display = "";
     $("modal-title").textContent = "Kumpulkan jawaban?";
     $("modal-text").textContent = un > 0
       ? "Masih ada " + un + " soal belum dijawab. Yakin kumpulkan sekarang?"
@@ -829,7 +998,13 @@
       });
     }
     saveScore(state.result);
+    var rq = state.result;
+    var freshQ = recordProgress({
+      xp: rq.correct * 10, bankId: state.bankId, ranked: false,
+      correct: rq.correct, total: rq.total, score: rq.score
+    });
     showResult();
+    if (freshQ.length) showBadgeModal(freshQ);
   }
 
   /* ---------- result ---------- */
