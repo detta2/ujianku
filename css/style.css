@@ -565,7 +565,7 @@ img{max-width:100%}
   .brand-name{font-size:19px}
   .avatar-name{display:none}
   /* buddy jadi baris super-ringkas di atas soal biar tombol kelihatan */
-  .quiz-stage{flex-direction:column;gap:6px;margin-top:8px}
+  .quiz-stage{flex-direction:column;gap:6px;margin-top:8px;align-items:stretch}
   .quiz-top{margin:10px 0}
   .buddy-side{
     width:100%;position:static;flex-direction:row;justify-content:flex-start;align-items:center;gap:8px;
