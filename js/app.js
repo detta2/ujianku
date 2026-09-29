@@ -78,13 +78,33 @@
     var u = $(useId);
     if (u && cat) u.setAttribute("href", "#m-" + cat.mascot);
   }
-  /* sapaan maskot full bahasa Gen Z */
-  var BUDDY_LINES = ["Gas bestie!", "Slay!", "W banget!", "Sat set beres!", "Era juara!", "Valid no debat!"];
-  var BUDDY_MISS = ["Yah, miss!", "Gapapa, comeback!", "Kurang w dikit!", "Waduh, next!"];
-  var BUDDY_TIMEOUT = ["⏰ Waktunya abis bestie!", "Telat dikit, sat set lagi!"];
-  var START_LINES = ["Gas, rebut emasnya bestie!", "Siap slay hari ini?", "Fokus, era juara dimulai!"];
-  var RANKED_START_LINES = ["Ranked = perang kilat, gas!", "Sat set 30 soal, bestie!", "Kejar #1!"];
-  function linesFor(map, level) { return Array.isArray(map) ? map : (map[level] || map["SMP"]); }
+  /* SD = bahasa anak yang baik & lembut; SMP ke atas = bahasa Gen Z */
+  var GENZ_CHEER = ["Gas bestie!", "Slay!", "W banget!", "Sat set beres!", "Era juara!", "Valid no debat!"];
+  var GENZ_MISS = ["Yah, miss!", "Gapapa, comeback!", "Kurang w dikit!", "Waduh, next!"];
+  var GENZ_TIMEOUT = ["⏰ Waktunya abis bestie!", "Telat dikit, sat set lagi!"];
+  var GENZ_START = ["Gas, rebut emasnya bestie!", "Siap slay hari ini?", "Fokus, era juara dimulai!"];
+  var GENZ_RANKED_START = ["Ranked = perang kilat, gas!", "Sat set 30 soal, bestie!", "Kejar #1!"];
+  var BUDDY_LINES = {
+    "SD": ["Ayo, kamu hebat!", "Semangat ya!", "Wah, pintar sekali!", "Pelan-pelan, pasti bisa!", "Coba lagi yuk!", "Kamu anak pintar!"],
+    "SMP": GENZ_CHEER, "SMA": GENZ_CHEER, "Kuliah": GENZ_CHEER
+  };
+  var BUDDY_MISS = {
+    "SD": ["Ups, belum tepat!", "Nggak apa-apa, coba lagi!", "Ayo, semangat lagi!"],
+    "SMP": GENZ_MISS, "SMA": GENZ_MISS, "Kuliah": GENZ_MISS
+  };
+  var BUDDY_TIMEOUT = {
+    "SD": ["Waktunya habis, nggak apa-apa!", "Yuk, lebih cepat dikit!"],
+    "SMP": GENZ_TIMEOUT, "SMA": GENZ_TIMEOUT, "Kuliah": GENZ_TIMEOUT
+  };
+  var START_LINES = {
+    "SD": ["Ayo, kamu pasti bisa!", "Kita belajar sambil main, ya!", "Semangat, anak pintar!"],
+    "SMP": GENZ_START, "SMA": GENZ_START, "Kuliah": GENZ_START
+  };
+  var RANKED_START_LINES = {
+    "SD": ["Ayo kumpulkan poin bareng!", "Main cepat tapi teliti ya!", "Kejar peringkat 1!"],
+    "SMP": GENZ_RANKED_START, "SMA": GENZ_RANKED_START, "Kuliah": GENZ_RANKED_START
+  };
+  function linesFor(map, level) { return map[level] || map["SMP"]; }
   function currentLevel() {
     if (state.mode === "ranked") return state.rankedLevel;
     return state.bank ? state.bank.level : null;
