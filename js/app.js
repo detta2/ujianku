@@ -19,6 +19,7 @@
     if (name === "home") applyTheme(null);
     if (name === "badges") renderBadges();
     if (name === "admin") renderAdmin();
+    if (name === "ranked") refreshRankedStamina();
     window.scrollTo({ top: 0, behavior: "smooth" });
   }
   document.querySelectorAll("[data-go]").forEach(function (el) {
@@ -31,6 +32,7 @@
   });
 
   var toastTimer = null;
+  var staminaTimer = null;
   function toast(msg) {
     var t = $("toast");
     t.textContent = msg;
@@ -485,6 +487,72 @@
     $("btn-start-quiz").textContent = "⚔️ Mulai Ranked";
     renderIdentity();
     go("start");
+    if (loggedIn()) refreshStartStamina();
+  }
+
+  /* ---------- stamina ranked (anti adiktif) ---------- */
+  function setStaminaPill(b) {
+    var el = $("stamina-pill");
+    if (el && b && b.ok) el.textContent = "⚡ " + b.stamina + "/" + b.maxStamina + " · -" + b.costPerMatch + "/laga";
+    if (b && b.ok) state.stamina = b.stamina;
+  }
+  function refreshStartStamina(force) {
+    var meta = $("start-meta");
+    if (!meta) return;
+    if ($("stamina-pill")) { if (!force) return; $("stamina-pill").remove(); }
+    meta.insertAdjacentHTML("beforeend", '<span class="pill" id="stamina-pill">⚡ …</span>');
+    srvApi("/api/ranked/stamina").then(function (r) { setStaminaPill(r.body); })
+      .catch(function () { var el = $("stamina-pill"); if (el) el.textContent = "⚡ --"; });
+  }
+  function refreshRankedStamina() {
+    var el = $("ranked-stamina");
+    if (!el) return;
+    if (!loggedIn()) { el.innerHTML = ""; return; }
+    el.innerHTML = '<span class="pill">⚡ …</span>';
+    srvApi("/api/ranked/stamina").then(function (r) {
+      var b = r.body || {};
+      el.innerHTML = b.ok
+        ? '<span class="pill">⚡ Stamina ' + b.stamina + "/" + b.maxStamina + " · 1 laga = " + b.costPerMatch + " ⚡ · +1 tiap 15 mnt</span>"
+        : "";
+    }).catch(function () { el.innerHTML = ""; });
+  }
+  function fmtCountdown(ms) {
+    var s = Math.max(0, Math.ceil(ms / 1000));
+    var m = Math.floor(s / 60); s = s % 60;
+    return m + ":" + (s < 10 ? "0" : "") + s;
+  }
+  function showStaminaEmpty(nextInMs) {
+    clearInterval(staminaTimer);
+    $("modal-ok").textContent = "Mengerti";
+    $("modal-cancel").style.display = "none";
+    $("modal-title").textContent = "⚡ Stamina habis!";
+    var deadline = Date.now() + (nextInMs || 0);
+    function paint() {
+      var left = deadline - Date.now();
+      $("modal-text").innerHTML = "Istirahat dulu biar nggak kecanduan 😌<br>Stamina +1 dalam <b>" + fmtCountdown(left) + "</b>.";
+      if (left <= 0) { clearInterval(staminaTimer); $("modal").classList.add("hidden"); refreshStartStamina(true); }
+    }
+    $("modal-ok").onclick = function () { clearInterval(staminaTimer); $("modal").classList.add("hidden"); };
+    paint();
+    $("modal").classList.remove("hidden");
+    staminaTimer = setInterval(paint, 1000);
+  }
+  /* Potong stamina dulu, baru laga dimulai. */
+  function useStaminaThen(fn) {
+    var btn = $("btn-start-quiz");
+    btn.disabled = true;
+    btn.textContent = "⏳ Cek stamina…";
+    function done() { btn.disabled = false; btn.textContent = "⚔️ Mulai Ranked"; }
+    srvApi("/api/ranked/stamina", { method: "POST" }).then(function (r) {
+      done();
+      var b = r.body || {};
+      if (r.status === 200 && b.ok) { setStaminaPill(b); fn(); return; }
+      if (r.status === 429) { setStaminaPill(b); showStaminaEmpty(b.nextRefillInMs || 0); return; }
+      toast(b.error || "Gagal menghubungi server. Cek koneksi lalu coba lagi.");
+    }).catch(function () {
+      done();
+      toast("Gagal menghubungi server. Cek koneksi lalu coba lagi.");
+    });
   }
 
   function startRankedQuiz(name) {
@@ -1053,7 +1121,7 @@
   $("btn-start-quiz").addEventListener("click", function () {
     if (state.mode === "ranked") {
       if (!isIdentified()) { requireRankedAuth(state.rankedLevel); return; }
-      startRankedQuiz(displayName());
+      useStaminaThen(function () { startRankedQuiz(displayName()); });
       return;
     }
     if (!isIdentified()) { requireAuth(state.bankId); return; }
@@ -1218,6 +1286,7 @@
     $("modal").classList.remove("hidden");
   });
   $("modal-cancel").addEventListener("click", function () {
+    clearInterval(staminaTimer);
     $("modal").classList.add("hidden");
   });
 
