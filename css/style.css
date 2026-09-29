@@ -209,14 +209,15 @@ img{max-width:100%}
 .hero-arena .mascot:nth-child(2){animation-delay:.55s}
 .hero-arena .mascot:nth-child(4){animation-delay:.9s}
 .hero-arena .mascot:nth-child(5){animation-delay:1.25s}
-.hero-podium{
-  display:flex;align-items:flex-end;justify-content:center;gap:6px;
-  margin:0 8px;position:relative;z-index:1;
+/* medali hero */
+.hero-medals{
+  display:flex;align-items:flex-end;justify-content:center;gap:16px;
+  margin:10px 0 4px;position:relative;z-index:2;
 }
-.hero-podium i{display:flex;align-items:center;justify-content:center;width:74px;border:var(--bd);border-top:0;font-style:normal;font-family:var(--font-d);font-weight:700;font-size:17px;color:var(--ink)}
-.hero-podium i:nth-child(1){height:34px;background:linear-gradient(180deg,#e8eef7,#c9d6ef);border-radius:0 0 0 12px}
-.hero-podium i:nth-child(2){height:52px;background:linear-gradient(180deg,var(--gold-light),var(--gold));border-radius:12px 12px 0 0;font-size:20px}
-.hero-podium i:nth-child(3){height:26px;background:linear-gradient(180deg,#f6c9a0,#e8a15c);border-radius:0 0 12px 0}
+.hero-medals .mascot{width:60px;height:60px;animation:mx-floaty 3.4s ease-in-out infinite}
+.hero-medals .mascot.gold{width:88px;height:88px;--medal:#ffd93b;--medal-deep:#f5b301}
+.hero-medals .mascot.silver{--medal:#eef2f9;--medal-deep:#c9d6ef;animation-delay:.7s}
+.hero-medals .mascot.bronze{--medal:#f6c9a0;--medal-deep:#e8a15c;animation-delay:1.4s}
 
 /* kartu divisi */
 .level-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:14px;margin-top:14px}
@@ -555,7 +556,9 @@ img{max-width:100%}
   .hero{padding:26px 18px}
   .hero-arena .trophy{width:96px;height:96px}
   .hero-arena .mascot{width:56px;height:56px}
-  .hero-podium i{width:56px}
+  .hero-medals{gap:10px}
+  .hero-medals .mascot{width:48px;height:48px}
+  .hero-medals .mascot.gold{width:70px;height:70px}
   .speech{right:-84px;max-width:120px;font-size:12px}
   .start-mascot-zone .mascot{width:104px;height:104px}
   .stat3{grid-template-columns:repeat(3,1fr);gap:8px}
