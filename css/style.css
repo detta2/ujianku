@@ -189,6 +189,10 @@ img{max-width:100%}
   text-shadow:0 2px 0 var(--gold-light);
 }
 .hero .lede{margin:12px 0 20px;color:var(--ink-soft);font-weight:600;font-size:16px;max-width:46ch}
+.hero-chips{overflow-x:auto;margin-bottom:22px;max-width:520px;scrollbar-width:none;-webkit-overflow-scrolling:touch}
+.hero-chips::-webkit-scrollbar{display:none}
+.chips-row{display:flex;gap:8px;width:max-content;padding:2px}
+.mq-chip{background:#fff;border:var(--bd);border-radius:999px;box-shadow:0 2px 0 var(--ink);padding:6px 14px;font-size:13px;font-weight:800;color:var(--ink);white-space:nowrap}
 .loading-note{text-align:center;color:var(--ink-soft);font-weight:700;padding:24px 12px;grid-column:1/-1}
 #hero-cta{position:relative;z-index:2}
 
