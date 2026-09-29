@@ -78,10 +78,46 @@
     var u = $(useId);
     if (u && cat) u.setAttribute("href", "#m-" + cat.mascot);
   }
-  var BUDDY_LINES = ["Gas!", "Kejar emas!", "Fokus, juara!", "Sikat!", "Dikit lagi!", "Kamu bisa!", "Jangan kasih kendor!"];
+  /* sapaan maskot disesuaikan jenjang: SD = bahasa anak kecil yang lembut,
+     makin tinggi jenjang makin dewasa bahasanya */
+  var BUDDY_LINES = {
+    "SD": ["Ayo, kamu hebat!", "Semangat ya!", "Wah, pintar sekali!", "Pelan-pelan, pasti bisa!", "Coba lagi yuk!", "Kamu anak pintar!"],
+    "SMP": ["Gas, kejar emas!", "Fokus, kamu bisa!", "Dikit lagi, ayo!", "Keren, lanjutkan!", "Jangan menyerah!"],
+    "SMA": ["Pertahankan ritmemu!", "Fokus penuh, juara!", "Bagus, terus maju!", "Kamu di jalur yang tepat!"],
+    "Kuliah": ["Pertahankan konsistensi!", "Fokus, target tercapai!", "Luar biasa!", "Selangkah ke puncak!"]
+  };
+  var BUDDY_MISS = {
+    "SD": ["Ups, belum tepat!", "Nggak apa-apa, coba lagi!", "Ayo, semangat lagi!"],
+    "SMP": ["Yah, meleset!", "Ayo kejar lagi!", "Fokus, lanjut!"],
+    "SMA": ["Kurang tepat, lanjut!", "Evaluasi, terus maju!", "Tetap fokus!"],
+    "Kuliah": ["Belum tepat, lanjutkan.", "Tetap tenang, fokus.", "Jadikan pelajaran."]
+  };
+  var BUDDY_TIMEOUT = {
+    "SD": ["Waktunya habis, nggak apa-apa!", "Yuk, lebih cepat dikit!"],
+    "SMP": ["⏰ Waktu habis!", "Ayo lebih cepat!"],
+    "SMA": ["Waktu habis, percepat!", "Atur waktumu baik-baik!"],
+    "Kuliah": ["Waktu habis.", "Perhatikan alokasi waktu."]
+  };
+  var START_LINES = {
+    "SD": ["Ayo, kamu pasti bisa!", "Kita belajar sambil main, ya!", "Semangat, anak pintar!"],
+    "SMP": ["Gas, rebut medali emas!", "Siap bertanding?", "Fokus, juara!"],
+    "SMA": ["Tunjukkan kemampuanmu!", "Siap meraih emas?", "Fokus penuh!"],
+    "Kuliah": ["Buktikan kompetensimu!", "Siap untuk tantangan?", "Raih peringkat terbaik!"]
+  };
+  var RANKED_START_LINES = {
+    "SD": ["Ayo kumpulkan poin bareng!", "Main cepat tapi teliti ya!", "Kejar peringkat 1!"],
+    "SMP": ["Ranked itu adu cepat & tepat!", "Kumpulkan poin sebanyak-banyaknya!", "Kejar peringkat 1!"],
+    "SMA": ["30 soal, buktikan kecepatanmu!", "Poin diakumulasi — jaga konsistensi!", "Kejar peringkat 1!"],
+    "Kuliah": ["Uji kecepatan dan ketepatanmu!", "Akumulasi poin menentukan peringkat.", "Kejar peringkat 1!"]
+  };
+  function linesFor(map, level) { return map[level] || map["SMP"]; }
+  function currentLevel() {
+    if (state.mode === "ranked") return state.rankedLevel;
+    return state.bank ? state.bank.level : null;
+  }
   function buddyCheer(hop) {
     var t = $("buddy-text");
-    if (t) t.textContent = pick(BUDDY_LINES);
+    if (t) t.textContent = pick(linesFor(BUDDY_LINES, currentLevel()));
     var m = $("quiz-buddy");
     if (m && hop !== false) {
       m.classList.remove("mx-happy");
@@ -403,7 +439,7 @@
     applyTheme(level);
     var cat = catOf(level);
     setMascot("start-mascot-use", cat);
-    $("start-speech").textContent = pick(["Ranked itu perang kilat!", "Cepat & tepat, juara!", "30 soal, jangan kasih kendor!", "Kejar peringkat 1!"]);
+    $("start-speech").textContent = pick(linesFor(RANKED_START_LINES, level));
     $("start-kicker").textContent = "⚔️ MODE RANKED · " + level;
     $("start-title").textContent = "Siap naik peringkat?";
     var t = rankedTotals(level);
@@ -494,7 +530,9 @@
       buddyCheer(true);
     } else {
       var bt = $("buddy-text");
-      if (bt) bt.textContent = i < 0 ? "⏰ Waktu habis!" : pick(["Yah, meleset!", "Ayo kejar lagi!", "Fokus, lanjut!"]);
+      if (bt) bt.textContent = i < 0
+        ? pick(linesFor(BUDDY_TIMEOUT, currentLevel()))
+        : pick(linesFor(BUDDY_MISS, currentLevel()));
     }
     var btns = $("q-opts").querySelectorAll(".opt");
     btns.forEach(function (b, bi) {
@@ -598,9 +636,7 @@
     applyTheme(b.level);
     var cat = catOf(b.level);
     setMascot("start-mascot-use", cat);
-    $("start-speech").textContent = cat
-      ? pick(["Gas, rebut medali emas!", "Siap bertanding?", "Fokus, juara!", "Kita menang bareng, ya!"])
-      : "Gas, rebut medali emas!";
+    $("start-speech").textContent = pick(linesFor(START_LINES, b.level));
     $("start-kicker").textContent = b.level + " · " + b.subject;
     $("start-title").textContent = "Siap bertanding?";
     $("start-meta").innerHTML =
