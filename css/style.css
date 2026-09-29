@@ -566,7 +566,7 @@ img{max-width:100%}
   .level-grid{grid-template-columns:repeat(2,1fr)}
   .subject-grid{grid-template-columns:repeat(2,1fr)}
   .brand{gap:8px}
-  .brand-name{font-size:17px;white-space:nowrap}
+  .brand-name{display:none}
   /* buddy jadi baris super-ringkas di atas soal biar tombol kelihatan */
   .quiz-stage{flex-direction:column;gap:6px;margin-top:8px;align-items:stretch}
   .topbar{padding:8px 10px}
