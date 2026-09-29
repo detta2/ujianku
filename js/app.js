@@ -1495,18 +1495,7 @@
   }
 
   /* ---------- init ---------- */
-  function renderChips() {
-    var names = [];
-    (window.CATALOG || []).forEach(function (c) {
-      c.banks.forEach(function (b) { names.push(b.subject); });
-    });
-    var track = $("chips-row");
-    if (!track || !names.length) return;
-    track.innerHTML = names.map(function (n) { return '<span class="mq-chip">📚 ' + esc(n) + "</span>"; }).join("");
-  }
-
   renderLevels();
-  renderChips();
   $("hero-ranked").addEventListener("click", function () {
     renderRankedLevels();
     go("ranked");
