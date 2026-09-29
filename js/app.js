@@ -700,18 +700,19 @@
   }
 
   /* ---------- init ---------- */
-  function renderStats() {
-    var banks = 0, qs = 0;
-    Object.keys(window.QBANK || {}).forEach(function (k) {
-      banks++;
-      qs += window.QBANK[k].questions.length;
+  function renderMarquee() {
+    var names = [];
+    (window.CATALOG || []).forEach(function (c) {
+      c.banks.forEach(function (b) { names.push(b.subject); });
     });
-    $("stat-soal").textContent = qs;
-    $("stat-pel").textContent = banks;
+    var track = $("marquee-track");
+    if (!track || !names.length) return;
+    var html = names.map(function (n) { return '<span class="mq-chip">📚 ' + esc(n) + "</span>"; }).join("");
+    track.innerHTML = html + html; /* duplikat biar loop mulus */
   }
 
   renderLevels();
-  renderStats();
+  renderMarquee();
   if (window.Auth) {
     updateAuthUI();
     Auth.initGoogleButton("gbtn");
