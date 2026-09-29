@@ -647,6 +647,21 @@
     });
   }
   function loggedIn() { return !!(window.Auth && Auth.user() && Auth.idToken()); }
+  /* Cek status admin ke server. Kalau gagal (misal pas redeploy), coba lagi otomatis. */
+  function checkAdmin(tries) {
+    tries = tries || 0;
+    srvApi("/api/admin/me").then(function (r) {
+      if (r.body && r.body.ok && r.body.admin) {
+        state.isAdmin = true;
+        var n = $("nav-admin");
+        if (n) n.style.display = "";
+      } else if ((!r.body || !r.body.ok) && tries < 4 && loggedIn()) {
+        setTimeout(function () { checkAdmin(tries + 1); }, 5000);
+      }
+    }).catch(function () {
+      if (tries < 4 && loggedIn()) setTimeout(function () { checkAdmin(tries + 1); }, 5000);
+    });
+  }
   /* dipanggil tiap auth berubah: cek admin + tarik total ranked dari server */
   function syncServerState() {
     var u = window.Auth && Auth.user();
@@ -657,11 +672,7 @@
     var navA = $("nav-admin");
     if (navA) navA.style.display = "none";
     if (!loggedIn()) return;
-    srvApi("/api/admin/me").then(function (r) {
-      state.isAdmin = !!(r.body && r.body.ok && r.body.admin);
-      var n = $("nav-admin");
-      if (n) n.style.display = state.isAdmin ? "" : "none";
-    }).catch(function () {});
+    checkAdmin(0);
     srvApi("/api/ranked/me").then(function (r) {
       if (r.body && r.body.ok && r.body.totals) {
         Object.keys(r.body.totals).forEach(function (lv) {
