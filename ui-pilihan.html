@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Pilih UI Baru — SiPintar</title>
+<style>
+  *{box-sizing:border-box}
+  body{font-family:system-ui,-apple-system,sans-serif;background:#f4f1ea;color:#26344e;margin:0;padding:28px 16px}
+  .wrap{max-width:1100px;margin:0 auto;text-align:center}
+  h1{font-size:30px;margin:0 0 6px}
+  p.sub{color:#5b6b8c;font-weight:600;margin:0 0 26px}
+  .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:22px;text-align:left}
+  .opt{background:#fff;border:3px solid #26344e;border-radius:24px;box-shadow:0 8px 0 rgba(38,52,78,.14);padding:18px}
+  .opt-head{display:flex;gap:12px;align-items:center;margin-bottom:14px}
+  .tag{flex:none;width:46px;height:46px;border-radius:16px;background:#26344e;color:#fff;font-weight:800;font-size:22px;display:flex;align-items:center;justify-content:center}
+  .opt-head h3{margin:0;font-size:20px}
+  .opt-head p{margin:2px 0 0;color:#5b6b8c;font-weight:600;font-size:13px}
+  .phone{border-radius:20px;padding:18px 14px;overflow:hidden;position:relative;min-height:380px}
+  .mascot{display:inline-block;vertical-align:middle}
+  .mascot svg{width:100%;height:100%;display:block}
+  .p-row{display:flex;justify-content:center;gap:4px;margin-bottom:10px}
+  .p-row .mascot{width:58px;height:58px}
+  .p-hero h4{font-size:24px;line-height:1.25;margin:0 0 14px;text-align:center}
+  .p-btn{display:block;text-align:center;font-weight:800;padding:12px;border-radius:999px;text-decoration:none;margin:0 auto;max-width:230px}
+  .p-levels{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:16px}
+  .p-card{padding:12px 10px;text-align:center;position:relative}
+  .p-card .mascot{width:52px;height:52px}
+  .p-card b{display:block;font-size:16px;margin-top:4px}
+  .p-card small{font-weight:700;opacity:.75}
+
+  /* ===== A: CANDY POP ===== */
+  .pa{background:linear-gradient(160deg,#ffe0ef 0%,#fff3d6 55%,#d8f7ff 100%);border:4px solid #ff6fa5;
+    background-image:radial-gradient(#ffffff90 3px,transparent 3.5px),radial-gradient(#ffd1e390 3px,transparent 3.5px),linear-gradient(160deg,#ffe0ef,#fff3d6 55%,#d8f7ff);
+    background-size:34px 34px,52px 52px,cover}
+  .pa .p-hero h4{color:#c2255c;font-family:"Comic Sans MS","Chalkboard SE",cursive}
+  .pa .p-hero h4 em{font-style:normal;color:#f08c00}
+  .pa .p-btn{background:linear-gradient(90deg,#ff6fa5,#ffa94d);color:#fff;box-shadow:0 5px 0 #c2255c;border:3px solid #fff}
+  .pa .p-card{background:#ffffffee;border:3px solid #ffc4da;border-radius:22px;box-shadow:0 4px 0 #ffd6e7}
+  .pa .p-card b{color:#c2255c}
+
+  /* ===== B: DARK NEON ARCADE ===== */
+  .pb{background:#0b0b1a;border:4px solid #00e5ff;color:#eafcff;
+    background-image:repeating-linear-gradient(0deg,transparent 0 3px,rgba(0,229,255,.05) 3px 4px),radial-gradient(circle at 50% 0%,#1b1b3a,#0b0b1a 70%)}
+  .pb .p-hero h4{color:#fff;text-shadow:0 0 10px #00e5ff,0 0 26px #ff2fb3;font-family:ui-monospace,Menlo,monospace;letter-spacing:.5px}
+  .pb .p-hero h4 em{font-style:normal;color:#ffe14d;text-shadow:0 0 12px #ffe14d}
+  .pb .p-btn{background:#101024;color:#00e5ff;border:2px solid #00e5ff;border-radius:12px;box-shadow:0 0 16px #00e5ff,inset 0 0 10px #00e5ff33;font-family:ui-monospace,monospace}
+  .pb .p-card{background:#151531;border:2px solid #3a3a6e;border-radius:14px;box-shadow:0 0 10px #ff2fb322}
+  .pb .p-card b{color:#ffe14d}
+  .pb .p-card small{color:#9be9ff}
+
+  /* ===== C: PAPER CRAFT ===== */
+  .pc{background:#f3e8cf;border:4px solid #a9804e;
+    background-image:repeating-linear-gradient(45deg,transparent 0 14px,rgba(120,84,40,.05) 14px 28px)}
+  .pc .p-hero h4{color:#6b4a26;font-family:Georgia,serif;font-style:italic}
+  .pc .p-hero h4 em{font-style:italic;color:#b3541e}
+  .pc .p-btn{background:#fffdf4;color:#6b4a26;border:2px dashed #a9804e;border-radius:8px;box-shadow:3px 4px 0 rgba(107,74,38,.25)}
+  .pc .p-card{background:#fffdf4;border:2px dashed #c39a5f;border-radius:8px;box-shadow:3px 4px 0 rgba(107,74,38,.18);margin-top:8px}
+  .pc .p-card::before{content:"";position:absolute;top:-13px;left:50%;transform:translateX(-50%) rotate(-4deg);width:64px;height:20px;background:rgba(255,214,140,.8);border:1px solid rgba(120,84,40,.2)}
+  .pc .p-card b{color:#6b4a26}
+
+  /* ===== D: SPACE ADVENTURE ===== */
+  .pd{background:linear-gradient(180deg,#070d28 0%,#191244 60%,#2c1658 100%);border:4px solid #8b7bff;color:#fff;
+    background-image:radial-gradient(2px 2px at 15% 25%,#fff,transparent),radial-gradient(1.6px 1.6px at 75% 15%,#fff,transparent),radial-gradient(2px 2px at 60% 60%,#fff,transparent),radial-gradient(1.4px 1.4px at 30% 70%,#fff,transparent),radial-gradient(2px 2px at 88% 45%,#fff,transparent),linear-gradient(180deg,#070d28,#191244 60%,#2c1658)}
+  .pd .p-hero{position:relative}
+  .pd .p-hero::after{content:"";position:absolute;top:-38px;right:-30px;width:110px;height:110px;border-radius:50%;
+    background:radial-gradient(circle at 35% 35%,#ffd6a5,#ff8c42 55%,#c2410c);box-shadow:0 0 30px #ff8c42aa}
+  .pd .p-hero h4{color:#fff;position:relative;z-index:1}
+  .pd .p-hero h4 em{font-style:normal;background:linear-gradient(90deg,#a78bfa,#67e8f9);-webkit-background-clip:text;background-clip:text;color:transparent}
+  .pd .p-btn{background:linear-gradient(90deg,#8b5cf6,#22d3ee);color:#fff;box-shadow:0 0 20px #8b5cf6;border:none;position:relative;z-index:1}
+  .pd .p-card{background:rgba(255,255,255,.09);border:1.5px solid rgba(255,255,255,.28);border-radius:18px;backdrop-filter:blur(3px);color:#fff}
+  .pd .p-card b{color:#fff}
+  .pd .p-card small{color:#c4b5fd}
+</style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs>
+<symbol id="m-dino" viewBox="0 0 120 120">
+  <polygon points="38,46 46,28 54,46" fill="#fbbf24" stroke="#26344e" stroke-width="2.5" stroke-linejoin="round"/>
+  <polygon points="56,44 64,26 72,44" fill="#fbbf24" stroke="#26344e" stroke-width="2.5" stroke-linejoin="round"/>
+  <polygon points="74,46 82,30 90,48" fill="#fbbf24" stroke="#26344e" stroke-width="2.5" stroke-linejoin="round"/>
+  <path d="M28 88 Q10 84 12 70 Q26 74 32 84 Z" fill="#22c55e" stroke="#26344e" stroke-width="3" stroke-linejoin="round"/>
+  <ellipse cx="46" cy="102" rx="11" ry="8" fill="#16a34a" stroke="#26344e" stroke-width="3"/>
+  <ellipse cx="74" cy="102" rx="11" ry="8" fill="#16a34a" stroke="#26344e" stroke-width="3"/>
+  <ellipse cx="60" cy="78" rx="32" ry="26" fill="#4ade80" stroke="#26344e" stroke-width="3"/>
+  <ellipse cx="60" cy="88" rx="18" ry="13" fill="#dcfbe7"/>
+  <circle cx="60" cy="40" r="22" fill="#4ade80" stroke="#26344e" stroke-width="3"/>
+  <path d="M42 38 q6 -7 12 0" fill="none" stroke="#26344e" stroke-width="3" stroke-linecap="round"/>
+  <path d="M66 38 q6 -7 12 0" fill="none" stroke="#26344e" stroke-width="3" stroke-linecap="round"/>
+  <circle cx="40" cy="50" r="6" fill="#f9a8d4" opacity=".9"/>
+  <circle cx="80" cy="50" r="6" fill="#f9a8d4" opacity=".9"/>
+  <path d="M52 55 Q60 68 68 55 Q60 60 52 55 Z" fill="#26344e"/>
+  <ellipse cx="60" cy="61" rx="5" ry="3" fill="#f9a8d4"/>
+</symbol>
+<symbol id="m-robot" viewBox="0 0 120 120">
+  <line x1="60" y1="26" x2="60" y2="13" stroke="#26344e" stroke-width="4" stroke-linecap="round"/>
+  <circle cx="60" cy="9" r="6" fill="#fbbf24" stroke="#26344e" stroke-width="3"/>
+  <rect x="22" y="44" width="10" height="18" rx="5" fill="#93c5fd" stroke="#26344e" stroke-width="3"/>
+  <rect x="88" y="44" width="10" height="18" rx="5" fill="#93c5fd" stroke="#26344e" stroke-width="3"/>
+  <rect x="44" y="94" width="12" height="14" rx="6" fill="#3b82f6" stroke="#26344e" stroke-width="3"/>
+  <rect x="64" y="94" width="12" height="14" rx="6" fill="#3b82f6" stroke="#26344e" stroke-width="3"/>
+  <rect x="36" y="70" width="48" height="28" rx="12" fill="#60a5fa" stroke="#26344e" stroke-width="3"/>
+  <circle cx="60" cy="84" r="6" fill="#dbeafe" stroke="#26344e" stroke-width="2.5"/>
+  <rect x="22" y="72" width="10" height="22" rx="5" fill="#3b82f6" stroke="#26344e" stroke-width="3"/>
+  <rect x="88" y="72" width="10" height="22" rx="5" fill="#3b82f6" stroke="#26344e" stroke-width="3"/>
+  <rect x="28" y="24" width="64" height="50" rx="18" fill="#93c5fd" stroke="#26344e" stroke-width="3"/>
+  <rect x="38" y="34" width="44" height="30" rx="12" fill="#1e3a8a"/>
+  <circle cx="52" cy="47" r="5" fill="#7dd3fc"/>
+  <circle cx="68" cy="47" r="5" fill="#7dd3fc"/>
+  <path d="M53 57 Q60 62 67 57" fill="none" stroke="#7dd3fc" stroke-width="2.5" stroke-linecap="round"/>
+</symbol>
+<symbol id="m-rocket" viewBox="0 0 120 120">
+  <circle cx="18" cy="24" r="3" fill="#fbbf24" stroke="#26344e" stroke-width="2"/>
+  <circle cx="102" cy="30" r="2.5" fill="#fbbf24" stroke="#26344e" stroke-width="2"/>
+  <circle cx="96" cy="90" r="3" fill="#fbbf24" stroke="#26344e" stroke-width="2"/>
+  <path d="M48 84 Q60 108 72 84 Q66 92 60 92 Q54 92 48 84 Z" fill="#fbbf24" stroke="#26344e" stroke-width="3" stroke-linejoin="round"/>
+  <path d="M54 84 Q60 98 66 84 Q63 89 60 89 Q57 89 54 84 Z" fill="#f97316"/>
+  <path d="M42 62 L28 84 L44 80 Z" fill="#ea580c" stroke="#26344e" stroke-width="3" stroke-linejoin="round"/>
+  <path d="M78 62 L92 84 L76 80 Z" fill="#ea580c" stroke="#26344e" stroke-width="3" stroke-linejoin="round"/>
+  <path d="M60 8 C76 22 82 48 78 72 L42 72 C38 48 44 22 60 8 Z" fill="#ffffff" stroke="#26344e" stroke-width="3" stroke-linejoin="round"/>
+  <path d="M60 8 C66 13 70 19 73 25 L47 25 C50 19 54 13 60 8 Z" fill="#f97316" stroke="#26344e" stroke-width="3" stroke-linejoin="round"/>
+  <circle cx="60" cy="48" r="11" fill="#38bdf8" stroke="#26344e" stroke-width="3"/>
+  <circle cx="56" cy="44" r="3" fill="#bae6fd"/>
+</symbol>
+<symbol id="m-owl" viewBox="0 0 120 120">
+  <rect x="46" y="100" width="10" height="10" rx="5" fill="#fbbf24" stroke="#26344e" stroke-width="2.5"/>
+  <rect x="64" y="100" width="10" height="10" rx="5" fill="#fbbf24" stroke="#26344e" stroke-width="2.5"/>
+  <ellipse cx="30" cy="72" rx="10" ry="20" fill="#8b5cf6" stroke="#26344e" stroke-width="3" transform="rotate(12 30 72)"/>
+  <ellipse cx="90" cy="72" rx="10" ry="20" fill="#8b5cf6" stroke="#26344e" stroke-width="3" transform="rotate(-12 90 72)"/>
+  <ellipse cx="60" cy="68" rx="32" ry="36" fill="#a78bfa" stroke="#26344e" stroke-width="3"/>
+  <ellipse cx="60" cy="80" rx="18" ry="18" fill="#ddd6fe"/>
+  <circle cx="47" cy="52" r="11" fill="#fff" stroke="#26344e" stroke-width="2.5"/>
+  <circle cx="73" cy="52" r="11" fill="#fff" stroke="#26344e" stroke-width="2.5"/>
+  <circle cx="48" cy="53" r="5" fill="#26344e"/>
+  <circle cx="74" cy="53" r="5" fill="#26344e"/>
+  <circle cx="50" cy="51" r="1.6" fill="#fff"/>
+  <circle cx="76" cy="51" r="1.6" fill="#fff"/>
+  <polygon points="60,60 54,68 66,68" fill="#fbbf24" stroke="#26344e" stroke-width="2.5" stroke-linejoin="round"/>
+  <g transform="rotate(-8 60 22)">
+    <polygon points="60,6 32,17 60,28 88,17" fill="#3b4a6b" stroke="#26344e" stroke-width="2.5" stroke-linejoin="round"/>
+    <rect x="52" y="20" width="16" height="8" rx="3" fill="#26344e"/>
+    <line x1="84" y1="17" x2="84" y2="31" stroke="#fbbf24" stroke-width="3" stroke-linecap="round"/>
+    <circle cx="84" cy="34" r="4" fill="#fbbf24" stroke="#26344e" stroke-width="2"/>
+  </g>
+</symbol>
+</defs></svg>
+
+<div class="wrap">
+  <h1>🎨 Pilih Tampilan Baru SiPintar</h1>
+  <p class="sub">Balas dengan huruf pilihannya (A / B / C / D) — yang dipilih akan saya pasang ke seluruh web</p>
+  <div class="grid">
+
+    <div class="opt">
+      <div class="opt-head"><span class="tag">A</span><div><h3>Candy Pop</h3><p>Warna permen pastel, ceria & manis — favorit anak SD</p></div></div>
+      <div class="phone pa">
+        <div class="p-hero">
+          <div class="p-row">
+            <span class="mascot"><svg><use href="#m-dino"/></svg></span>
+            <span class="mascot"><svg><use href="#m-robot"/></svg></span>
+            <span class="mascot"><svg><use href="#m-rocket"/></svg></span>
+            <span class="mascot"><svg><use href="#m-owl"/></svg></span>
+          </div>
+          <h4>Ayo main<br>sambil <em>belajar!</em></h4>
+          <a class="p-btn">Pilih Jenjang →</a>
+        </div>
+        <div class="p-levels">
+          <div class="p-card"><span class="mascot"><svg><use href="#m-dino"/></svg></span><b>SD</b><small>si Dino</small></div>
+          <div class="p-card"><span class="mascot"><svg><use href="#m-robot"/></svg></span><b>SMP</b><small>si Robo</small></div>
+          <div class="p-card"><span class="mascot"><svg><use href="#m-rocket"/></svg></span><b>SMA</b><small>si Roki</small></div>
+          <div class="p-card"><span class="mascot"><svg><use href="#m-owl"/></svg></span><b>Kuliah</b><small>si Ollie</small></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="opt">
+      <div class="opt-head"><span class="tag">B</span><div><h3>Neon Arcade</h3><p>Gelap + neon menyala, gaya gamer — keren buat SMP/SMA</p></div></div>
+      <div class="phone pb">
+        <div class="p-hero">
+          <div class="p-row">
+            <span class="mascot"><svg><use href="#m-dino"/></svg></span>
+            <span class="mascot"><svg><use href="#m-robot"/></svg></span>
+            <span class="mascot"><svg><use href="#m-rocket"/></svg></span>
+            <span class="mascot"><svg><use href="#m-owl"/></svg></span>
+          </div>
+          <h4>AYO MAIN<br>SAMBIL <em>BELAJAR!</em></h4>
+          <a class="p-btn">▶ PILIH JENJANG</a>
+        </div>
+        <div class="p-levels">
+          <div class="p-card"><span class="mascot"><svg><use href="#m-dino"/></svg></span><b>SD</b><small>si Dino</small></div>
+          <div class="p-card"><span class="mascot"><svg><use href="#m-robot"/></svg></span><b>SMP</b><small>si Robo</small></div>
+          <div class="p-card"><span class="mascot"><svg><use href="#m-rocket"/></svg></span><b>SMA</b><small>si Roki</small></div>
+          <div class="p-card"><span class="mascot"><svg><use href="#m-owl"/></svg></span><b>Kuliah</b><small>si Ollie</small></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="opt">
+      <div class="opt-head"><span class="tag">C</span><div><h3>Paper Craft</h3><p>Kertas & selotip, hangat kayak scrapbook — cozy</p></div></div>
+      <div class="phone pc">
+        <div class="p-hero">
+          <div class="p-row">
+            <span class="mascot"><svg><use href="#m-dino"/></svg></span>
+            <span class="mascot"><svg><use href="#m-robot"/></svg></span>
+            <span class="mascot"><svg><use href="#m-rocket"/></svg></span>
+            <span class="mascot"><svg><use href="#m-owl"/></svg></span>
+          </div>
+          <h4>Ayo main<br>sambil <em>belajar!</em></h4>
+          <a class="p-btn">✂ Pilih Jenjang →</a>
+        </div>
+        <div class="p-levels">
+          <div class="p-card"><span class="mascot"><svg><use href="#m-dino"/></svg></span><b>SD</b><small>si Dino</small></div>
+          <div class="p-card"><span class="mascot"><svg><use href="#m-robot"/></svg></span><b>SMP</b><small>si Robo</small></div>
+          <div class="p-card"><span class="mascot"><svg><use href="#m-rocket"/></svg></span><b>SMA</b><small>si Roki</small></div>
+          <div class="p-card"><span class="mascot"><svg><use href="#m-owl"/></svg></span><b>Kuliah</b><small>si Ollie</small></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="opt">
+      <div class="opt-head"><span class="tag">D</span><div><h3>Space Adventure</h3><p>Luar angkasa, bintang & planet — petualangan seru</p></div></div>
+      <div class="phone pd">
+        <div class="p-hero">
+          <div class="p-row">
+            <span class="mascot"><svg><use href="#m-dino"/></svg></span>
+            <span class="mascot"><svg><use href="#m-robot"/></svg></span>
+            <span class="mascot"><svg><use href="#m-rocket"/></svg></span>
+            <span class="mascot"><svg><use href="#m-owl"/></svg></span>
+          </div>
+          <h4>Ayo main<br>sambil <em>belajar!</em></h4>
+          <a class="p-btn">🚀 Pilih Jenjang →</a>
+        </div>
+        <div class="p-levels">
+          <div class="p-card"><span class="mascot"><svg><use href="#m-dino"/></svg></span><b>SD</b><small>si Dino</small></div>
+          <div class="p-card"><span class="mascot"><svg><use href="#m-robot"/></svg></span><b>SMP</b><small>si Robo</small></div>
+          <div class="p-card"><span class="mascot"><svg><use href="#m-rocket"/></svg></span><b>SMA</b><small>si Roki</small></div>
+          <div class="p-card"><span class="mascot"><svg><use href="#m-owl"/></svg></span><b>Kuliah</b><small>si Ollie</small></div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+</body>
+</html>
