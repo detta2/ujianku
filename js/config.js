@@ -13,7 +13,8 @@ window.APP_CONFIG = {
 /* Katalog: jenjang -> daftar bank soal (id = key di window.QBANK) */
 window.CATALOG = [
   {
-    level: "SD", tagline: "Kelas 4–6", color: "#059669",
+    level: "SD", tagline: "Kelas 4–6", color: "#16a34a",
+    mascot: "dino", mascotName: "Dino", friend: "Main bareng Dino, belajar jadi petualangan.",
     banks: [
       { id: "sd-matematika", subject: "Matematika" },
       { id: "sd-ipa", subject: "IPA" },
@@ -22,7 +23,8 @@ window.CATALOG = [
     ],
   },
   {
-    level: "SMP", tagline: "Kelas 7–9", color: "#1d4ed8",
+    level: "SMP", tagline: "Kelas 7–9", color: "#2563eb",
+    mascot: "robot", mascotName: "Robo", friend: "Robo siap membantumu naik level.",
     banks: [
       { id: "smp-matematika", subject: "Matematika" },
       { id: "smp-ipa", subject: "IPA" },
@@ -31,7 +33,8 @@ window.CATALOG = [
     ],
   },
   {
-    level: "SMA", tagline: "Kelas 10–12", color: "#7c3aed",
+    level: "SMA", tagline: "Kelas 10–12", color: "#ea580c",
+    mascot: "rocket", mascotName: "Roki", friend: "Roki siap melesat ke ujian bersamamu.",
     banks: [
       { id: "sma-matematika", subject: "Matematika" },
       { id: "sma-fisika", subject: "Fisika" },
@@ -42,7 +45,8 @@ window.CATALOG = [
     ],
   },
   {
-    level: "Kuliah", tagline: "Tingkat sarjana", color: "#d97706",
+    level: "Kuliah", tagline: "Tingkat sarjana", color: "#7c3aed",
+    mascot: "owl", mascotName: "Ollie", friend: "Ollie, si burung hantu paling pinter.",
     banks: [
       { id: "kuliah-matematika-dasar", subject: "Matematika Dasar" },
       { id: "kuliah-fisika-dasar", subject: "Fisika Dasar" },

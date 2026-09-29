@@ -5,11 +5,103 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <title>SiPintar — Latihan Soal SD, SMP, SMA, Kuliah</title>
 <meta name="description" content="Latihan ujian online: pilih jenjang & pelajaran, kerjakan dengan timer, dapatkan nilai + pembahasan, adu skor di leaderboard.">
+<meta name="theme-color" content="#f97316">
+<meta property="og:title" content="SiPintar — Latihan Soal SD, SMP, SMA, Kuliah">
+<meta property="og:description" content="Belajar sambil main bareng Dino, Robo, Roki & Ollie. Gratis!">
+<meta property="og:type" content="website">
+<link rel="icon" type="image/svg+xml" href="favicon.svg">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css">
 <link rel="stylesheet" href="css/style.css">
 <script src="https://accounts.google.com/gsi/client" async defer></script>
 </head>
 <body>
+
+<!-- ======== MASKOT ======== -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <symbol id="m-dino" viewBox="0 0 120 120">
+      <path d="M28 84 Q10 78 14 60 Q28 64 34 74 Z" fill="#22c55e" stroke="#26344e" stroke-width="3" stroke-linejoin="round"/>
+      <rect x="44" y="92" width="14" height="18" rx="7" fill="#16a34a" stroke="#26344e" stroke-width="3"/>
+      <rect x="64" y="92" width="14" height="18" rx="7" fill="#16a34a" stroke="#26344e" stroke-width="3"/>
+      <ellipse cx="58" cy="70" rx="30" ry="28" fill="#4ade80" stroke="#26344e" stroke-width="3"/>
+      <ellipse cx="58" cy="80" rx="17" ry="15" fill="#dcfbe7"/>
+      <polygon points="40,46 46,30 52,46" fill="#15803d" stroke="#26344e" stroke-width="2.5" stroke-linejoin="round"/>
+      <polygon points="54,44 60,28 66,44" fill="#15803d" stroke="#26344e" stroke-width="2.5" stroke-linejoin="round"/>
+      <circle cx="84" cy="40" r="20" fill="#4ade80" stroke="#26344e" stroke-width="3"/>
+      <ellipse cx="97" cy="46" rx="8" ry="6.5" fill="#4ade80"/>
+      <circle cx="100" cy="44" r="1.6" fill="#26344e"/>
+      <g class="mx-eyes">
+        <circle cx="86" cy="34" r="7" fill="#fff" stroke="#26344e" stroke-width="2.5"/>
+        <circle cx="88" cy="35" r="3.2" fill="#26344e"/>
+        <circle cx="89" cy="33.6" r="1.1" fill="#fff"/>
+      </g>
+      <path d="M88 53 Q94 57 100 53" fill="none" stroke="#26344e" stroke-width="2.5" stroke-linecap="round"/>
+      <ellipse cx="76" cy="66" rx="5" ry="8" fill="#22c55e" stroke="#26344e" stroke-width="2.5" transform="rotate(20 76 66)"/>
+    </symbol>
+    <symbol id="m-robot" viewBox="0 0 120 120">
+      <g class="mx-antenna">
+        <line x1="60" y1="26" x2="60" y2="13" stroke="#26344e" stroke-width="4" stroke-linecap="round"/>
+        <circle cx="60" cy="9" r="6" fill="#fbbf24" stroke="#26344e" stroke-width="3"/>
+      </g>
+      <rect x="22" y="44" width="10" height="18" rx="5" fill="#93c5fd" stroke="#26344e" stroke-width="3"/>
+      <rect x="88" y="44" width="10" height="18" rx="5" fill="#93c5fd" stroke="#26344e" stroke-width="3"/>
+      <rect x="44" y="94" width="12" height="14" rx="6" fill="#3b82f6" stroke="#26344e" stroke-width="3"/>
+      <rect x="64" y="94" width="12" height="14" rx="6" fill="#3b82f6" stroke="#26344e" stroke-width="3"/>
+      <rect x="36" y="70" width="48" height="28" rx="12" fill="#60a5fa" stroke="#26344e" stroke-width="3"/>
+      <circle cx="60" cy="84" r="6" fill="#dbeafe" stroke="#26344e" stroke-width="2.5"/>
+      <rect x="22" y="72" width="10" height="22" rx="5" fill="#3b82f6" stroke="#26344e" stroke-width="3"/>
+      <rect x="88" y="72" width="10" height="22" rx="5" fill="#3b82f6" stroke="#26344e" stroke-width="3"/>
+      <rect x="28" y="24" width="64" height="50" rx="18" fill="#93c5fd" stroke="#26344e" stroke-width="3"/>
+      <rect x="38" y="34" width="44" height="30" rx="12" fill="#1e3a8a"/>
+      <g class="mx-eyes">
+        <circle cx="52" cy="47" r="5" fill="#7dd3fc"/>
+        <circle cx="68" cy="47" r="5" fill="#7dd3fc"/>
+      </g>
+      <path d="M53 57 Q60 62 67 57" fill="none" stroke="#7dd3fc" stroke-width="2.5" stroke-linecap="round"/>
+    </symbol>
+    <symbol id="m-rocket" viewBox="0 0 120 120">
+      <circle cx="18" cy="24" r="3" fill="#fbbf24" stroke="#26344e" stroke-width="2"/>
+      <circle cx="102" cy="30" r="2.5" fill="#fbbf24" stroke="#26344e" stroke-width="2"/>
+      <circle cx="96" cy="90" r="3" fill="#fbbf24" stroke="#26344e" stroke-width="2"/>
+      <g class="mx-flame">
+        <path d="M48 84 Q60 108 72 84 Q66 92 60 92 Q54 92 48 84 Z" fill="#fbbf24" stroke="#26344e" stroke-width="3" stroke-linejoin="round"/>
+        <path d="M54 84 Q60 98 66 84 Q63 89 60 89 Q57 89 54 84 Z" fill="#f97316"/>
+      </g>
+      <path d="M42 62 L28 84 L44 80 Z" fill="#ea580c" stroke="#26344e" stroke-width="3" stroke-linejoin="round"/>
+      <path d="M78 62 L92 84 L76 80 Z" fill="#ea580c" stroke="#26344e" stroke-width="3" stroke-linejoin="round"/>
+      <path d="M60 8 C76 22 82 48 78 72 L42 72 C38 48 44 22 60 8 Z" fill="#ffffff" stroke="#26344e" stroke-width="3" stroke-linejoin="round"/>
+      <path d="M60 8 C66 13 70 19 73 25 L47 25 C50 19 54 13 60 8 Z" fill="#f97316" stroke="#26344e" stroke-width="3" stroke-linejoin="round"/>
+      <circle cx="60" cy="48" r="11" fill="#38bdf8" stroke="#26344e" stroke-width="3"/>
+      <circle cx="56" cy="44" r="3" fill="#bae6fd"/>
+    </symbol>
+    <symbol id="m-owl" viewBox="0 0 120 120">
+      <rect x="46" y="100" width="10" height="10" rx="5" fill="#fbbf24" stroke="#26344e" stroke-width="2.5"/>
+      <rect x="64" y="100" width="10" height="10" rx="5" fill="#fbbf24" stroke="#26344e" stroke-width="2.5"/>
+      <ellipse cx="30" cy="72" rx="10" ry="20" fill="#8b5cf6" stroke="#26344e" stroke-width="3" transform="rotate(12 30 72)"/>
+      <ellipse cx="90" cy="72" rx="10" ry="20" fill="#8b5cf6" stroke="#26344e" stroke-width="3" transform="rotate(-12 90 72)"/>
+      <ellipse cx="60" cy="68" rx="32" ry="36" fill="#a78bfa" stroke="#26344e" stroke-width="3"/>
+      <ellipse cx="60" cy="80" rx="18" ry="18" fill="#ddd6fe"/>
+      <g class="mx-eyes">
+        <circle cx="47" cy="52" r="11" fill="#fff" stroke="#26344e" stroke-width="2.5"/>
+        <circle cx="73" cy="52" r="11" fill="#fff" stroke="#26344e" stroke-width="2.5"/>
+        <circle cx="48" cy="53" r="5" fill="#26344e"/>
+        <circle cx="74" cy="53" r="5" fill="#26344e"/>
+        <circle cx="50" cy="51" r="1.6" fill="#fff"/>
+        <circle cx="76" cy="51" r="1.6" fill="#fff"/>
+      </g>
+      <polygon points="60,60 54,68 66,68" fill="#fbbf24" stroke="#26344e" stroke-width="2.5" stroke-linejoin="round"/>
+      <g transform="rotate(-8 60 22)">
+        <polygon points="60,6 32,17 60,28 88,17" fill="#3b4a6b" stroke="#26344e" stroke-width="2.5" stroke-linejoin="round"/>
+        <rect x="52" y="20" width="16" height="8" rx="3" fill="#26344e"/>
+        <line x1="84" y1="17" x2="84" y2="31" stroke="#fbbf24" stroke-width="3" stroke-linecap="round"/>
+        <circle cx="84" cy="34" r="4" fill="#fbbf24" stroke="#26344e" stroke-width="2"/>
+      </g>
+    </symbol>
+    <symbol id="m-star" viewBox="0 0 100 100">
+      <polygon points="50,6 62,36 94,36 68,55 77,88 50,69 23,88 32,55 6,36 38,36" fill="#fbbf24" stroke="#26344e" stroke-width="5" stroke-linejoin="round"/>
+    </symbol>
+  </defs>
+</svg>
 
 <header class="topbar">
   <button class="brand" data-go="home" aria-label="Beranda">
@@ -28,46 +120,69 @@
 
   <!-- ============ HOME ============ -->
   <section id="screen-home" class="screen active">
-    <div class="hero-band">
-      <p class="kicker light">Latihan ujian online · gratis</p>
-      <h1>Kerjakan soal.<br>Dapat nilai.<br><em>Lihat pembahasannya.</em></h1>
-      <p class="lede">Bank soal SD sampai Kuliah. Ada timer kayak ujian beneran, nilai otomatis, kunci jawaban + cara ngerjainnya, dan leaderboard buat adu skor.</p>
-      <div class="hero-stats">
-        <div><b id="stat-soal">–</b><span>soal</span></div>
-        <div><b id="stat-pel">–</b><span>pelajaran</span></div>
-        <div><b>4</b><span>jenjang</span></div>
+    <div class="hero">
+      <div class="cloud c1"></div>
+      <div class="cloud c2"></div>
+      <div class="hero-copy">
+        <p class="kicker light">Gratis · SD sampai Kuliah</p>
+        <h1>Ayo main<br>sambil <span class="hl">belajar!</span></h1>
+        <p class="lede">Kerjakan soal bareng Dino, Robo, Roki, dan Ollie. Ada timer kayak ujian beneran, nilai langsung keluar, plus pembahasan tiap soal.</p>
+        <div class="hero-stats">
+          <div><b id="stat-soal">–</b><span>soal</span></div>
+          <div><b id="stat-pel">–</b><span>pelajaran</span></div>
+          <div><b>4</b><span>jenjang</span></div>
+        </div>
+        <a class="btn-primary" href="#levels" id="hero-cta">Pilih Jenjang →</a>
       </div>
-      <a class="btn-primary" href="#levels" id="hero-cta">Pilih Jenjang →</a>
+      <div class="hero-mascots" aria-hidden="true">
+        <span class="mascot mx-bounce"><svg><use href="#m-dino"/></svg></span>
+        <span class="mascot mx-bounce"><svg><use href="#m-robot"/></svg></span>
+        <span class="mascot mx-floaty"><svg><use href="#m-rocket"/></svg></span>
+        <span class="mascot mx-sway"><svg><use href="#m-owl"/></svg></span>
+      </div>
+      <div class="hero-ground"></div>
     </div>
 
-    <h2 class="section-title" id="levels">Pilih jenjangmu</h2>
+    <h2 class="section-title" id="levels">Pilih duniamu</h2>
+    <p class="section-sub">Tiap jenjang punya teman main sendiri.</p>
     <div class="level-grid" id="level-grid"></div>
 
     <div class="how-grid">
-      <div class="how-card"><b>1</b><h3>Pilih</h3><p>Tentukan jenjang & pelajaran.</p></div>
-      <div class="how-card"><b>2</b><h3>Kerjakan</h3><p>Jawab soal dengan timer berjalan.</p></div>
-      <div class="how-card"><b>3</b><h3>Pelajari</h3><p>Dapat nilai + pembahasan tiap soal.</p></div>
+      <div class="how-card"><span class="step">1</span><h3>Pilih</h3><p>Tentukan jenjang & pelajaran.</p></div>
+      <div class="how-card"><span class="step">2</span><h3>Kerjakan</h3><p>Jawab soal dengan timer berjalan.</p></div>
+      <div class="how-card"><span class="step">3</span><h3>Pelajari</h3><p>Dapat nilai + pembahasan tiap soal.</p></div>
     </div>
   </section>
 
   <!-- ============ SUBJECTS ============ -->
   <section id="screen-subjects" class="screen">
     <button class="backlink" data-go="home">← Ganti jenjang</button>
-    <h2 class="section-title" id="subjects-title">Pilih pelajaran</h2>
-    <p class="section-sub" id="subjects-sub"></p>
+    <div class="subject-head">
+      <span class="mascot mx-bounce" id="subjects-mascot"><svg><use id="subjects-mascot-use" href="#m-dino"/></svg></span>
+      <div>
+        <h2 class="section-title" id="subjects-title" style="margin-top:0">Pilih pelajaran</h2>
+        <p class="section-sub" id="subjects-sub" style="margin-bottom:0"></p>
+      </div>
+    </div>
     <div class="subject-grid" id="subject-grid"></div>
   </section>
 
   <!-- ============ START ============ -->
   <section id="screen-start" class="screen">
     <button class="backlink" data-go="subjects">← Ganti pelajaran</button>
-    <div class="start-card">
-      <p class="kicker" id="start-kicker"></p>
-      <h2 id="start-title"></h2>
-      <div class="start-meta" id="start-meta"></div>
-      <div class="identity" id="start-identity"></div>
-      <button class="btn-primary btn-big" id="btn-start-quiz">Mulai Ujian</button>
-      <p class="hint">Waktu habis = otomatis dikumpulkan.</p>
+    <div class="start-wrap">
+      <div class="start-mascot-zone">
+        <span class="mascot mx-cheer" id="start-mascot"><svg><use id="start-mascot-use" href="#m-dino"/></svg></span>
+        <div class="speech" id="start-speech">Ayo, kamu pasti bisa!</div>
+      </div>
+      <div class="start-card" id="start-card">
+        <p class="kicker" id="start-kicker"></p>
+        <h2 id="start-title"></h2>
+        <div class="start-meta" id="start-meta"></div>
+        <div class="identity" id="start-identity"></div>
+        <button class="btn-primary btn-big" id="btn-start-quiz">Mulai Ujian</button>
+        <p class="hint">Waktu habis = otomatis dikumpulkan.</p>
+      </div>
     </div>
   </section>
 
@@ -83,6 +198,11 @@
         <span id="timer-text">--:--</span>
         <button class="btn-ghost" id="btn-quiz-menu">Buka peta soal</button>
       </div>
+    </div>
+
+    <div class="buddy-zone">
+      <span class="mascot mx-bounce" id="quiz-buddy"><svg><use id="quiz-buddy-use" href="#m-dino"/></svg></span>
+      <div class="buddy-bubble" id="buddy-text">Semangat!</div>
     </div>
 
     <div class="qcard">
@@ -109,7 +229,11 @@
 
   <!-- ============ RESULT ============ -->
   <section id="screen-result" class="screen">
-    <div class="result-card">
+    <div class="result-card" id="result-card">
+      <div class="result-mascot-zone">
+        <span class="mascot" id="result-mascot"><svg><use id="result-mascot-use" href="#m-dino"/></svg></span>
+      </div>
+      <div class="stars" id="result-stars" aria-hidden="true"></div>
       <p class="kicker" id="result-kicker"></p>
       <div class="score-ring">
         <svg viewBox="0 0 120 120">
@@ -143,7 +267,12 @@
   <section id="screen-login" class="screen">
     <button class="backlink" data-go="home">← Beranda</button>
     <div class="start-card auth-card">
-      <div class="auth-icon">👤</div>
+      <div class="login-mascots" aria-hidden="true">
+        <span class="mascot mx-bounce"><svg><use href="#m-dino"/></svg></span>
+        <span class="mascot mx-bounce"><svg><use href="#m-robot"/></svg></span>
+        <span class="mascot mx-floaty"><svg><use href="#m-rocket"/></svg></span>
+        <span class="mascot mx-sway"><svg><use href="#m-owl"/></svg></span>
+      </div>
       <h2>Masuk dulu yuk</h2>
       <p class="section-sub">Biar skor dan riwayat ujian kesimpan di profil kamu sendiri.</p>
       <div id="gbtn" class="gbtn-wrap"></div>

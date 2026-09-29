@@ -14,6 +14,7 @@
   function go(name) {
     state.screen = name;
     screens.forEach(function (s) { $("screen-" + s).classList.toggle("active", s === name); });
+    if (name === "home") applyTheme(null);
     window.scrollTo({ top: 0, behavior: "smooth" });
   }
   document.querySelectorAll("[data-go]").forEach(function (el) {
@@ -56,6 +57,62 @@
   function esc(s) {
     return String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
   }
+  function pick(arr) { return arr[Math.floor(Math.random() * arr.length)]; }
+  function catOf(level) {
+    return window.CATALOG.filter(function (c) { return c.level === level; })[0] || null;
+  }
+  /* tema warna + maskot per jenjang; level null = netral */
+  function applyTheme(level) {
+    var b = document.body;
+    if (level) { b.setAttribute("data-level", level); }
+    else { b.removeAttribute("data-level"); }
+    ["screen-subjects", "screen-start", "screen-quiz", "screen-result"].forEach(function (id) {
+      var el = $(id);
+      ["theme-SD", "theme-SMP", "theme-SMA", "theme-Kuliah"].forEach(function (t) { el.classList.remove(t); });
+      if (level) el.classList.add("theme-" + level);
+    });
+  }
+  function setMascot(useId, cat) {
+    var u = $(useId);
+    if (u && cat) u.setAttribute("href", "#m-" + cat.mascot);
+  }
+  var BUDDY_LINES = ["Semangat!", "Kamu hebat!", "Teruskan!", "Fokus, bisa!", "Ayo, dikit lagi!", "Gampang, kan?"];
+  function buddyCheer(hop) {
+    var t = $("buddy-text");
+    if (t) t.textContent = pick(BUDDY_LINES);
+    var m = $("quiz-buddy");
+    if (m && hop !== false) {
+      m.classList.remove("mx-happy");
+      void m.offsetWidth;
+      m.classList.add("mx-happy");
+    }
+  }
+  function countUp(el, to) {
+    var t0 = null;
+    function step(ts) {
+      if (!t0) t0 = ts;
+      var p = Math.min(1, (ts - t0) / 900);
+      el.textContent = Math.round(to * (1 - Math.pow(1 - p, 3)));
+      if (p < 1) requestAnimationFrame(step);
+    }
+    requestAnimationFrame(step);
+  }
+  function confetti(container, n) {
+    var colors = ["#f97316", "#22c55e", "#3b82f6", "#8b5cf6", "#fbbf24", "#ef4444"];
+    n = n || 60;
+    for (var i = 0; i < n; i++) {
+      var p = document.createElement("div");
+      p.className = "confetti-piece";
+      p.style.left = Math.random() * 100 + "%";
+      p.style.setProperty("--dx", (Math.random() * 160 - 80) + "px");
+      p.style.setProperty("--rot", (Math.random() * 720 - 360) + "deg");
+      p.style.setProperty("--dur", (2 + Math.random() * 1.6) + "s");
+      p.style.animationDelay = (Math.random() * 0.7) + "s";
+      p.style.background = colors[i % colors.length];
+      container.appendChild(p);
+      (function (el) { setTimeout(function () { if (el.parentNode) el.parentNode.removeChild(el); }, 4500); })(p);
+    }
+  }
 
   function bankById(id) {
     return (window.QBANK && window.QBANK[id]) || null;
@@ -76,23 +133,32 @@
     window.CATALOG.forEach(function (c) {
       var ready = c.banks.filter(function (b) { return bankById(b.id); }).length;
       var btn = document.createElement("button");
-      btn.className = "level-card";
+      btn.className = "level-card theme-" + c.level;
       btn.innerHTML =
-        '<span class="level-mono" style="background:' + c.color + '">' + esc(c.level.slice(0, 2).toUpperCase()) + "</span>" +
+        '<span class="level-mascot-name">si ' + esc(c.mascotName) + '</span>' +
+        '<span class="mascot mx-bounce"><svg><use href="#m-' + c.mascot + '"/></svg></span>' +
         "<h3>" + esc(c.level) + "</h3>" +
-        "<p>" + esc(c.tagline) + " · " + ready + "/" + c.banks.length + " pelajaran</p>" +
-        '<span class="go">Pilih →</span>';
+        "<p>" + esc(c.friend) + "</p>" +
+        "<p>" + ready + "/" + c.banks.length + " pelajaran</p>" +
+        '<span class="go">Main →</span>';
       btn.addEventListener("click", function () { openSubjects(c.level); });
       grid.appendChild(btn);
     });
   }
 
   /* ---------- subjects ---------- */
+  var SUB_ICONS = {
+    "Matematika": "🔢", "IPA": "🔬", "Fisika": "⚛️", "Kimia": "🧪", "Biologi": "🧬",
+    "Bahasa Indonesia": "📝", "Bahasa Inggris": "🔤",
+    "Matematika Dasar": "🔢", "Fisika Dasar": "⚛️",
+  };
   function openSubjects(level) {
     state.level = level;
-    var cat = window.CATALOG.filter(function (c) { return c.level === level; })[0];
+    applyTheme(level);
+    var cat = catOf(level);
+    setMascot("subjects-mascot-use", cat);
     $("subjects-title").textContent = "Pelajaran " + level;
-    $("subjects-sub").textContent = cat.tagline + " — pilih satu buat mulai ujian.";
+    $("subjects-sub").textContent = cat.tagline + " — " + cat.mascotName + " nemanin kamu.";
     var grid = $("subject-grid");
     grid.innerHTML = "";
     cat.banks.forEach(function (b) {
@@ -101,6 +167,7 @@
       btn.className = "subject-card";
       btn.disabled = !bank;
       btn.innerHTML =
+        '<span class="sub-ico">' + (SUB_ICONS[b.subject] || "📚") + "</span>" +
         "<h3>" + esc(b.subject) + "</h3>" +
         (bank
           ? "<p>" + bank.questions.length + " soal · " + fmtDur(bank.duration) + "</p>" +
@@ -245,6 +312,12 @@
     state.bankId = bankId;
     state.bank = bankById(bankId);
     var b = state.bank;
+    applyTheme(b.level);
+    var cat = catOf(b.level);
+    setMascot("start-mascot-use", cat);
+    $("start-speech").textContent = cat
+      ? pick(["Ayo, kamu pasti bisa!", "Siap berpetualang?", "Waktunya bersinar!", "Kita kerjain bareng, ya!"])
+      : "Ayo, kamu pasti bisa!";
     $("start-kicker").textContent = b.level + " · " + b.subject;
     $("start-title").textContent = "Siap ujian?";
     $("start-meta").innerHTML =
@@ -267,6 +340,9 @@
     state.answers = state.bank.questions.map(function () { return -1; });
     state.timeLeft = state.bank.duration;
     state.startTime = Date.now();
+    applyTheme(state.bank.level);
+    setMascot("quiz-buddy-use", catOf(state.bank.level));
+    buddyCheer(false);
     $("quiz-bank-label").textContent = state.bank.level + " · " + state.bank.subject;
     renderQuestion();
     updateTimerUI();
@@ -308,6 +384,7 @@
       b.appendChild(span);
       b.addEventListener("click", function () {
         state.answers[state.qi] = i;
+        buddyCheer(true);
         renderQuestion();
       });
       box.appendChild(b);
@@ -385,9 +462,28 @@
   /* ---------- result ---------- */
   function showResult() {
     var r = state.result;
+    var cat = catOf(state.bank.level);
+    setMascot("result-mascot-use", cat);
+    var mn = cat ? cat.mascotName : "temanmu";
     $("result-kicker").textContent =
       state.bank.level + " · " + state.bank.subject + (r.timeUp ? " · waktu habis" : "");
-    $("result-score").textContent = r.score;
+    // bintang 0-3
+    var stars = r.score >= 85 ? 3 : r.score >= 65 ? 2 : r.score >= 40 ? 1 : 0;
+    var box = $("result-stars");
+    box.innerHTML = "";
+    for (var i = 0; i < 3; i++) {
+      var s = document.createElement("span");
+      s.className = "star" + (i < stars ? " earned" : "");
+      s.innerHTML = '<svg><use href="#m-star"/></svg>';
+      box.appendChild(s);
+    }
+    // maskot: joget kalau bagus
+    var m = $("result-mascot");
+    m.classList.remove("mx-dance", "mx-bounce");
+    if (r.score >= 65) { m.classList.add("mx-dance"); } else { m.classList.add("mx-bounce"); }
+    // angka count-up + ring
+    var scoreEl = $("result-score");
+    countUp(scoreEl, r.score);
     requestAnimationFrame(function () {
       $("ring-fg").style.strokeDashoffset = 326.7 * (1 - r.score / 100);
     });
@@ -398,12 +494,13 @@
       '<div class="stat good"><b>' + r.correct + "</b><span>Benar</span></div>" +
       '<div class="stat bad"><b>' + (r.total - r.correct) + "</b><span>Salah</span></div>" +
       '<div class="stat"><b>' + fmtDur(r.used) + "</b><span>Waktu</span></div>";
-    var msg = r.score >= 90 ? "Luar biasa! Pertahankan." :
-              r.score >= 75 ? "Bagus! Sedikit lagi sempurna." :
-              r.score >= 60 ? "Lumayan, pelajari pembahasannya." :
-              "Jangan menyerah — cek pembahasannya ya.";
+    var msg = r.score >= 85 ? "Luar biasa! " + mn + " bangga banget sama kamu." :
+              r.score >= 65 ? "Keren! Dikit lagi sempurna." :
+              r.score >= 40 ? "Bagus, terus latihan ya." :
+              "Jangan menyerah — " + mn + " temenin belajar lagi.";
     $("lb-note").textContent = msg + " Skormu " + (LB.online ? "masuk leaderboard online." : "tersimpan di leaderboard perangkat ini.");
     go("result");
+    if (r.score >= 60) confetti($("result-card"), 70);
   }
 
   $("btn-review").addEventListener("click", function () { renderReview(); go("review"); });
