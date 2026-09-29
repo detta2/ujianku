@@ -531,8 +531,11 @@
     var btns = $("q-opts").querySelectorAll(".opt");
     btns.forEach(function (b, bi) {
       b.disabled = true;
-      if (bi === q.answer) b.classList.add("correct");
-      else if (bi === i) b.classList.add("wrong");
+      // kalau waktu habis (i < 0): jangan bocorkan kunci jawaban, soal langsung hangus
+      if (i >= 0) {
+        if (bi === q.answer) b.classList.add("correct");
+        else if (bi === i) b.classList.add("wrong");
+      }
     });
     $("quiz-progress").textContent = "⭐ " + state.qPoints + " poin";
     setTimeout(nextRanked, 800);
