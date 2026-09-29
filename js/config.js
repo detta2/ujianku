@@ -26,7 +26,6 @@ window.CATALOG = [
       { id: "sd-pai", subject: "Pendidikan Agama" },
       { id: "sd-pjok", subject: "PJOK" },
       { id: "sd-seni", subject: "Seni" },
-      { id: "sd-koding", subject: "Koding & AI" },
     ],
   },
   {
