@@ -265,7 +265,7 @@
       btn.className = "subject-card";
       btn.disabled = !bank;
       btn.innerHTML =
-        '<span class="sub-ico">' + (SUB_ICONS[b.subject] || "📚") + "</span>" +
+        '<span class="sub-ico">' + subjectIcon(b.subject) + "</span>" +
         "<h3>" + esc(b.subject) + "</h3>" +
         (bank
           ? "<p>" + sessionCount(bank) + " soal acak · " + fmtDur(sessionDur(bank)) + "</p>" +

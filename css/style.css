@@ -306,9 +306,16 @@ img{max-width:100%}
 .subject-card .meta{display:inline-block;margin-top:10px;font-weight:800;font-size:13px;color:var(--t-deep)}
 .subject-card:disabled{opacity:.55;cursor:not-allowed}
 .subject-card .sub-ico{
-  width:44px;height:44px;border-radius:14px;background:var(--t-soft);border:2px solid var(--ink);
-  display:flex;align-items:center;justify-content:center;font-size:22px;margin-bottom:10px;
+  width:56px;height:56px;border-radius:16px;background:#fff;border:3px solid var(--ink);
+  box-shadow:0 3px 0 var(--ink);
+  display:flex;align-items:center;justify-content:center;margin-bottom:10px;
 }
+.subject-card .sub-ico svg{width:38px;height:38px}
+.sub-ico .a,.sub-ico .b{stroke:var(--ink);stroke-width:1.8}
+.sub-ico .a{fill:var(--c1)}
+.sub-ico .b{fill:var(--c2)}
+.sub-ico .c{fill:none;stroke:var(--ink);stroke-width:1.8;stroke-linecap:round}
+.sub-ico .t{fill:var(--ink)}
 
 /* ============ START ============ */
 .start-wrap{max-width:520px;margin:18px auto 0;text-align:center}
@@ -589,7 +596,8 @@ img{max-width:100%}
 @media (min-width:900px){
   .subject-grid{grid-template-columns:repeat(3,1fr);gap:18px;margin-top:18px}
   .subject-card{padding:28px 24px;border-radius:20px}
-  .subject-card .sub-ico{width:64px;height:64px;font-size:32px;border-radius:18px;margin-bottom:14px}
+  .subject-card .sub-ico{width:64px;height:64px;border-radius:18px;margin-bottom:14px}
+  .subject-card .sub-ico svg{width:44px;height:44px}
   .subject-card h3{font-size:23px;margin-bottom:8px}
   .subject-card p{font-size:14px}
   .subject-card .meta{font-size:14px;margin-top:14px}
