@@ -436,14 +436,18 @@
     grid.innerHTML = "";
     window.CATALOG.forEach(function (c) {
       var t = rankedTotals(c.level);
+      var tr = tierOf(t.rating || 0);
       var btn = document.createElement("button");
       btn.className = "level-card theme-" + c.level;
       btn.innerHTML =
-        '<span class="division-badge">⚔️ Ranked · ' + esc(c.divisionMedal) + '</span>' +
-        '<span class="level-mascot-name">si ' + esc(c.mascotName) + '</span>' +
+        '<span class="division-badge">⚔️ Ranked · ' + esc(c.divisionMedal) + "</span>" +
+        '<span class="level-mascot-name">si ' + esc(c.mascotName) + "</span>" +
         '<span class="mascot mx-bounce"><img src="img/maskot-' + c.mascot + '.png" alt=""></span>' +
         "<h3>" + esc(c.level) + "</h3>" +
         "<p>30 soal acak · 15 dtk/soal</p>" +
+        (loggedIn()
+          ? "<p>" + tr.icon + " <b>" + tr.name + "</b> · " + (t.rating || 0) + " rating</p>"
+          : "") +
         (t.points > 0
           ? "<p>⭐ " + t.points + " poin · " + t.matches + " match</p>"
           : "<p>Belum ada poin — mulai dari sini!</p>") +
@@ -478,6 +482,7 @@
     $("start-meta").innerHTML =
       '<span class="pill">' + RANKED_Q + " soal acak</span>" +
       '<span class="pill">⏱ ' + RANKED_SEC + " detik/soal</span>" +
+      '<span class="pill">🏆 ≥18 benar +10 · &lt;18 −5</span>' +
       '<span class="pill">dari ' + cat.banks.length + " pelajaran</span>" +
       (t.points > 0 ? '<span class="pill">⭐ ' + t.points + " poin terkumpul</span>" : "") +
       loginHint;
@@ -794,13 +799,19 @@
     }).then(function (r) {
       var b = r.body || {};
       if (b.ok) {
-        try { localStorage.setItem("ujianku_ranked_" + state.rankedLevel, JSON.stringify({ points: b.points, matches: b.matches, best: b.best })); } catch (e) {}
+        try { localStorage.setItem("ujianku_ranked_" + state.rankedLevel, JSON.stringify({ points: b.points, matches: b.matches, best: b.best, rating: b.rating })); } catch (e) {}
         if (state.screen === "result" && state.result && state.result.ranked) {
           state.result.rank = b.rank;
           state.result.totalPlayers = b.totalPlayers;
           state.result.allPoints = b.points;
           var note = document.querySelector("#screen-result .lb-note");
-          if (note) note.textContent = "Total poin rankedmu: " + b.points + " — peringkat #" + b.rank + " dari " + b.totalPlayers + " pemain di " + divName(state.rankedLevel) + " (🌍 global)";
+          if (note) note.textContent = "Rating " + b.rating + " (" + (b.delta >= 0 ? "+" : "") + b.delta + ") — peringkat #" + b.rank + " dari " + b.totalPlayers + " pemain di " + divName(state.rankedLevel) + " (🌍 global)";
+          var rs = $("result-stats");
+          if (rs && !rs.querySelector("[data-rating]")) {
+            rs.insertAdjacentHTML("beforeend", '<div class="stat" data-rating><b>' + b.tier.icon + " " + b.rating + "</b><span>" + esc(b.tier.name) + "</span></div>");
+          }
+          if (b.tierUp) { toast("🎉 Naik tier ke " + b.tier.icon + " " + b.tier.name + "!"); confetti($("result-card"), 90); }
+          else if (b.tierDown) { toast("😅 Turun ke " + b.tier.icon + " " + b.tier.name + " — gas lagi!"); }
           if (state.screen === "ranked") renderRankedCards();
         }
       } else if (b.banned) {
@@ -1135,6 +1146,23 @@
   var RANKED_SEC = 15;  // detik per soal di ranked
   var RANKED_BASE = 10; // poin dasar jawaban benar
   var RANKED_BONUS = 5; // bonus kecepatan maksimal per soal
+  /* Tangga tier ranked — cerminkan TIERS di lib/apilib.js */
+  var TIERS = [
+    { min: 0,   icon: "🥉", name: "Perunggu" },
+    { min: 100, icon: "🥈", name: "Perak" },
+    { min: 200, icon: "🥇", name: "Emas" },
+    { min: 300, icon: "💠", name: "Platinum" },
+    { min: 450, icon: "💎", name: "Diamond" },
+    { min: 600, icon: "👑", name: "Master" },
+    { min: 750, icon: "🌟", name: "Legenda" },
+  ];
+  function tierOf(r) {
+    r = Math.max(0, Math.floor(+r || 0));
+    var t = TIERS[0], idx = 0, i;
+    for (i = 0; i < TIERS.length; i++) if (r >= TIERS[i].min) { t = TIERS[i]; idx = i; }
+    var nx = idx + 1 < TIERS.length ? TIERS[idx + 1] : null;
+    return { icon: t.icon, name: t.name, index: idx, nextAt: nx ? nx.min : null };
+  }
   function shuffleArr(a) {
     for (var i = a.length - 1; i > 0; i--) {
       var j = Math.floor(Math.random() * (i + 1));
@@ -1491,7 +1519,7 @@
     if (state.lbMode === "ranked") {
       LB.online = false;
       subLabel.style.display = "none";
-      headRow.innerHTML = "<th>#</th><th>Nama</th><th>Total Poin</th><th>Main</th><th>Terbaik</th>";
+      headRow.innerHTML = "<th>#</th><th>Nama</th><th>Tier</th><th>Rating</th><th>Main</th>";
       loadRankedLb();
       return;
     }
@@ -1536,17 +1564,19 @@
     rows.slice(0, 20).forEach(function (r, i) {
       var tr = document.createElement("tr");
       if (r.name === me) tr.className = "me";
+      var tierCell, ratingCell;
+      if (r.rating == null) { tierCell = "<td>–</td>"; ratingCell = "<td>–</td>"; }
+      else { var t2 = tierOf(r.rating); tierCell = "<td>" + t2.icon + " " + t2.name + "</td>"; ratingCell = '<td class="score">' + r.rating + "</td>"; }
       tr.innerHTML =
         '<td class="rank">' + (i + 1) + "</td>" +
         "<td>" + esc(r.name) + "</td>" +
-        '<td class="score">' + r.points + "</td>" +
-        "<td>" + r.matches + "×</td>" +
-        "<td>+" + r.best + "</td>";
+        tierCell + ratingCell +
+        "<td>" + r.matches + "×</td>";
       tb.appendChild(tr);
     });
     $("lb-source").textContent = isGlobal
-      ? "🌍 Leaderboard global — semua pemain yang login Google."
-      : "⚔️ Papan peringkat Ranked — total poin akumulasi per divisi, tersimpan di perangkat ini. Masuk dengan Google untuk ikut leaderboard global.";
+      ? "🌍 Leaderboard global — urutan berdasar rating. Menang +10, kalah −5."
+      : "⚔️ Papan peringkat Ranked — tersimpan di perangkat ini. Masuk dengan Google untuk ikut leaderboard global.";
   }
 
   function fillLbSubjects() {

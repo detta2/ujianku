@@ -49,6 +49,12 @@ module.exports = async function (req, res) {
     var curMatches = lib.num(cur.matches, 0);
     var curBest = lib.num(cur.best, 0);
 
+    /* rating naik-turun: benar >= 18/30 -> +10, else -5. Mentok 0, nggak bisa minus. */
+    var curRating = Math.max(0, Math.floor(lib.num(cur.rating, 0)));
+    var delta = correct >= 18 ? 10 : -5;
+    var newRating = Math.max(0, curRating + delta);
+    var tierBefore = lib.tierOf(curRating), tierAfter = lib.tierOf(newRating);
+
     var addPoints = points, addMatches = 1, newBest = Math.max(curBest, points);
     /* migrasi sekali: total lokal (HP) digabung hanya bila server masih kosong */
     var migrated = false;
@@ -64,8 +70,10 @@ module.exports = async function (req, res) {
 
     await lib.kvpipe([
       ["HSET", "rk:" + level + ":" + u.sub,
-        "points", String(newPoints), "matches", String(newMatches), "best", String(newBest)],
+        "points", String(newPoints), "matches", String(newMatches), "best", String(newBest),
+        "rating", String(newRating)],
       ["ZADD", "z:lb:" + level, String(newPoints), u.sub],
+      ["ZADD", "z:rt:" + level, String(newRating), u.sub],
     ]);
     if (flagged.length) {
       await lib.kvcmd("LPUSH", "flags", JSON.stringify({
@@ -75,8 +83,8 @@ module.exports = async function (req, res) {
       await lib.kvcmd("LTRIM", "flags", 0, 199);
     }
     var rankInfo = await lib.kvpipe([
-      ["ZREVRANK", "z:lb:" + level, u.sub],
-      ["ZCARD", "z:lb:" + level],
+      ["ZREVRANK", "z:rt:" + level, u.sub],
+      ["ZCARD", "z:rt:" + level],
     ]);
     return lib.send(res, 200, {
       ok: true,
@@ -84,6 +92,10 @@ module.exports = async function (req, res) {
       rank: rankInfo[0] == null ? null : rankInfo[0] + 1,
       totalPlayers: rankInfo[1] || 0,
       migrated: migrated,
+      rating: newRating, delta: delta,
+      tier: { icon: tierAfter.icon, name: tierAfter.name },
+      tierUp: tierAfter.index > tierBefore.index,
+      tierDown: tierAfter.index < tierBefore.index,
     });
   } catch (e) { return lib.handleErr(res, e); }
 };
