@@ -160,7 +160,10 @@
       var b = state.pendingBank;
       state.pendingBank = null;
       openStart(b);
+      return;
     }
+    // sudah login tapi masih di layar login (mis. masuk via tombol "Masuk") -> ke beranda
+    if (state.screen === "login" && isIdentified()) go("home");
   }
   function updateAuthUI() {
     var area = $("auth-area");
