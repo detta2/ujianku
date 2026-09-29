@@ -72,7 +72,7 @@
         <h1>ARENA<br><span class="hl">PINTAR</span></h1>
         <p class="lede">Pilih divisimu, kerjakan soal dengan timer kayak lomba beneran, rebut medali emas, dan adu skor di leaderboard.</p>
         <div class="hero-ctas">
-          <a class="btn-gold btn-primary" href="#levels" id="hero-cta" style="border:3px solid #0b2a6b">Masuk Arena →</a>
+          <button type="button" class="btn-gold btn-primary js-divisi-open" id="hero-cta" style="border:3px solid #0b2a6b">Masuk Arena →</button>
           <button class="btn-ranked" id="hero-ranked">⚔️ Mode Ranked</button>
         </div>
       </div>
@@ -105,7 +105,7 @@
     <div class="cta-banner">
       <span class="mascot"><img src="img/maskot-kuliah.png" alt="Prof. Kwek"></span>
       <div class="cta-text"><h3>Siap jadi yang terpintar?</h3><p>Pilih divisimu dan rebut medali emas hari ini.</p></div>
-      <a class="btn-primary btn-gold" href="#levels">Masuk Arena →</a>
+      <button type="button" class="btn-primary btn-gold js-divisi-open">Masuk Arena →</button>
     </div>
   </section>
 
@@ -365,6 +365,15 @@
       <button class="btn-secondary" id="modal-cancel">Batal</button>
       <button class="btn-primary" id="modal-ok">Ya, kumpulkan</button>
     </div>
+  </div>
+</div>
+
+<div class="modal hidden" id="divisi-modal">
+  <div class="modal-card divisi-card">
+    <h3>Pilih Arenasmu</h3>
+    <p class="divisi-sub">Mau bertanding di divisi mana?</p>
+    <div class="divisi-list" id="divisi-list"></div>
+    <button class="btn-ghost" id="divisi-cancel">Tutup</button>
   </div>
 </div>
 

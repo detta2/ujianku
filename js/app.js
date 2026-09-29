@@ -201,6 +201,37 @@
     });
   }
 
+  /* ---------- popup pilih divisi ---------- */
+  function renderDivisiList() {
+    var list = $("divisi-list");
+    if (!list || list.children.length) return;
+    window.CATALOG.forEach(function (c) {
+      var b = document.createElement("button");
+      b.type = "button";
+      b.className = "divisi-pick theme-" + c.level;
+      b.innerHTML =
+        '<span class="mascot"><img src="img/maskot-' + c.mascot + '.png" alt=""></span>' +
+        '<span class="divisi-pick-text"><b>' + esc(c.level) + '</b>' +
+        '<small>' + esc(c.division) + ' · ' + esc(c.divisionMedal) + ' · ' + c.banks.length + ' pelajaran</small></span>' +
+        '<span class="divisi-pick-go">→</span>';
+      b.addEventListener("click", function () {
+        $("divisi-modal").classList.add("hidden");
+        openSubjects(c.level);
+      });
+      list.appendChild(b);
+    });
+  }
+  document.querySelectorAll(".js-divisi-open").forEach(function (btn) {
+    btn.addEventListener("click", function () {
+      renderDivisiList();
+      $("divisi-modal").classList.remove("hidden");
+    });
+  });
+  $("divisi-cancel").addEventListener("click", function () { $("divisi-modal").classList.add("hidden"); });
+  $("divisi-modal").addEventListener("click", function (e) {
+    if (e.target === this) this.classList.add("hidden");
+  });
+
   /* ---------- subjects ---------- */
   var SUB_ICONS = {
     "Matematika": "🔢", "IPA": "🔬", "IPS": "🌏", "Fisika": "⚛️", "Kimia": "🧪", "Biologi": "🧬",
