@@ -3,10 +3,10 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-<title>SiPintar — Latihan Soal SD, SMP, SMA, Kuliah</title>
-<meta name="description" content="Latihan ujian online: pilih jenjang & pelajaran, kerjakan dengan timer, dapatkan nilai + pembahasan, adu skor di leaderboard.">
+<title>SiPintar Arena — Bertanding Soal SD, SMP, SMA, Kuliah</title>
+<meta name="description" content="Arena bertanding soal: pilih divisi & pelajaran, taklukkan soal dengan timer, rebut medali, adu skor di leaderboard.">
 <meta name="theme-color" content="#1d4ed8">
-<meta property="og:title" content="SiPintar — Arena Latihan Soal SD, SMP, SMA, Kuliah">
+<meta property="og:title" content="SiPintar Arena — Bertanding Soal SD, SMP, SMA, Kuliah">
 <meta property="og:description" content="Bertanding, rebut medali emas, adu skor di leaderboard. Gratis!">
 <meta property="og:type" content="website">
 <link rel="icon" type="image/svg+xml" href="favicon.svg">
@@ -48,7 +48,7 @@
 </svg>
 
 <header class="topbar">
-  <button class="brand" data-go="home" aria-label="Beranda">
+  <button class="brand" data-go="home" aria-label="Markas">
     <span class="brand-mark"><svg viewBox="0 0 64 64" aria-hidden="true"><use href="#logo-mark"/></svg></span>
     <span class="brand-name">SiPintar</span>
   </button>
@@ -68,9 +68,9 @@
   <section id="screen-home" class="screen active">
     <div class="hero">
       <div class="hero-copy">
-        <p class="kicker light">Kompetisi Latihan Soal · SD sampai Kuliah</p>
+        <p class="kicker light">Arena Kompetisi Soal · SD sampai Kuliah</p>
         <h1>ARENA<br><span class="hl">PINTAR</span></h1>
-        <p class="lede">Pilih divisimu, kerjakan soal dengan timer kayak lomba beneran, rebut medali emas, dan adu skor di leaderboard.</p>
+        <p class="lede">Pilih divisimu, taklukkan soal melawan waktu, rebut medali emas, dan buktikan kamu yang terbaik di leaderboard!</p>
         <div class="hero-ctas">
           <button type="button" class="btn-gold btn-primary js-divisi-open" id="hero-cta" style="border:3px solid #0b2a6b">Masuk Arena →</button>
           <button class="btn-ranked" id="hero-ranked">⚔️ Mode Ranked</button>
@@ -93,37 +93,37 @@
     </div>
 
     <h2 class="section-title" id="levels">Pilih Divisimu</h2>
-    <p class="section-sub">Tiap divisi dijaga atlet andalan. Makin tinggi divisi, makin seru tantangannya.</p>
+    <p class="section-sub">Empat divisi, empat atlet andalan. Makin tinggi divisinya, makin sengit pertandingannya!</p>
     <div class="level-grid" id="level-grid"></div>
 
     <div class="how-grid">
-      <div class="how-card"><span class="step">1</span><h3>Pilih</h3><p>Tentukan divisi & pelajaran yang mau ditantang.</p></div>
-      <div class="how-card"><span class="step">2</span><h3>Bertanding</h3><p>Jawab soal secepat & setepat mungkin sebelum waktu habis.</p></div>
-      <div class="how-card"><span class="step">3</span><h3>Rebut Medali</h3><p>Nilai tinggi = medali emas, perak, atau perunggu. Kumpulkan semuanya!</p></div>
+      <div class="how-card"><span class="step">1</span><h3>Pilih Divisi</h3><p>Tentukan arena dan pelajaran yang mau kamu taklukkan.</p></div>
+      <div class="how-card"><span class="step">2</span><h3>Bertanding</h3><p>Jawab secepat dan setepat mungkin sebelum peluit waktu berbunyi.</p></div>
+      <div class="how-card"><span class="step">3</span><h3>Naik Podium</h3><p>Skor tertinggi naik podium: emas, perak, atau perunggu. Kumpulkan semuanya!</p></div>
     </div>
 
     <div class="cta-banner">
       <span class="mascot"><img src="img/maskot-kuliah.png" alt="Prof. Kwek"></span>
-      <div class="cta-text"><h3>Siap jadi yang terpintar?</h3><p>Pilih divisimu dan rebut medali emas hari ini.</p></div>
+      <div class="cta-text"><h3>Siap jadi juara arena?</h3><p>Pilih divisimu dan rebut medali emas hari ini juga!</p></div>
       <button type="button" class="btn-primary btn-gold js-divisi-open">Masuk Arena →</button>
     </div>
   </section>
 
   <!-- ============ RANKED ============ -->
   <section id="screen-ranked" class="screen">
-    <button class="backlink" data-go="home">← Beranda</button>
+    <button class="backlink" data-go="home">← Markas</button>
     <h2 class="section-title">⚔️ Mode Ranked</h2>
-    <p class="section-sub">30 soal acak dari <b>semua</b> pelajaran divisimu. Cuma 15 detik per soal — jawab cepat buat bonus poin. Poin diakumulasi terus, kejar peringkat 1!</p>
+    <p class="section-sub">30 soal acak dari <b>semua</b> pelajaran di divisimu. Cuma 15 detik per soal — makin cepat, makin banyak poin. Poin terus diakumulasi, kejar takhta peringkat 1!</p>
     <div class="level-grid" id="ranked-grid"></div>
   </section>
 
   <!-- ============ SUBJECTS ============ -->
   <section id="screen-subjects" class="screen">
-    <button class="backlink" data-go="home">← Ganti jenjang</button>
+    <button class="backlink" data-go="home">← Ganti divisi</button>
     <div class="subject-head">
       <span class="mascot mx-bounce" id="subjects-mascot"><img id="subjects-mascot-use" src="img/maskot-sd.png" alt=""></span>
       <div>
-        <h2 class="section-title" id="subjects-title" style="margin-top:0">Pilih pelajaran</h2>
+        <h2 class="section-title" id="subjects-title" style="margin-top:0">Arena</h2>
         <p class="section-sub" id="subjects-sub" style="margin-bottom:0"></p>
       </div>
     </div>
@@ -132,7 +132,7 @@
 
   <!-- ============ START ============ -->
   <section id="screen-start" class="screen">
-    <button class="backlink" data-go="subjects">← Ganti pelajaran</button>
+    <button class="backlink" data-go="subjects">← Pilih pelajaran</button>
     <div class="start-wrap">
       <div class="start-mascot-zone">
         <span class="mascot mx-cheer" id="start-mascot"><img id="start-mascot-use" src="img/maskot-sd.png" alt=""></span>
@@ -144,7 +144,7 @@
         <div class="start-meta" id="start-meta"></div>
         <div class="identity" id="start-identity"></div>
         <button class="btn-gold btn-primary btn-big" id="btn-start-quiz" style="border:3px solid #0b2a6b">Masuk Arena</button>
-        <p class="hint">Waktu habis = otomatis dikumpulkan.</p>
+        <p class="hint">Waktu habis = jawabanmu otomatis dikunci.</p>
       </div>
     </div>
   </section>
@@ -159,7 +159,7 @@
       <div class="timerbar"><div class="timerfill" id="timer-fill"></div></div>
       <div class="timerrow">
         <span id="timer-text">--:--</span>
-        <button class="btn-ghost" id="btn-quiz-menu">Buka peta soal</button>
+        <button class="btn-ghost" id="btn-quiz-menu">Peta Arena</button>
       </div>
     </div>
 
@@ -176,10 +176,10 @@
         </div>
 
         <div class="quiz-nav">
-          <button class="btn-secondary" id="btn-prev">← Sebelumnya</button>
-          <button class="btn-secondary" id="btn-next">Berikutnya →</button>
+          <button class="btn-secondary" id="btn-prev">← Soal Lalu</button>
+          <button class="btn-secondary" id="btn-next">Soal Lanjut →</button>
         </div>
-        <button class="btn-primary btn-big" id="btn-submit">Kumpulkan Jawaban</button>
+        <button class="btn-primary btn-big" id="btn-submit">🏁 Akhiri Laga</button>
       </div>
     </div>
 
@@ -214,27 +214,27 @@
       <div class="result-stats" id="result-stats"></div>
       <p class="lb-note" id="lb-note"></p>
       <div class="result-actions">
-        <button class="btn-primary" id="btn-review">Lihat Pembahasan</button>
+        <button class="btn-primary" id="btn-review">Bedah Pertandingan</button>
         <button class="btn-secondary" data-go="leaderboard">Leaderboard</button>
       </div>
       <div class="result-actions">
-        <button class="btn-secondary" id="btn-retry">Ulangi</button>
-        <button class="btn-ghost" data-go="home">Beranda</button>
+        <button class="btn-secondary" id="btn-retry">Tanding Lagi</button>
+        <button class="btn-ghost" data-go="home">Markas</button>
       </div>
     </div>
   </section>
 
   <!-- ============ REVIEW ============ -->
   <section id="screen-review" class="screen">
-    <button class="backlink" id="btn-review-back">← Kembali ke hasil</button>
-    <h2 class="section-title">Pembahasan</h2>
+    <button class="backlink" id="btn-review-back">← Lihat Hasil</button>
+    <h2 class="section-title">Bedah Pertandingan</h2>
     <p class="section-sub" id="review-sub"></p>
     <div id="review-list"></div>
   </section>
 
   <!-- ============ LOGIN ============ -->
   <section id="screen-login" class="screen">
-    <button class="backlink" data-go="home">← Beranda</button>
+    <button class="backlink" data-go="home">← Markas</button>
     <div class="start-card auth-card">
       <div class="login-mascots" aria-hidden="true">
         <span class="mascot mx-bounce"><img src="img/maskot-sd.png" alt="Kiki"></span>
@@ -242,21 +242,21 @@
         <span class="mascot mx-floaty"><img src="img/maskot-sma.png" alt="Kaka"></span>
         <span class="mascot mx-sway"><img src="img/maskot-kuliah.png" alt="Prof. Kwek"></span>
       </div>
-      <h2>Masuk dulu yuk</h2>
-      <p class="section-sub">Biar skor dan riwayat ujian kesimpan di profil kamu sendiri.</p>
+      <h2>Gabung arena dulu yuk</h2>
+      <p class="section-sub">Biar skor dan rekor lagamu tersimpan di profil petarungmu.</p>
       <div id="gbtn" class="gbtn-wrap"></div>
       <div class="divider"><span>atau lanjut tanpa akun Google</span></div>
       <label class="field" style="text-align:left">
         <span>Nama tampilan</span>
         <input id="guest-name" type="text" maxlength="20" placeholder="cth: detta" autocomplete="off">
       </label>
-      <button class="btn-secondary btn-big" id="btn-guest">Lanjut sebagai tamu →</button>
+      <button class="btn-secondary btn-big" id="btn-guest">Tanding sebagai tamu →</button>
     </div>
   </section>
 
   <!-- ============ PROFILE ============ -->
   <section id="screen-profile" class="screen">
-    <button class="backlink" data-go="home">← Beranda</button>
+    <button class="backlink" data-go="home">← Markas</button>
     <div class="start-card profile-head">
       <img id="profile-avatar" class="avatar-lg" alt="">
       <div>
@@ -265,26 +265,26 @@
       </div>
     </div>
     <div class="stat3">
-      <div class="start-card stat"><b id="pf-count">0</b><span>Ujian selesai</span></div>
-      <div class="start-card stat"><b id="pf-avg">0</b><span>Rata-rata nilai</span></div>
-      <div class="start-card stat"><b id="pf-best">0</b><span>Nilai terbaik</span></div>
+      <div class="start-card stat"><b id="pf-count">0</b><span>Laga selesai</span></div>
+      <div class="start-card stat"><b id="pf-avg">0</b><span>Rata-rata skor</span></div>
+      <div class="start-card stat"><b id="pf-best">0</b><span>Skor terbaik</span></div>
     </div>
-    <h2 class="section-title" style="margin-top:22px">Riwayat ujian</h2>
+    <h2 class="section-title" style="margin-top:22px">Rekor Pertandingan</h2>
     <div id="profile-history"></div>
     <button class="btn-ghost" id="btn-logout" style="margin-top:14px">Keluar</button>
   </section>
 
   <!-- ============ LEADERBOARD ============ -->
   <section id="screen-leaderboard" class="screen">
-    <button class="backlink" data-go="home">← Beranda</button>
+    <button class="backlink" data-go="home">← Markas</button>
     <h2 class="section-title">Leaderboard</h2>
     <p class="section-sub" id="lb-source"></p>
     <div class="lb-tabs" id="lb-tabs">
-      <button class="lb-tab active" data-lbmode="normal">🎮 Normal</button>
+      <button class="lb-tab active" data-lbmode="normal">🎮 Latihan</button>
       <button class="lb-tab" data-lbmode="ranked">⚔️ Ranked</button>
     </div>
     <div class="lb-filters">
-      <label class="field inline"><span>Jenjang</span><select id="lb-level"></select></label>
+      <label class="field inline"><span>Divisi</span><select id="lb-level"></select></label>
       <label class="field inline"><span>Pelajaran</span><select id="lb-subject"></select></label>
     </div>
     <div class="lb-table-wrap">
@@ -292,15 +292,15 @@
         <thead><tr><th>#</th><th>Nama</th><th>Skor</th><th>Benar</th><th>Waktu</th></tr></thead>
         <tbody id="lb-body"></tbody>
       </table>
-      <p class="empty hidden" id="lb-empty">Belum ada skor di sini — jadilah yang pertama!</p>
+      <p class="empty hidden" id="lb-empty">Arena masih kosong — jadilah juara pertamanya!</p>
     </div>
   </section>
 
   <!-- ============ LENCANA ============ -->
   <section id="screen-badges" class="screen">
-    <button class="backlink" data-go="home">← Beranda</button>
+    <button class="backlink" data-go="home">← Markas</button>
     <h2 class="section-title">🎖️ Lencanaku</h2>
-    <p class="section-sub">Main, kumpulin XP, buka semua lencana!</p>
+    <p class="section-sub">Bertanding, kumpulkan XP, dan rebut semua lencana kemenangan!</p>
     <div class="lvl-card">
       <div class="lvl-top"><span id="badge-level-name">–</span><span id="badge-level-xp">0 XP</span></div>
       <div class="xpbar"><div class="xpfill" id="badge-xp-fill"></div></div>
@@ -311,9 +311,9 @@
 
   <!-- ============ PANEL ADMIN ============ -->
   <section id="screen-admin" class="screen">
-    <button class="backlink" data-go="home">← Beranda</button>
+    <button class="backlink" data-go="home">← Markas</button>
     <h2 class="section-title">🛡️ Panel Admin</h2>
-    <p class="section-sub">Kelola pemain, banned akun curang, dan kirim hadiah poin.</p>
+    <p class="section-sub">Kelola petarung, banned akun curang, dan kirim bonus poin.</p>
     <div class="adm-tabs">
       <button class="adm-tab active" data-atab="players">Pemain</button>
       <button class="adm-tab" data-atab="flags">⚠️ Flag <span id="adm-flag-count"></span></button>
@@ -330,7 +330,7 @@
 </main>
 
 <footer class="footer">
-  <p>SiPintar Arena — latihan soal SD · SMP · SMA · Kuliah. Bertanding dengan jujur ya.</p>
+  <p>SiPintar Arena — bertanding soal SD · SMP · SMA · Kuliah. Main jujur, menang terhormat!</p>
 </footer>
 
 <div class="toast hidden" id="toast"></div>
@@ -363,7 +363,7 @@
     <p id="modal-text"></p>
     <div class="modal-actions">
       <button class="btn-secondary" id="modal-cancel">Batal</button>
-      <button class="btn-primary" id="modal-ok">Ya, kumpulkan</button>
+      <button class="btn-primary" id="modal-ok">Ya, akhiri! 🏁</button>
     </div>
   </div>
 </div>

@@ -15,7 +15,7 @@ window.CATALOG = [
   {
     level: "SD", tagline: "Kelas 4–6", color: "#16a34a",
     division: "Divisi 1", divisionMedal: "🥉 Perunggu",
-    mascot: "sd", mascotName: "Kiki", friend: "Main bareng Kiki, belajar jadi petualangan.",
+    mascot: "sd", mascotName: "Kiki", friend: "Kiki, pelatih andalanmu di Divisi 1!",
     banks: [
       { id: "sd-matematika", subject: "Matematika" },
       { id: "sd-ipa", subject: "IPA" },
@@ -31,7 +31,7 @@ window.CATALOG = [
   {
     level: "SMP", tagline: "Kelas 7–9", color: "#2563eb",
     division: "Divisi 2", divisionMedal: "🥈 Perak",
-    mascot: "smp", mascotName: "Koko", friend: "Koko siap membantumu naik level.",
+    mascot: "smp", mascotName: "Koko", friend: "Koko siap mengantaramu naik podium!",
     banks: [
       { id: "smp-matematika", subject: "Matematika" },
       { id: "smp-ipa", subject: "IPA" },
@@ -49,7 +49,7 @@ window.CATALOG = [
   {
     level: "SMA", tagline: "Kelas 10–12", color: "#ea580c",
     division: "Divisi 3", divisionMedal: "🥇 Emas",
-    mascot: "sma", mascotName: "Kaka", friend: "Kaka siap berjuang ke ujian bersamamu.",
+    mascot: "sma", mascotName: "Kaka", friend: "Kaka siap berjuang merebut emas bersamamu!",
     banks: [
       { id: "sma-matematika", subject: "Matematika" },
       { id: "sma-fisika", subject: "Fisika" },
@@ -68,7 +68,7 @@ window.CATALOG = [
   {
     level: "Kuliah", tagline: "Tingkat sarjana", color: "#7c3aed",
     division: "Divisi 4", divisionMedal: "🏆 Champion",
-    mascot: "kuliah", mascotName: "Prof. Kwek", friend: "Prof. Kwek, si bebek paling pinter.",
+    mascot: "kuliah", mascotName: "Prof. Kwek", friend: "Prof. Kwek, sang juara bertahan!",
     banks: [
       { id: "kuliah-matematika-dasar", subject: "Matematika Dasar" },
       { id: "kuliah-fisika-dasar", subject: "Fisika Dasar" },

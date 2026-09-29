@@ -247,13 +247,13 @@
     applyTheme(level);
     var cat = catOf(level);
     setMascot("subjects-mascot-use", cat);
-    $("subjects-title").textContent = "Pelajaran " + level;
+    $("subjects-title").textContent = "Arena " + level;
     $("subjects-sub").textContent = cat.tagline + " — " + cat.mascotName + " jadi pelatihmu di arena.";
     var grid = $("subject-grid");
     grid.innerHTML = '<p class="loading-note">⏳ Memuat soal...</p>';
     go("subjects");
     ensureLevel(level).then(function () { renderSubjectCards(cat); }, function () {
-      grid.innerHTML = '<p class="loading-note">Gagal memuat soal. Cek koneksi lalu coba lagi.</p>';
+      grid.innerHTML = '<p class="loading-note">Gagal membuka arena. Cek koneksi lalu coba lagi.</p>';
     });
   }
   function renderSubjectCards(cat) {
@@ -270,7 +270,7 @@
         (bank
           ? "<p>" + sessionCount(bank) + " soal acak · " + fmtDur(sessionDur(bank)) + "</p>" +
             '<span class="meta">Mulai bertanding →</span>'
-          : "<p>Segera hadir</p>");
+          : "<p>Arena segera dibuka</p>");
       if (bank) btn.addEventListener("click", function () { requireAuth(b.id); });
       grid.appendChild(btn);
     });
@@ -279,7 +279,7 @@
   /* ---------- auth: nama & identitas pemain ---------- */
   function displayName() {
     var u = window.Auth && Auth.user();
-    if (u) return (u.name || "Peserta").slice(0, 20);
+    if (u) return (u.name || "Petarung").slice(0, 20);
     return (localStorage.getItem("ujianku_guest") || "Tamu").slice(0, 20);
   }
   function isIdentified() {
@@ -291,7 +291,7 @@
       state.pendingBank = bankId;
       go("login");
     }, function () {
-      toast("Gagal memuat soal. Cek koneksi lalu coba lagi.");
+      toast("Gagal membuka arena. Cek koneksi lalu coba lagi.");
     });
   }
   function renderIdentity() {
@@ -376,7 +376,7 @@
     var av = $("profile-avatar");
     av.src = u.picture || "";
     av.style.display = u.picture ? "" : "none";
-    $("profile-name").textContent = u.name || "Peserta";
+    $("profile-name").textContent = u.name || "Petarung";
     $("profile-email").textContent = u.email || "";
     var s = Auth.stats();
     $("pf-count").textContent = s.count;
@@ -388,7 +388,7 @@
     if (!h.length) {
       var e = document.createElement("div");
       e.className = "empty";
-      e.textContent = "Belum ada riwayat ujian. Yuk mulai satu!";
+      e.textContent = "Belum ada rekor. Yuk tanding perdana!";
       box.appendChild(e);
       return;
     }
@@ -457,7 +457,7 @@
       state.pendingBank = null;
       go("login");
     }, function () {
-      toast("Gagal memuat soal. Cek koneksi lalu coba lagi.");
+      toast("Gagal membuka arena. Cek koneksi lalu coba lagi.");
     });
   }
   function openRankedStart(level) {
@@ -472,7 +472,7 @@
     $("start-kicker").textContent = "⚔️ MODE RANKED · " + level;
     $("start-title").textContent = "Siap naik peringkat?";
     var t = rankedTotals(level);
-    var loginHint = loggedIn() ? "" : '<span class="pill pill-dim">💡 Masuk Google biar poinmu masuk leaderboard global</span>';
+    var loginHint = loggedIn() ? "" : '<span class="pill pill-dim">💡 Masuk Google biar poinmu tercatat di leaderboard global</span>';
     $("start-meta").innerHTML =
       '<span class="pill">' + RANKED_Q + " soal acak</span>" +
       '<span class="pill">⏱ ' + RANKED_SEC + " detik/soal</span>" +
@@ -522,7 +522,7 @@
     var sub = q.subject
       ? ' <span class="q-subject">' + (SUB_ICONS[q.subject] || "📚") + " " + esc(q.subject) + "</span>"
       : "";
-    $("q-num").innerHTML = "Soal " + (state.qi + 1) + " dari " + state.qs.length + sub;
+    $("q-num").innerHTML = "Ronde " + (state.qi + 1) + " dari " + state.qs.length + sub;
     $("q-text").textContent = q.q;
     $("quiz-progress").textContent = "⭐ " + state.qPoints + " poin";
     var box = $("q-opts");
@@ -633,8 +633,8 @@
     $("result-kicker").textContent = "⚔️ RANKED · " + level;
     var tier = r.points >= 350 ? { name: "👑 CALON JUARA", sub: "Peringkat 1 makin dekat, bestie!" } :
                r.points >= 250 ? { name: "🔥 MENYALA!", sub: "Terus gas ke puncak!" } :
-               r.points >= 150 ? { name: "💪 GAS TERUS", sub: "Poin terus diakumulasi!" } :
-                                 { name: "🎯 PEMANASAN", sub: "Main lagi, kumpulin poin!" };
+               r.points >= 150 ? { name: "💪 GAS TERUS", sub: "Poin terus bertambah, kejar puncak!" } :
+                                 { name: "🎯 PEMANASAN", sub: "Tanding lagi, kumpulkan poin!" };
     var med = $("result-medal");
     med.style.setProperty("--medal", "#ffd93b");
     med.style.setProperty("--medal-deep", "#f5b301");
@@ -867,7 +867,7 @@
 
   /* ---------- lencana & level ---------- */
   var LEVELS = [
-    { xp: 0, name: "Pemula 🌱" },
+    { xp: 0, name: "Rookie 🌱" },
     { xp: 500, name: "Petarung ⚔️" },
     { xp: 1500, name: "Ksatria 🛡️" },
     { xp: 3000, name: "Master 🎖️" },
@@ -914,25 +914,25 @@
     return { totalRanked: total, champion: champ };
   }
   var BADGES = [
-    { id: "first", icon: "🌱", name: "Langkah Pertama", desc: "Selesaikan 1 kuis",
+    { id: "first", icon: "🌱", name: "Debut Arena", desc: "Selesaikan 1 pertandingan",
       test: function (p) { return p.matches >= 1; },
       prog: function (p) { return Math.min(p.matches, 1) + "/1"; } },
-    { id: "streak3", icon: "🔥", name: "Semangat Membara", desc: "Main 3 hari beruntun",
+    { id: "streak3", icon: "🔥", name: "Streak Membara", desc: "Bertanding 3 hari beruntun",
       test: function (p) { return dayStreak(p.days) >= 3; },
       prog: function (p) { return Math.min(dayStreak(p.days), 3) + "/3 hari"; } },
-    { id: "streak7", icon: "⚡", name: "Kilat 7 Hari", desc: "Main 7 hari beruntun",
+    { id: "streak7", icon: "⚡", name: "Kilat 7 Hari", desc: "Bertanding 7 hari beruntun",
       test: function (p) { return dayStreak(p.days) >= 7; },
       prog: function (p) { return Math.min(dayStreak(p.days), 7) + "/7 hari"; } },
-    { id: "perfect", icon: "🎯", name: "Penembak Jitu", desc: "Semua benar di mode normal",
+    { id: "perfect", icon: "🎯", name: "Penembak Jitu", desc: "Semua benar di mode latihan",
       test: function (p) { return p.perfects > 0; },
       prog: function () { return "jawab 15/15 benar"; } },
-    { id: "gold", icon: "🥇", name: "Pemburu Emas", desc: "Raih medali emas (nilai ≥ 85)",
+    { id: "gold", icon: "🥇", name: "Pemburu Emas", desc: "Rebut medali emas (skor ≥ 85)",
       test: function (p) { return p.golds > 0; },
-      prog: function () { return "nilai 85+"; } },
-    { id: "explorer", icon: "📚", name: "Petualang", desc: "Mainkan 10 pelajaran berbeda",
+      prog: function () { return "skor 85+"; } },
+    { id: "explorer", icon: "📚", name: "Penjelajah Arena", desc: "Taklukkan 10 pelajaran berbeda",
       test: function (p) { return p.subjects.length >= 10; },
       prog: function (p) { return Math.min(p.subjects.length, 10) + "/10 pelajaran"; } },
-    { id: "ranked10", icon: "⚔️", name: "Petarung Ranked", desc: "Main 10 match ranked",
+    { id: "ranked10", icon: "⚔️", name: "Petarung Ranked", desc: "Tanding 10 match ranked",
       test: function (p) { return p.rankedMatches >= 10; },
       prog: function (p) { return Math.min(p.rankedMatches, 10) + "/10 match"; } },
     { id: "ranked25", icon: "👑", name: "Dewa Ranked", desc: "25+ benar dalam 1 match ranked",
@@ -941,7 +941,7 @@
     { id: "collector", icon: "⭐", name: "Kolektor 1000", desc: "Kumpulkan 1000 poin ranked",
       test: function (p, ctx) { return ctx.totalRanked >= 1000; },
       prog: function (p, ctx) { return Math.min(ctx.totalRanked, 1000) + "/1000 poin"; } },
-    { id: "champion", icon: "🏆", name: "Juara Sejati", desc: "Peringkat #1 ranked di sebuah divisi",
+    { id: "champion", icon: "🏆", name: "Juara Sejati", desc: "Rebut peringkat #1 ranked di sebuah divisi",
       test: function (p, ctx) { return ctx.champion; },
       prog: function () { return "jadi #1 di divisi"; } }
   ];
@@ -969,11 +969,11 @@
     return fresh;
   }
   function showBadgeModal(fresh) {
-    $("modal-title").textContent = "🎖️ Lencana Baru!";
+    $("modal-title").textContent = "🎖️ Lencana Kemenangan!";
     $("modal-text").innerHTML = fresh.map(function (b) {
       return b.icon + " <b>" + esc(b.name) + "</b> — " + esc(b.desc);
     }).join("<br>");
-    $("modal-ok").textContent = "Keren!";
+    $("modal-ok").textContent = "Mantap!";
     $("modal-ok").onclick = function () {
       $("modal").classList.add("hidden");
       $("modal-ok").textContent = "OK";
@@ -1006,7 +1006,7 @@
       $("badge-level-next").textContent = (nx.xp - p.xp) + " XP lagi ke " + nx.name;
     } else {
       $("badge-xp-fill").style.width = "100%";
-      $("badge-level-next").textContent = "Level maksimal! Kamu legenda!";
+      $("badge-level-next").textContent = "Level maksimal! Kamu legenda arena!";
     }
     var ctx = buildBadgeCtx();
     var grid = $("badge-grid");
@@ -1033,7 +1033,7 @@
     state.mode = "normal";
     var back = document.querySelector("#screen-start .backlink");
     back.setAttribute("data-go", "subjects");
-    back.textContent = "← Ganti pelajaran";
+    back.textContent = "← Pilih pelajaran";
     $("btn-start-quiz").textContent = "Masuk Arena";
     var b = state.bank;
     applyTheme(b.level);
@@ -1045,7 +1045,7 @@
     $("start-meta").innerHTML =
       '<span class="pill">' + sessionCount(b) + " soal acak</span>" +
       '<span class="pill">' + fmtDur(sessionDur(b)) + "</span>" +
-      '<span class="pill">dari ' + b.questions.length + " bank soal</span>";
+      '<span class="pill">dari ' + b.questions.length + " paket soal</span>";
     renderIdentity();
     go("start");
   }
@@ -1146,7 +1146,7 @@
 
   function renderQuestion() {
     var q = state.qs[state.qi];
-    $("q-num").textContent = "Soal " + (state.qi + 1) + " dari " + state.qs.length;
+    $("q-num").textContent = "Ronde " + (state.qi + 1) + " dari " + state.qs.length;
     $("q-text").textContent = q.q;
     $("quiz-progress").textContent =
       state.answers.filter(function (a) { return a >= 0; }).length + "/" + state.qs.length + " terjawab";
@@ -1208,12 +1208,12 @@
 
   $("btn-submit").addEventListener("click", function () {
     var un = state.answers.filter(function (a) { return a < 0; }).length;
-    $("modal-ok").textContent = "OK";
+    $("modal-ok").textContent = "Ya, akhiri! 🏁";
     $("modal-cancel").style.display = "";
-    $("modal-title").textContent = "Kumpulkan jawaban?";
+    $("modal-title").textContent = "Akhiri laga sekarang?";
     $("modal-text").textContent = un > 0
-      ? "Masih ada " + un + " soal belum dijawab. Yakin kumpulkan sekarang?"
-      : "Semua soal sudah dijawab. Kumpulkan?";
+      ? "Masih ada " + un + " ronde belum dijawab. Yakin akhiri laga sekarang?"
+      : "Semua ronde sudah dijawab. Akhiri laga?";
     $("modal-ok").onclick = function () { $("modal").classList.add("hidden"); finishQuiz(false); };
     $("modal").classList.remove("hidden");
   });
@@ -1255,11 +1255,11 @@
     setMascot("result-mascot-use", cat);
     var mn = cat ? cat.mascotName : "temanmu";
     $("result-kicker").textContent =
-      state.bank.level + " · " + state.bank.subject + (r.timeUp ? " · waktu habis" : "");
+      state.bank.level + " · " + state.bank.subject + (r.timeUp ? " · ⏱ waktu habis" : "");
     // medali: emas / perak / perunggu
     var medal = r.score >= 85 ? { name: "MEDALI EMAS", c: "#ffd93b", d: "#f5b301", sub: "Luar biasa, juara!" } :
                 r.score >= 65 ? { name: "MEDALI PERAK", c: "#eef2f9", d: "#aebdd6", sub: "Keren, dikit lagi emas!" } :
-                r.score >= 40 ? { name: "MEDALI PERUNGGU", c: "#f6c9a0", d: "#cd7f32", sub: "Bagus, terus naik!" } : null;
+                r.score >= 40 ? { name: "MEDALI PERUNGGU", c: "#f6c9a0", d: "#cd7f32", sub: "Bagus, terus kejar emas!" } : null;
     var med = $("result-medal");
     med.style.setProperty("--medal", medal ? medal.c : "#e3ebfb");
     med.style.setProperty("--medal-deep", medal ? medal.d : "#c9d6ef");
@@ -1288,8 +1288,8 @@
       '<div class="stat"><b>' + fmtDur(r.used) + "</b><span>Waktu</span></div>";
     var msg = r.score >= 85 ? "Emas! " + mn + " bangga banget sama kamu." :
               r.score >= 65 ? "Perak! Dikit lagi emas." :
-              r.score >= 40 ? "Perunggu! Terus latihan biar naik kelas." :
-              "Belum beruntung — " + mn + " temenin latihan lagi.";
+              r.score >= 40 ? "Perunggu! Terus berlatih biar naik podium." :
+              "Belum beruntung — " + mn + " temenin tanding lagi.";
     $("lb-note").textContent = msg + " Skormu " + (LB.online ? "masuk leaderboard online." : "tersimpan di leaderboard perangkat ini.");
     go("result");
     if (r.score >= 60) confetti($("result-card"), 70);
@@ -1384,7 +1384,7 @@
       apiPost(entry).catch(function () {
         LB.online = false;
         localSave(state.bankId, entry);
-        toast("Server leaderboard tidak terjangkau — skor disimpan lokal.");
+        toast("Server leaderboard tidak terjangkau — skormu disimpan di perangkat ini.");
       });
     } else {
       localSave(state.bankId, entry);
@@ -1550,7 +1550,7 @@
   }
   $("btn-guest").addEventListener("click", function () {
     var g = $("guest-name").value.trim().slice(0, 20);
-    if (!g) { toast("Isi nama dulu ya."); $("guest-name").focus(); return; }
+    if (!g) { toast("Isi nama petarung dulu ya."); $("guest-name").focus(); return; }
     if (window.Auth && Auth.user()) Auth.logout();
     localStorage.setItem("ujianku_guest", g);
     onAuthChanged();
