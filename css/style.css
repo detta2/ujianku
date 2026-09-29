@@ -525,6 +525,7 @@ img{max-width:100%}
 /* ============ MASKOT ============ */
 .mascot{display:inline-block;vertical-align:middle}
 .mascot svg{width:100%;height:100%;display:block;overflow:visible}
+.mascot img{width:100%;height:100%;display:block;object-fit:contain}
 /* idle animations */
 .mx-bounce{animation:mx-bounce 2.6s ease-in-out infinite;transform-origin:50% 90%}
 @keyframes mx-bounce{0%,100%{transform:translateY(0)}50%{transform:translateY(-9px)}}

@@ -79,7 +79,7 @@
   }
   function setMascot(useId, cat) {
     var u = $(useId);
-    if (u && cat) u.setAttribute("href", "#m-" + cat.mascot);
+    if (u && cat) u.setAttribute("src", "img/maskot-" + cat.mascot + ".png");
   }
   /* SD = bahasa anak yang baik & lembut; SMP ke atas = bahasa Gen Z */
   var GENZ_CHEER = ["Gas bestie!", "Slay!", "W banget!", "Sat set beres!", "Era juara!", "Valid no debat!"];
@@ -191,7 +191,7 @@
       btn.innerHTML =
         '<span class="division-badge">' + esc(c.division) + ' · ' + esc(c.divisionMedal) + '</span>' +
         '<span class="level-mascot-name">si ' + esc(c.mascotName) + '</span>' +
-        '<span class="mascot mx-bounce"><svg><use href="#m-' + c.mascot + '"/></svg></span>' +
+        '<span class="mascot mx-bounce"><img src="img/maskot-' + c.mascot + '.png" alt=""></span>' +
         "<h3>" + esc(c.level) + "</h3>" +
         "<p>" + esc(c.friend) + "</p>" +
         "<p>" + c.banks.length + " pelajaran</p>" +
@@ -408,7 +408,7 @@
       btn.innerHTML =
         '<span class="division-badge">⚔️ Ranked · ' + esc(c.divisionMedal) + '</span>' +
         '<span class="level-mascot-name">si ' + esc(c.mascotName) + '</span>' +
-        '<span class="mascot mx-bounce"><svg><use href="#m-' + c.mascot + '"/></svg></span>' +
+        '<span class="mascot mx-bounce"><img src="img/maskot-' + c.mascot + '.png" alt=""></span>' +
         "<h3>" + esc(c.level) + "</h3>" +
         "<p>30 soal acak · 15 dtk/soal</p>" +
         (t.points > 0
