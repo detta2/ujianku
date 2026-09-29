@@ -19,6 +19,13 @@
 <!-- ======== MASKOT ======== -->
 <svg width="0" height="0" style="position:absolute" aria-hidden="true">
   <defs>
+    <symbol id="logo-mark" viewBox="0 0 64 64">
+      <rect x="3" y="3" width="58" height="58" rx="17" fill="#7c5cff" stroke="#26344e" stroke-width="3.5"/>
+      <path d="M15 27 Q23.5 22 32 26 Q40.5 22 49 27 L49 47 Q40.5 42 32 46 Q23.5 42 15 47 Z" fill="#fff" stroke="#26344e" stroke-width="3" stroke-linejoin="round"/>
+      <line x1="32" y1="26" x2="32" y2="46" stroke="#26344e" stroke-width="2.5"/>
+      <path d="M24 33 q4 -2 8 0 M24 38 q4 -2 8 0" fill="none" stroke="#a78bfa" stroke-width="2" stroke-linecap="round"/>
+      <path d="M47 9 l2.1 4.3 4.7 .6 -3.5 3.2 .9 4.7 -4.2 -2.3 -4.2 2.3 .9 -4.7 -3.5 -3.2 4.7 -.6 z" fill="#ffd93b" stroke="#26344e" stroke-width="2" stroke-linejoin="round"/>
+    </symbol>
     <symbol id="m-dino" viewBox="0 0 120 120">
       <polygon points="38,46 46,28 54,46" fill="#fbbf24" stroke="#26344e" stroke-width="2.5" stroke-linejoin="round"/>
       <polygon points="56,44 64,26 72,44" fill="#fbbf24" stroke="#26344e" stroke-width="2.5" stroke-linejoin="round"/>
@@ -103,7 +110,7 @@
 
 <header class="topbar">
   <button class="brand" data-go="home" aria-label="Beranda">
-    <span class="brand-mark">S</span>
+    <span class="brand-mark"><svg viewBox="0 0 64 64" aria-hidden="true"><use href="#logo-mark"/></svg></span>
     <span class="brand-name">SiPintar</span>
   </button>
   <div class="topbar-right">

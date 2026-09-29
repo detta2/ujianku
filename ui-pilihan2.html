@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Pilih UI Baru (2) — SiPintar</title>
+<style>
+  *{box-sizing:border-box}
+  body{font-family:system-ui,-apple-system,sans-serif;background:#f4f1ea;color:#26344e;margin:0;padding:28px 16px}
+  .wrap{max-width:1100px;margin:0 auto;text-align:center}
+  h1{font-size:30px;margin:0 0 6px}
+  p.sub{color:#5b6b8c;font-weight:600;margin:0 0 26px}
+  .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:22px;text-align:left}
+  .opt{background:#fff;border:3px solid #26344e;border-radius:24px;box-shadow:0 8px 0 rgba(38,52,78,.14);padding:18px}
+  .opt-head{display:flex;gap:12px;align-items:center;margin-bottom:14px}
+  .tag{flex:none;width:46px;height:46px;border-radius:16px;background:#26344e;color:#fff;font-weight:800;font-size:22px;display:flex;align-items:center;justify-content:center}
+  .opt-head h3{margin:0;font-size:20px}
+  .opt-head p{margin:2px 0 0;color:#5b6b8c;font-weight:600;font-size:13px}
+  .phone{border-radius:20px;padding:18px 14px;overflow:hidden;position:relative;min-height:400px}
+  .mascot{display:inline-block;vertical-align:middle}
+  .mascot svg{width:100%;height:100%;display:block}
+
+  /* ===== E: KACA MODERN (glassmorphism) ===== */
+  .pe{background:linear-gradient(135deg,#e0f2ff 0%,#f3e8ff 50%,#ffe8f3 100%);border:1px solid rgba(255,255,255,.7)}
+  .pe .p-hero{text-align:center;margin-bottom:16px}
+  .pe .p-hero .mascot{width:76px;height:76px;filter:drop-shadow(0 8px 12px rgba(124,92,255,.3))}
+  .pe .p-hero h4{font-size:23px;margin:10px 0 4px;color:#3b3b6e;font-weight:800}
+  .pe .p-hero p{color:#6b6b9e;font-weight:600;font-size:13px;margin:0 0 12px}
+  .pe .p-btn{display:inline-block;background:rgba(124,92,255,.9);color:#fff;font-weight:800;padding:11px 26px;border-radius:16px;text-decoration:none;box-shadow:0 8px 20px rgba(124,92,255,.35);backdrop-filter:blur(6px)}
+  .pe .p-levels{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+  .pe .p-card{background:rgba(255,255,255,.55);border:1px solid rgba(255,255,255,.9);border-radius:18px;padding:12px;text-align:center;backdrop-filter:blur(8px);box-shadow:0 6px 16px rgba(80,80,160,.12)}
+  .pe .p-card .mascot{width:48px;height:48px}
+  .pe .p-card b{display:block;color:#3b3b6e;font-size:15px;margin-top:4px}
+  .pe .p-card small{color:#8a8ab5;font-weight:600}
+
+  /* ===== F: PIXEL RETRO ===== */
+  .pf{background:#1c1033;border:4px solid #000;color:#fff;image-rendering:pixelated;
+    background-image:linear-gradient(#2c1a52 0 0);box-shadow:inset 0 0 0 4px #3d2a6e}
+  .pf .p-top{display:flex;align-items:center;gap:10px;margin-bottom:12px}
+  .pf .p-top .mascot{width:52px;height:52px}
+  .pf .p-top h4{font-family:ui-monospace,Menlo,monospace;font-size:17px;margin:0;color:#ffd93b;text-shadow:3px 3px 0 #b3541e;letter-spacing:1px}
+  .pf .p-top small{font-family:ui-monospace,monospace;color:#b9a8ff;font-size:11px}
+  .pf .p-row{display:flex;align-items:center;gap:12px;background:#2c1a52;border:3px solid #000;box-shadow:4px 4px 0 #000;padding:10px;margin-bottom:10px}
+  .pf .p-row .mascot{width:46px;height:46px;flex:none}
+  .pf .p-row b{font-family:ui-monospace,monospace;color:#7df9ff;font-size:15px;display:block}
+  .pf .p-row small{font-family:ui-monospace,monospace;color:#b9a8ff;font-size:11px}
+  .pf .p-row .lvl{margin-left:auto;font-family:ui-monospace,monospace;background:#ffd93b;color:#1c1033;font-weight:800;font-size:12px;padding:6px 10px;border:3px solid #000;box-shadow:3px 3px 0 #000}
+  .pf .p-start{display:block;text-align:center;font-family:ui-monospace,monospace;color:#7df9ff;font-weight:800;margin-top:14px;animation:blink 1.1s steps(2) infinite;font-size:14px}
+  @keyframes blink{50%{opacity:0}}
+
+  /* ===== G: KOMIK POP ===== */
+  .pg{background:#fff8e7;border:4px solid #111;
+    background-image:radial-gradient(#11111122 2.2px,transparent 2.6px);background-size:22px 22px}
+  .pg .burst{position:absolute;top:12px;right:10px;width:92px;height:92px;background:#ff4757;color:#fff;font-weight:900;font-size:13px;display:flex;align-items:center;justify-content:center;text-align:center;transform:rotate(12deg);
+    clip-path:polygon(50% 0%,61% 12%,76% 6%,79% 21%,95% 21%,90% 36%,100% 45%,90% 55%,95% 70%,79% 70%,76% 86%,61% 80%,50% 93%,39% 80%,24% 86%,21% 70%,5% 70%,10% 55%,0% 45%,10% 36%,5% 21%,21% 21%,24% 6%,39% 12%)}
+  .pg .p-hero{text-align:center;margin:6px 0 14px}
+  .pg .p-hero h4{font-size:26px;font-weight:900;color:#111;margin:0;transform:rotate(-2deg);text-transform:uppercase;letter-spacing:.5px}
+  .pg .p-hero h4 em{font-style:normal;background:#ffd93b;padding:0 8px;border:3px solid #111;box-shadow:4px 4px 0 #111;display:inline-block;transform:rotate(1deg)}
+  .pg .p-hero .mascot{width:64px;height:64px;margin:8px 2px 0}
+  .pg .p-btn{display:block;text-align:center;background:#ffd93b;color:#111;font-weight:900;font-size:17px;padding:12px;border:3px solid #111;border-radius:12px;box-shadow:5px 5px 0 #111;text-decoration:none;max-width:250px;margin:0 auto;transform:rotate(-1deg)}
+  .pg .p-levels{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:16px}
+  .pg .p-card{background:#fff;border:3px solid #111;border-radius:14px;padding:10px;text-align:center;box-shadow:5px 5px 0 #111}
+  .pg .p-card:nth-child(odd){transform:rotate(-1.5deg)}
+  .pg .p-card:nth-child(even){transform:rotate(1.5deg)}
+  .pg .p-card .mascot{width:50px;height:50px}
+  .pg .p-card b{display:block;font-size:16px}
+  .pg .p-card small{font-weight:700;color:#666}
+
+  /* ===== H: SUNSET GRADIENT ===== */
+  .ph{background:linear-gradient(160deg,#7c3aed 0%,#d946ef 45%,#fb7185 75%,#fb923c 100%);border:none;color:#fff;padding:0}
+  .ph .p-inner{padding:20px 16px}
+  .ph .p-hero{text-align:left;margin-bottom:16px}
+  .ph .p-kicker{display:inline-block;background:rgba(255,255,255,.22);border:1px solid rgba(255,255,255,.4);color:#fff;font-weight:800;font-size:12px;padding:5px 12px;border-radius:999px;margin-bottom:10px}
+  .ph .p-hero h4{font-size:27px;font-weight:800;margin:0 0 6px;line-height:1.2;text-shadow:0 2px 12px rgba(0,0,0,.2)}
+  .ph .p-hero p{margin:0;color:#ffe9f3;font-weight:600;font-size:14px}
+  .ph .p-levels{display:flex;gap:10px;overflow:hidden;margin-top:4px}
+  .ph .p-card{flex:1;min-width:0;background:rgba(255,255,255,.16);border:1px solid rgba(255,255,255,.35);border-radius:18px;padding:12px 8px;text-align:center;backdrop-filter:blur(6px)}
+  .ph .p-card .mascot{width:52px;height:52px}
+  .ph .p-card b{display:block;font-size:15px;margin-top:4px}
+  .ph .p-card small{color:#ffe9f3;font-weight:600;font-size:11px}
+  .ph .p-btn{display:block;text-align:center;background:#fff;color:#c026d3;font-weight:800;padding:13px;border-radius:16px;text-decoration:none;margin:16px 16px 0;box-shadow:0 10px 24px rgba(0,0,0,.25)}
+  .ph .p-foot{padding:0 16px 18px}
+</style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs>
+<symbol id="m-dino" viewBox="0 0 120 120">
+  <polygon points="38,46 46,28 54,46" fill="#fbbf24" stroke="#26344e" stroke-width="2.5" stroke-linejoin="round"/>
+  <polygon points="56,44 64,26 72,44" fill="#fbbf24" stroke="#26344e" stroke-width="2.5" stroke-linejoin="round"/>
+  <polygon points="74,46 82,30 90,48" fill="#fbbf24" stroke="#26344e" stroke-width="2.5" stroke-linejoin="round"/>
+  <path d="M28 88 Q10 84 12 70 Q26 74 32 84 Z" fill="#22c55e" stroke="#26344e" stroke-width="3" stroke-linejoin="round"/>
+  <ellipse cx="46" cy="102" rx="11" ry="8" fill="#16a34a" stroke="#26344e" stroke-width="3"/>
+  <ellipse cx="74" cy="102" rx="11" ry="8" fill="#16a34a" stroke="#26344e" stroke-width="3"/>
+  <ellipse cx="60" cy="78" rx="32" ry="26" fill="#4ade80" stroke="#26344e" stroke-width="3"/>
+  <ellipse cx="60" cy="88" rx="18" ry="13" fill="#dcfbe7"/>
+  <circle cx="60" cy="40" r="22" fill="#4ade80" stroke="#26344e" stroke-width="3"/>
+  <path d="M42 38 q6 -7 12 0" fill="none" stroke="#26344e" stroke-width="3" stroke-linecap="round"/>
+  <path d="M66 38 q6 -7 12 0" fill="none" stroke="#26344e" stroke-width="3" stroke-linecap="round"/>
+  <circle cx="40" cy="50" r="6" fill="#f9a8d4" opacity=".9"/>
+  <circle cx="80" cy="50" r="6" fill="#f9a8d4" opacity=".9"/>
+  <path d="M52 55 Q60 68 68 55 Q60 60 52 55 Z" fill="#26344e"/>
+  <ellipse cx="60" cy="61" rx="5" ry="3" fill="#f9a8d4"/>
+</symbol>
+<symbol id="m-robot" viewBox="0 0 120 120">
+  <line x1="60" y1="26" x2="60" y2="13" stroke="#26344e" stroke-width="4" stroke-linecap="round"/>
+  <circle cx="60" cy="9" r="6" fill="#fbbf24" stroke="#26344e" stroke-width="3"/>
+  <rect x="22" y="44" width="10" height="18" rx="5" fill="#93c5fd" stroke="#26344e" stroke-width="3"/>
+  <rect x="88" y="44" width="10" height="18" rx="5" fill="#93c5fd" stroke="#26344e" stroke-width="3"/>
+  <rect x="44" y="94" width="12" height="14" rx="6" fill="#3b82f6" stroke="#26344e" stroke-width="3"/>
+  <rect x="64" y="94" width="12" height="14" rx="6" fill="#3b82f6" stroke="#26344e" stroke-width="3"/>
+  <rect x="36" y="70" width="48" height="28" rx="12" fill="#60a5fa" stroke="#26344e" stroke-width="3"/>
+  <circle cx="60" cy="84" r="6" fill="#dbeafe" stroke="#26344e" stroke-width="2.5"/>
+  <rect x="22" y="72" width="10" height="22" rx="5" fill="#3b82f6" stroke="#26344e" stroke-width="3"/>
+  <rect x="88" y="72" width="10" height="22" rx="5" fill="#3b82f6" stroke="#26344e" stroke-width="3"/>
+  <rect x="28" y="24" width="64" height="50" rx="18" fill="#93c5fd" stroke="#26344e" stroke-width="3"/>
+  <rect x="38" y="34" width="44" height="30" rx="12" fill="#1e3a8a"/>
+  <circle cx="52" cy="47" r="5" fill="#7dd3fc"/>
+  <circle cx="68" cy="47" r="5" fill="#7dd3fc"/>
+  <path d="M53 57 Q60 62 67 57" fill="none" stroke="#7dd3fc" stroke-width="2.5" stroke-linecap="round"/>
+</symbol>
+<symbol id="m-rocket" viewBox="0 0 120 120">
+  <circle cx="18" cy="24" r="3" fill="#fbbf24" stroke="#26344e" stroke-width="2"/>
+  <circle cx="102" cy="30" r="2.5" fill="#fbbf24" stroke="#26344e" stroke-width="2"/>
+  <circle cx="96" cy="90" r="3" fill="#fbbf24" stroke="#26344e" stroke-width="2"/>
+  <path d="M48 84 Q60 108 72 84 Q66 92 60 92 Q54 92 48 84 Z" fill="#fbbf24" stroke="#26344e" stroke-width="3" stroke-linejoin="round"/>
+  <path d="M54 84 Q60 98 66 84 Q63 89 60 89 Q57 89 54 84 Z" fill="#f97316"/>
+  <path d="M42 62 L28 84 L44 80 Z" fill="#ea580c" stroke="#26344e" stroke-width="3" stroke-linejoin="round"/>
+  <path d="M78 62 L92 84 L76 80 Z" fill="#ea580c" stroke="#26344e" stroke-width="3" stroke-linejoin="round"/>
+  <path d="M60 8 C76 22 82 48 78 72 L42 72 C38 48 44 22 60 8 Z" fill="#ffffff" stroke="#26344e" stroke-width="3" stroke-linejoin="round"/>
+  <path d="M60 8 C66 13 70 19 73 25 L47 25 C50 19 54 13 60 8 Z" fill="#f97316" stroke="#26344e" stroke-width="3" stroke-linejoin="round"/>
+  <circle cx="60" cy="48" r="11" fill="#38bdf8" stroke="#26344e" stroke-width="3"/>
+  <circle cx="56" cy="44" r="3" fill="#bae6fd"/>
+</symbol>
+<symbol id="m-owl" viewBox="0 0 120 120">
+  <rect x="46" y="100" width="10" height="10" rx="5" fill="#fbbf24" stroke="#26344e" stroke-width="2.5"/>
+  <rect x="64" y="100" width="10" height="10" rx="5" fill="#fbbf24" stroke="#26344e" stroke-width="2.5"/>
+  <ellipse cx="30" cy="72" rx="10" ry="20" fill="#8b5cf6" stroke="#26344e" stroke-width="3" transform="rotate(12 30 72)"/>
+  <ellipse cx="90" cy="72" rx="10" ry="20" fill="#8b5cf6" stroke="#26344e" stroke-width="3" transform="rotate(-12 90 72)"/>
+  <ellipse cx="60" cy="68" rx="32" ry="36" fill="#a78bfa" stroke="#26344e" stroke-width="3"/>
+  <ellipse cx="60" cy="80" rx="18" ry="18" fill="#ddd6fe"/>
+  <circle cx="47" cy="52" r="11" fill="#fff" stroke="#26344e" stroke-width="2.5"/>
+  <circle cx="73" cy="52" r="11" fill="#fff" stroke="#26344e" stroke-width="2.5"/>
+  <circle cx="48" cy="53" r="5" fill="#26344e"/>
+  <circle cx="74" cy="53" r="5" fill="#26344e"/>
+  <circle cx="50" cy="51" r="1.6" fill="#fff"/>
+  <circle cx="76" cy="51" r="1.6" fill="#fff"/>
+  <polygon points="60,60 54,68 66,68" fill="#fbbf24" stroke="#26344e" stroke-width="2.5" stroke-linejoin="round"/>
+  <g transform="rotate(-8 60 22)">
+    <polygon points="60,6 32,17 60,28 88,17" fill="#3b4a6b" stroke="#26344e" stroke-width="2.5" stroke-linejoin="round"/>
+    <rect x="52" y="20" width="16" height="8" rx="3" fill="#26344e"/>
+    <line x1="84" y1="17" x2="84" y2="31" stroke="#fbbf24" stroke-width="3" stroke-linecap="round"/>
+    <circle cx="84" cy="34" r="4" fill="#fbbf24" stroke="#26344e" stroke-width="2"/>
+  </g>
+</symbol>
+</defs></svg>
+
+<div class="wrap">
+  <h1>🎨 Pilih Tampilan Baru SiPintar <small style="font-size:15px;color:#8a8ab5">(ronde 2)</small></h1>
+  <p class="sub">Balas dengan huruf pilihannya (E / F / G / H) — yang dipilih akan saya pasang ke seluruh web</p>
+  <div class="grid">
+
+    <div class="opt">
+      <div class="opt-head"><span class="tag">E</span><div><h3>Kaca Modern</h3><p>Kartu kaca buram, bersih & elegan — gaya aplikasi modern</p></div></div>
+      <div class="phone pe">
+        <div class="p-hero">
+          <span class="mascot"><svg><use href="#m-dino"/></svg></span>
+          <h4>Belajar jadi seru ✨</h4>
+          <p>160 soal latihan menantimu</p>
+          <a class="p-btn">Mulai Belajar</a>
+        </div>
+        <div class="p-levels">
+          <div class="p-card"><span class="mascot"><svg><use href="#m-dino"/></svg></span><b>SD</b><small>si Dino</small></div>
+          <div class="p-card"><span class="mascot"><svg><use href="#m-robot"/></svg></span><b>SMP</b><small>si Robo</small></div>
+          <div class="p-card"><span class="mascot"><svg><use href="#m-rocket"/></svg></span><b>SMA</b><small>si Roki</small></div>
+          <div class="p-card"><span class="mascot"><svg><use href="#m-owl"/></svg></span><b>Kuliah</b><small>si Ollie</small></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="opt">
+      <div class="opt-head"><span class="tag">F</span><div><h3>Pixel Retro</h3><p>Gaya game 8-bit jadul — nostalgia & unik</p></div></div>
+      <div class="phone pf">
+        <div class="p-top">
+          <span class="mascot"><svg><use href="#m-robot"/></svg></span>
+          <div><h4>SIPINTAR.EXE</h4><small>v2.0 — pilih levelmu!</small></div>
+        </div>
+        <div class="p-row"><span class="mascot"><svg><use href="#m-dino"/></svg></span><div><b>LEVEL 1 — SD</b><small>si Dino • 40 soal</small></div><span class="lvl">▶</span></div>
+        <div class="p-row"><span class="mascot"><svg><use href="#m-robot"/></svg></span><div><b>LEVEL 2 — SMP</b><small>si Robo • 40 soal</small></div><span class="lvl">▶</span></div>
+        <div class="p-row"><span class="mascot"><svg><use href="#m-rocket"/></svg></span><div><b>LEVEL 3 — SMA</b><small>si Roki • 40 soal</small></div><span class="lvl">▶</span></div>
+        <div class="p-row"><span class="mascot"><svg><use href="#m-owl"/></svg></span><div><b>LEVEL 4 — KULIAH</b><small>si Ollie • 40 soal</small></div><span class="lvl">▶</span></div>
+        <span class="p-start">— PRESS START —</span>
+      </div>
+    </div>
+
+    <div class="opt">
+      <div class="opt-head"><span class="tag">G</span><div><h3>Komik Pop</h3><p>Gaya komik heboh, penuh energi — POW! 💥</p></div></div>
+      <div class="phone pg">
+        <div class="burst">160<br>SOAL!</div>
+        <div class="p-hero">
+          <h4>Belajar<br><em>Anti Bosan!</em></h4>
+          <div>
+            <span class="mascot"><svg><use href="#m-dino"/></svg></span>
+            <span class="mascot"><svg><use href="#m-rocket"/></svg></span>
+            <span class="mascot"><svg><use href="#m-owl"/></svg></span>
+          </div>
+        </div>
+        <a class="p-btn">GAS BELAJAR! ⚡</a>
+        <div class="p-levels">
+          <div class="p-card"><span class="mascot"><svg><use href="#m-dino"/></svg></span><b>SD</b><small>si Dino</small></div>
+          <div class="p-card"><span class="mascot"><svg><use href="#m-robot"/></svg></span><b>SMP</b><small>si Robo</small></div>
+          <div class="p-card"><span class="mascot"><svg><use href="#m-rocket"/></svg></span><b>SMA</b><small>si Roki</small></div>
+          <div class="p-card"><span class="mascot"><svg><use href="#m-owl"/></svg></span><b>Kuliah</b><small>si Ollie</small></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="opt">
+      <div class="opt-head"><span class="tag">H</span><div><h3>Sunset Gradient</h3><p>Gradasi ungu→oranye, berani & kekinian</p></div></div>
+      <div class="phone ph">
+        <div class="p-inner">
+          <div class="p-hero">
+            <span class="p-kicker">✨ 160 soal siap dimainkan</span>
+            <h4>Naik level<br>bersama SiPintar</h4>
+            <p>Dari SD sampai kuliah, semua ada.</p>
+          </div>
+          <div class="p-levels">
+            <div class="p-card"><span class="mascot"><svg><use href="#m-dino"/></svg></span><b>SD</b><small>Dino</small></div>
+            <div class="p-card"><span class="mascot"><svg><use href="#m-robot"/></svg></span><b>SMP</b><small>Robo</small></div>
+            <div class="p-card"><span class="mascot"><svg><use href="#m-rocket"/></svg></span><b>SMA</b><small>Roki</small></div>
+            <div class="p-card"><span class="mascot"><svg><use href="#m-owl"/></svg></span><b>Kuliah</b><small>Ollie</small></div>
+          </div>
+        </div>
+        <div class="p-foot"><a class="p-btn">Pilih Jenjang →</a></div>
+      </div>
+    </div>
+
+  </div>
+</div>
+</body>
+</html>
