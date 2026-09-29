@@ -132,6 +132,7 @@
     <nav class="topnav">
       <button class="navbtn" data-go="leaderboard">Leaderboard</button>
       <button class="navbtn" data-go="badges">🎖️ Lencana</button>
+      <button class="navbtn" id="nav-admin" data-go="admin" style="display:none">🛡️ Admin</button>
     </nav>
     <div id="auth-area"></div>
   </div>
@@ -377,6 +378,24 @@
     <div class="badge-grid" id="badge-grid"></div>
   </section>
 
+  <!-- ============ PANEL ADMIN ============ -->
+  <section id="screen-admin" class="screen">
+    <button class="backlink" data-go="home">← Beranda</button>
+    <h2 class="section-title">🛡️ Panel Admin</h2>
+    <p class="section-sub">Kelola pemain, banned akun curang, dan kirim hadiah poin.</p>
+    <div class="adm-tabs">
+      <button class="adm-tab active" data-atab="players">Pemain</button>
+      <button class="adm-tab" data-atab="flags">⚠️ Flag <span id="adm-flag-count"></span></button>
+    </div>
+    <div id="adm-players">
+      <input id="adm-q" class="adm-search" placeholder="🔍 Cari nama / email…" autocomplete="off">
+      <div id="adm-list"></div>
+    </div>
+    <div id="adm-flags" style="display:none">
+      <div id="adm-flag-list"></div>
+    </div>
+  </section>
+
 </main>
 
 <footer class="footer">
@@ -384,6 +403,28 @@
 </footer>
 
 <div class="toast hidden" id="toast"></div>
+
+<div class="modal hidden" id="adm-gift-modal">
+  <div class="modal-card">
+    <h3>🎁 Kasih Hadiah</h3>
+    <p class="section-sub" id="adm-gift-who"></p>
+    <label class="fld">Divisi
+      <select id="adm-gift-level" class="fld-in">
+        <option>SD</option><option>SMP</option><option>SMA</option><option>Kuliah</option>
+      </select>
+    </label>
+    <label class="fld">Jumlah poin
+      <input id="adm-gift-points" class="fld-in" type="number" min="1" max="10000" inputmode="numeric" placeholder="mis. 100">
+    </label>
+    <label class="fld">Alasan (opsional)
+      <input id="adm-gift-reason" class="fld-in" type="text" maxlength="140" placeholder="mis. Juara event mingguan">
+    </label>
+    <div class="modal-actions">
+      <button class="btn-ghost" id="adm-gift-cancel">Batal</button>
+      <button class="btn-primary" id="adm-gift-ok">Kirim 🎁</button>
+    </div>
+  </div>
+</div>
 
 <div class="modal hidden" id="modal">
   <div class="modal-card">

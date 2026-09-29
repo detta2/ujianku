@@ -3,7 +3,7 @@
   "use strict";
 
   var $ = function (id) { return document.getElementById(id); };
-  var screens = ["home", "ranked", "subjects", "login", "start", "quiz", "result", "review", "profile", "leaderboard", "badges"];
+  var screens = ["home", "ranked", "subjects", "login", "start", "quiz", "result", "review", "profile", "leaderboard", "badges", "admin"];
   var state = {
     level: null, bankId: null, bank: null,
     mode: "normal", rankedLevel: null,
@@ -18,12 +18,14 @@
     screens.forEach(function (s) { $("screen-" + s).classList.toggle("active", s === name); });
     if (name === "home") applyTheme(null);
     if (name === "badges") renderBadges();
+    if (name === "admin") renderAdmin();
     window.scrollTo({ top: 0, behavior: "smooth" });
   }
   document.querySelectorAll("[data-go]").forEach(function (el) {
     el.addEventListener("click", function () {
       var t = el.getAttribute("data-go");
       if (t === "leaderboard") initLeaderboard();
+      if (t === "admin") renderAdmin();
       go(t);
     });
   });
@@ -291,6 +293,7 @@
   }
   function onAuthChanged() {
     updateAuthUI();
+    syncServerState();
     if (state.screen === "profile" && !(window.Auth && Auth.user())) go("home");
     if (state.pendingRanked && isIdentified()) {
       var rl = state.pendingRanked;
@@ -438,11 +441,13 @@
     $("start-kicker").textContent = "⚔️ MODE RANKED · " + level;
     $("start-title").textContent = "Siap naik peringkat?";
     var t = rankedTotals(level);
+    var loginHint = loggedIn() ? "" : '<span class="pill pill-dim">💡 Masuk Google biar poinmu masuk leaderboard global</span>';
     $("start-meta").innerHTML =
       '<span class="pill">' + RANKED_Q + " soal acak</span>" +
       '<span class="pill">⏱ ' + RANKED_SEC + " detik/soal</span>" +
       '<span class="pill">dari ' + cat.banks.length + " pelajaran</span>" +
-      (t.points > 0 ? '<span class="pill">⭐ ' + t.points + " poin terkumpul</span>" : "");
+      (t.points > 0 ? '<span class="pill">⭐ ' + t.points + " poin terkumpul</span>" : "") +
+      loginHint;
     var back = document.querySelector("#screen-start .backlink");
     back.setAttribute("data-go", "ranked");
     back.textContent = "← Ganti divisi";
@@ -585,6 +590,8 @@
     });
     showResult();
     if (freshR.length) showBadgeModal(freshR);
+    /* kirim ke leaderboard global (bila login Google) */
+    submitRankedServer(pts, correct, qs.length);
   }
   function showRankedResult() {
     var r = state.result;
@@ -624,6 +631,196 @@
       " — peringkat #" + r.rank + " dari " + r.totalPlayers + " pemain di Divisi " + level + ".";
     go("result");
     if (r.points >= 200) confetti($("result-card"), 70);
+  }
+
+  /* ---------- server: leaderboard global & panel admin ---------- */
+  function srvApi(path, opts) {
+    opts = opts || {};
+    var headers = { "Content-Type": "application/json" };
+    try { var t = window.Auth && Auth.idToken(); if (t) headers["Authorization"] = "Bearer " + t; } catch (e) {}
+    return fetch(path, {
+      method: opts.method || "GET",
+      headers: headers,
+      body: opts.body ? JSON.stringify(opts.body) : undefined,
+    }).then(function (r) {
+      return r.json().then(function (j) { return { status: r.status, body: j || {} }; });
+    });
+  }
+  function loggedIn() { return !!(window.Auth && Auth.user() && Auth.idToken()); }
+  /* dipanggil tiap auth berubah: cek admin + tarik total ranked dari server */
+  function syncServerState() {
+    var u = window.Auth && Auth.user();
+    var key = u ? (u.email || u.name || "?") : "";
+    if (state._srvKey === key) return;
+    state._srvKey = key;
+    state.isAdmin = false;
+    var navA = $("nav-admin");
+    if (navA) navA.style.display = "none";
+    if (!loggedIn()) return;
+    srvApi("/api/admin/me").then(function (r) {
+      state.isAdmin = !!(r.body && r.body.ok && r.body.admin);
+      var n = $("nav-admin");
+      if (n) n.style.display = state.isAdmin ? "" : "none";
+    }).catch(function () {});
+    srvApi("/api/ranked/me").then(function (r) {
+      if (r.body && r.body.ok && r.body.totals) {
+        Object.keys(r.body.totals).forEach(function (lv) {
+          try { localStorage.setItem("ujianku_ranked_" + lv, JSON.stringify(r.body.totals[lv])); } catch (e) {}
+        });
+        if (state.screen === "ranked") renderRankedCards();
+      }
+      if (r.body && r.body.banned) toast("⚠️ Akun kamu dibanned dari ranked global.");
+    }).catch(function () {});
+  }
+  /* kirim hasil match ranked ke server (global). Dipanggil setelah update lokal. */
+  function submitRankedServer(pts, correct, totalQ) {
+    if (!loggedIn()) return;
+    var durMs = Date.now() - (state.startTime || Date.now());
+    var mig = {};
+    ["SD", "SMP", "SMA", "Kuliah"].forEach(function (lv) { mig[lv] = rankedTotals(lv); });
+    srvApi("/api/ranked/submit", {
+      method: "POST",
+      body: { level: state.rankedLevel, points: pts, correct: correct, total: totalQ, durationMs: durMs, migrate: mig },
+    }).then(function (r) {
+      var b = r.body || {};
+      if (b.ok) {
+        try { localStorage.setItem("ujianku_ranked_" + state.rankedLevel, JSON.stringify({ points: b.points, matches: b.matches, best: b.best })); } catch (e) {}
+        if (state.screen === "result" && state.result && state.result.ranked) {
+          state.result.rank = b.rank;
+          state.result.totalPlayers = b.totalPlayers;
+          state.result.allPoints = b.points;
+          var note = document.querySelector("#screen-result .lb-note");
+          if (note) note.textContent = "Total poin rankedmu: " + b.points + " — peringkat #" + b.rank + " dari " + b.totalPlayers + " pemain di " + divName(state.rankedLevel) + " (🌍 global)";
+          if (state.screen === "ranked") renderRankedCards();
+        }
+      } else if (b.banned) {
+        toast("⚠️ Akun dibanned dari ranked global.");
+      }
+    }).catch(function () { /* offline: tetap tersimpan lokal */ });
+  }
+
+  /* ---------- panel admin ---------- */
+  function renderAdmin() {
+    if (!state.isAdmin) { go("home"); toast("Khusus admin."); return; }
+    admWireOnce();
+    admLoadPlayers();
+    admLoadFlags();
+  }
+  function admWireOnce() {
+    if (state._admWired) return;
+    state._admWired = true;
+    document.querySelectorAll(".adm-tab").forEach(function (tb) {
+      tb.addEventListener("click", function () {
+        document.querySelectorAll(".adm-tab").forEach(function (x) { x.classList.remove("active"); });
+        tb.classList.add("active");
+        var k = tb.getAttribute("data-atab");
+        $("adm-players").style.display = k === "players" ? "" : "none";
+        $("adm-flags").style.display = k === "flags" ? "" : "none";
+      });
+    });
+    var q = $("adm-q"), deb = null;
+    q.addEventListener("input", function () {
+      clearTimeout(deb);
+      deb = setTimeout(admLoadPlayers, 350);
+    });
+    $("adm-gift-cancel").addEventListener("click", function () { $("adm-gift-modal").classList.add("hidden"); });
+    $("adm-gift-ok").addEventListener("click", admGiftSend);
+  }
+  function admLoadPlayers() {
+    var q = ($("adm-q").value || "").trim();
+    var box = $("adm-list");
+    box.innerHTML = '<p class="section-sub">Memuat…</p>';
+    srvApi("/api/admin/players?q=" + encodeURIComponent(q)).then(function (r) {
+      var b = r.body || {};
+      if (!b.ok) { box.innerHTML = '<p class="section-sub">Gagal: ' + esc(b.error || "?") + "</p>"; return; }
+      if (!b.rows.length) { box.innerHTML = '<p class="section-sub">Belum ada pemain.</p>'; return; }
+      box.innerHTML = "";
+      b.rows.forEach(function (p) {
+        var div = document.createElement("div");
+        div.className = "adm-row" + (p.banned ? " banned" : "");
+        var d = p.seen ? new Date(p.seen).toLocaleDateString("id-ID", { day: "numeric", month: "short" }) : "-";
+        div.innerHTML =
+          (p.pic ? '<img class="avatar" src="' + esc(p.pic) + '" alt="">'
+                 : '<span class="avatar adm-noimg">👤</span>') +
+          '<div class="adm-info"><b>' + esc(p.name) +
+          (p.banned ? ' <span class="adm-ban-tag">BANNED</span>' : "") + "</b>" +
+          "<span>" + esc(p.email) + " · aktif " + esc(d) + "</span>" +
+          "<span>⭐ " + p.totalPoints + " poin · " + p.totalMatches + " match</span></div>" +
+          '<div class="adm-actions"></div>';
+        var acts = div.querySelector(".adm-actions");
+        var bGift = document.createElement("button");
+        bGift.className = "btn-ghost btn-sm";
+        bGift.textContent = "🎁 Hadiah";
+        bGift.onclick = function () { admGiftOpen(p); };
+        var bBan = document.createElement("button");
+        bBan.className = "btn-ghost btn-sm" + (p.banned ? "" : " danger");
+        bBan.textContent = p.banned ? "✅ Buka" : "🚫 Banned";
+        bBan.onclick = function () { admBan(p, !p.banned); };
+        acts.appendChild(bGift);
+        acts.appendChild(bBan);
+        box.appendChild(div);
+      });
+    }).catch(function () { box.innerHTML = '<p class="section-sub">Server tidak terjangkau.</p>'; });
+  }
+  function admBan(p, banned) {
+    if (banned && !confirm("Banned " + p.name + "?\nSkornya ditolak & hilang dari leaderboard.")) return;
+    srvApi("/api/admin/ban", { method: "POST", body: { sub: p.sub, banned: banned } })
+      .then(function (r) {
+        toast(r.body && r.body.ok ? (banned ? "🚫 " + p.name + " dibanned." : "✅ Banned " + p.name + " dibuka.") : "Gagal.");
+        admLoadPlayers();
+      })
+      .catch(function () { toast("Server tidak terjangkau."); });
+  }
+  var _admGiftSub = null;
+  function admGiftOpen(p) {
+    _admGiftSub = p.sub;
+    $("adm-gift-who").textContent = "Untuk: " + p.name + (p.email ? " (" + p.email + ")" : "");
+    $("adm-gift-points").value = "";
+    $("adm-gift-reason").value = "";
+    $("adm-gift-modal").classList.remove("hidden");
+  }
+  function admGiftSend() {
+    var pts = Math.floor(Number($("adm-gift-points").value) || 0);
+    var level = $("adm-gift-level").value;
+    var reason = $("adm-gift-reason").value.trim();
+    if (!(pts >= 1 && pts <= 10000)) { toast("Poin harus 1–10000."); return; }
+    srvApi("/api/admin/grant", { method: "POST", body: { sub: _admGiftSub, level: level, points: pts, reason: reason } })
+      .then(function (r) {
+        var b = r.body || {};
+        if (b.ok) {
+          toast("🎁 " + pts + " poin terkirim!");
+          $("adm-gift-modal").classList.add("hidden");
+          admLoadPlayers();
+        } else toast("Gagal: " + (b.error || "?"));
+      })
+      .catch(function () { toast("Server tidak terjangkau."); });
+  }
+  function admLoadFlags() {
+    var box = $("adm-flag-list");
+    srvApi("/api/admin/flags").then(function (r) {
+      var b = r.body || {};
+      var n = b.rows ? b.rows.length : 0;
+      $("adm-flag-count").textContent = n ? "(" + n + ")" : "";
+      if (!b.ok || !n) { box.innerHTML = '<p class="section-sub">Bersih, tidak ada yang mencurigakan. ✅</p>'; return; }
+      box.innerHTML = "";
+      b.rows.forEach(function (f) {
+        var div = document.createElement("div");
+        div.className = "adm-row";
+        var t = new Date(f.at).toLocaleString("id-ID", { day: "numeric", month: "short", hour: "2-digit", minute: "2-digit" });
+        div.innerHTML =
+          '<div class="adm-info"><b>' + esc(f.name || "?") + "</b>" +
+          "<span>" + esc(f.level) + " · " + f.points + " poin · " + f.correct + "/30 benar · " +
+          Math.round((f.durationMs || 0) / 1000) + " dtk</span>" +
+          "<span>⚠️ " + esc((f.reasons || []).join("; ")) + " · " + esc(t) + "</span></div>" +
+          '<div class="adm-actions"></div>';
+        var bb = document.createElement("button");
+        bb.className = "btn-ghost btn-sm danger";
+        bb.textContent = "🚫 Banned";
+        bb.onclick = function () { admBan({ sub: f.sub, name: f.name || "pemain" }, true); };
+        div.querySelector(".adm-actions").appendChild(bb);
+        box.appendChild(div);
+      });
+    }).catch(function () { box.innerHTML = '<p class="section-sub">Server tidak terjangkau.</p>'; });
   }
 
   /* ---------- lencana & level ---------- */
@@ -1185,7 +1382,6 @@
       subLabel.style.display = "none";
       headRow.innerHTML = "<th>#</th><th>Nama</th><th>Total Poin</th><th>Main</th><th>Terbaik</th>";
       loadRankedLb();
-      $("lb-source").textContent = "⚔️ Papan peringkat Ranked — total poin akumulasi per divisi, tersimpan di perangkat ini.";
       return;
     }
     subLabel.style.display = "";
@@ -1205,7 +1401,23 @@
   }
 
   function loadRankedLb() {
-    var rows = rankedLb(state.lbLevel);
+    var tb = $("lb-body");
+    if (loggedIn()) {
+      tb.innerHTML = '<tr><td colspan="5">Memuat leaderboard global… 🌍</td></tr>';
+      $("lb-empty").classList.add("hidden");
+      srvApi("/api/lb?level=" + encodeURIComponent(state.lbLevel)).then(function (r) {
+        if (state.screen !== "leaderboard" || state.lbMode !== "ranked") return;
+        if (r.body && r.body.ok) renderRankedLbRows(r.body.rows, true);
+        else renderRankedLbRows(rankedLb(state.lbLevel).slice(0, 20), false);
+      }).catch(function () {
+        if (state.screen === "leaderboard" && state.lbMode === "ranked")
+          renderRankedLbRows(rankedLb(state.lbLevel).slice(0, 20), false);
+      });
+      return;
+    }
+    renderRankedLbRows(rankedLb(state.lbLevel).slice(0, 20), false);
+  }
+  function renderRankedLbRows(rows, isGlobal) {
     var tb = $("lb-body");
     tb.innerHTML = "";
     $("lb-empty").classList.toggle("hidden", rows.length > 0);
@@ -1221,6 +1433,9 @@
         "<td>+" + r.best + "</td>";
       tb.appendChild(tr);
     });
+    $("lb-source").textContent = isGlobal
+      ? "🌍 Leaderboard global — semua pemain yang login Google."
+      : "⚔️ Papan peringkat Ranked — total poin akumulasi per divisi, tersimpan di perangkat ini. Masuk dengan Google untuk ikut leaderboard global.";
   }
 
   function fillLbSubjects() {
@@ -1301,6 +1516,7 @@
     updateAuthUI();
     Auth.initGoogleButton("gbtn");
     window.App = { onAuthChanged: onAuthChanged };
+    syncServerState();
   }
   $("btn-guest").addEventListener("click", function () {
     var g = $("guest-name").value.trim().slice(0, 20);
