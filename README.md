@@ -1,4 +1,4 @@
-# UjianKu
+# SiPintar
 
 Website latihan ujian online — SD, SMP, SMA, Kuliah. Pilih jenjang → pelajaran →
 kerjakan soal dengan timer → dapat nilai otomatis → lihat kunci jawaban +

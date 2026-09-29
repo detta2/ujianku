@@ -1,4 +1,4 @@
-/* UjianKu auth — Login Google (GIS) + profil & riwayat lokal. */
+/* SiPintar auth — Login Google (GIS) + profil & riwayat lokal. */
 (function () {
   "use strict";
 

@@ -1,4 +1,4 @@
-/* UjianKu app logic — vanilla JS, no build step. */
+/* SiPintar app logic — vanilla JS, no build step. */
 (function () {
   "use strict";
 

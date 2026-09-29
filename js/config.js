@@ -1,4 +1,4 @@
-/* UjianKu config.
+/* SiPintar config.
  * LEADERBOARD_API: kosongkan ("") untuk mode lokal (skor tersimpan di perangkat).
  * Isi dengan URL backend bila sudah deploy api/leaderboard.py di VPS,
  * contoh: "https://api.contohmu.id"  (HARUS https bila web diakses via https)
