@@ -44,6 +44,24 @@
     });
   });
 
+  /* menu pengaturan ⚙️: buka/tutup + tutup otomatis tiap ada item diklik */
+  (function () {
+    var btn = $("settings-btn"), menu = $("settings-menu");
+    if (!btn || !menu) return;
+    function close() { menu.hidden = true; btn.setAttribute("aria-expanded", "false"); }
+    btn.addEventListener("click", function (e) {
+      e.stopPropagation();
+      var willOpen = menu.hidden;
+      menu.hidden = !willOpen;
+      btn.setAttribute("aria-expanded", String(willOpen));
+    });
+    document.addEventListener("click", function (e) {
+      if (!menu.hidden && !e.target.closest(".settings-wrap")) close();
+    });
+    document.addEventListener("keydown", function (e) { if (e.key === "Escape") close(); });
+    menu.addEventListener("click", function (e) { if (e.target.closest("button")) close(); });
+  })();
+
   var toastTimer = null;
   var staminaTimer = null;
   function toast(msg) {
@@ -379,8 +397,8 @@
       area.appendChild(b);
     } else {
       var l = document.createElement("button");
-      l.className = "navbtn";
-      l.textContent = "Masuk";
+      l.className = "set-item";
+      l.innerHTML = '<span class="set-ico">🔑</span><span>Masuk</span>';
       l.addEventListener("click", function () { state.pendingBank = null; go("login"); });
       area.appendChild(l);
     }

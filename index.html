@@ -54,13 +54,16 @@
     <span class="brand-name">SiPintar</span>
   </button>
   <div class="topbar-right">
-    <button class="bgm-btn" id="bgm-toggle" aria-label="Matikan musik" title="Musik">🔊</button>
-    <nav class="topnav">
-      <button class="navbtn" data-go="leaderboard">Leaderboard</button>
-      <button class="navbtn" data-go="badges">🎖️ Lencana</button>
-      <button class="navbtn" id="nav-admin" data-go="admin" style="display:none">🛡️ Admin</button>
-    </nav>
-    <div id="auth-area"></div>
+    <div class="settings-wrap">
+      <button class="bgm-btn" id="settings-btn" aria-label="Pengaturan" aria-haspopup="true" aria-expanded="false" title="Pengaturan">⚙️</button>
+      <div class="settings-menu" id="settings-menu" hidden>
+        <div id="auth-area"></div>
+        <button class="set-item" data-go="leaderboard"><span class="set-ico">🏆</span><span>Leaderboard</span></button>
+        <button class="set-item" data-go="badges"><span class="set-ico">🎖️</span><span>Lencana</span></button>
+        <button class="set-item" id="set-bgm" aria-label="Matikan musik"><span class="set-ico">🔊</span><span>Musik: <b id="set-bgm-state">ON</b></span></button>
+        <button class="set-item" id="nav-admin" data-go="admin" style="display:none"><span class="set-ico">🛡️</span><span>Admin</span></button>
+      </div>
+    </div>
   </div>
 </header>
 

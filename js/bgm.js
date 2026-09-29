@@ -80,6 +80,14 @@
   }
 
   function updateBtn() {
+    var row = document.getElementById("set-bgm");
+    if (row) {
+      var ico = row.querySelector(".set-ico");
+      if (ico) ico.textContent = muted ? "🔇" : "🔊";
+      var st = document.getElementById("set-bgm-state");
+      if (st) st.textContent = muted ? "OFF" : "ON";
+      row.setAttribute("aria-label", muted ? "Nyalakan musik" : "Matikan musik");
+    }
     var b = document.getElementById("bgm-toggle");
     if (!b) return;
     b.textContent = muted ? "🔇" : "🔊";
@@ -111,11 +119,13 @@
   document.addEventListener("keydown", unlock);
   document.addEventListener("DOMContentLoaded", function () {
     updateBtn();
-    var b = document.getElementById("bgm-toggle");
-    if (b) b.addEventListener("click", function (e) {
-      e.stopPropagation();
-      unlock();
-      setMuted(!muted);
+    ["bgm-toggle", "set-bgm"].forEach(function (id) {
+      var b = document.getElementById(id);
+      if (b) b.addEventListener("click", function (e) {
+        e.stopPropagation();
+        unlock();
+        setMuted(!muted);
+      });
     });
   });
 
