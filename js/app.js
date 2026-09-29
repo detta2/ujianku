@@ -78,39 +78,13 @@
     var u = $(useId);
     if (u && cat) u.setAttribute("href", "#m-" + cat.mascot);
   }
-  /* sapaan maskot disesuaikan jenjang: SD = bahasa anak kecil yang lembut,
-     makin tinggi jenjang makin dewasa bahasanya */
-  var BUDDY_LINES = {
-    "SD": ["Ayo, kamu hebat!", "Semangat ya!", "Wah, pintar sekali!", "Pelan-pelan, pasti bisa!", "Coba lagi yuk!", "Kamu anak pintar!"],
-    "SMP": ["Gas, kejar emas!", "Fokus, kamu bisa!", "Dikit lagi, ayo!", "Keren, lanjutkan!", "Jangan menyerah!"],
-    "SMA": ["Pertahankan ritmemu!", "Fokus penuh, juara!", "Bagus, terus maju!", "Kamu di jalur yang tepat!"],
-    "Kuliah": ["Pertahankan konsistensi!", "Fokus, target tercapai!", "Luar biasa!", "Selangkah ke puncak!"]
-  };
-  var BUDDY_MISS = {
-    "SD": ["Ups, belum tepat!", "Nggak apa-apa, coba lagi!", "Ayo, semangat lagi!"],
-    "SMP": ["Yah, meleset!", "Ayo kejar lagi!", "Fokus, lanjut!"],
-    "SMA": ["Kurang tepat, lanjut!", "Evaluasi, terus maju!", "Tetap fokus!"],
-    "Kuliah": ["Belum tepat, lanjutkan.", "Tetap tenang, fokus.", "Jadikan pelajaran."]
-  };
-  var BUDDY_TIMEOUT = {
-    "SD": ["Waktunya habis, nggak apa-apa!", "Yuk, lebih cepat dikit!"],
-    "SMP": ["⏰ Waktu habis!", "Ayo lebih cepat!"],
-    "SMA": ["Waktu habis, percepat!", "Atur waktumu baik-baik!"],
-    "Kuliah": ["Waktu habis.", "Perhatikan alokasi waktu."]
-  };
-  var START_LINES = {
-    "SD": ["Ayo, kamu pasti bisa!", "Kita belajar sambil main, ya!", "Semangat, anak pintar!"],
-    "SMP": ["Gas, rebut medali emas!", "Siap bertanding?", "Fokus, juara!"],
-    "SMA": ["Tunjukkan kemampuanmu!", "Siap meraih emas?", "Fokus penuh!"],
-    "Kuliah": ["Buktikan kompetensimu!", "Siap untuk tantangan?", "Raih peringkat terbaik!"]
-  };
-  var RANKED_START_LINES = {
-    "SD": ["Ayo kumpulkan poin bareng!", "Main cepat tapi teliti ya!", "Kejar peringkat 1!"],
-    "SMP": ["Ranked itu adu cepat & tepat!", "Kumpulkan poin sebanyak-banyaknya!", "Kejar peringkat 1!"],
-    "SMA": ["30 soal, buktikan kecepatanmu!", "Poin diakumulasi — jaga konsistensi!", "Kejar peringkat 1!"],
-    "Kuliah": ["Uji kecepatan dan ketepatanmu!", "Akumulasi poin menentukan peringkat.", "Kejar peringkat 1!"]
-  };
-  function linesFor(map, level) { return map[level] || map["SMP"]; }
+  /* sapaan maskot full bahasa Gen Z */
+  var BUDDY_LINES = ["Gas bestie!", "Slay!", "W banget!", "Sat set beres!", "Era juara!", "Valid no debat!"];
+  var BUDDY_MISS = ["Yah, miss!", "Gapapa, comeback!", "Kurang w dikit!", "Waduh, next!"];
+  var BUDDY_TIMEOUT = ["⏰ Waktunya abis bestie!", "Telat dikit, sat set lagi!"];
+  var START_LINES = ["Gas, rebut emasnya bestie!", "Siap slay hari ini?", "Fokus, era juara dimulai!"];
+  var RANKED_START_LINES = ["Ranked = perang kilat, gas!", "Sat set 30 soal, bestie!", "Kejar #1!"];
+  function linesFor(map, level) { return Array.isArray(map) ? map : (map[level] || map["SMP"]); }
   function currentLevel() {
     if (state.mode === "ranked") return state.rankedLevel;
     return state.bank ? state.bank.level : null;
@@ -590,9 +564,9 @@
     setMascot("result-mascot-use", cat);
     var maxPts = RANKED_Q * (RANKED_BASE + RANKED_BONUS);
     $("result-kicker").textContent = "⚔️ RANKED · " + level;
-    var tier = r.points >= 350 ? { name: "👑 CALON JUARA", sub: "Peringkat 1 makin dekat!" } :
-               r.points >= 250 ? { name: "🔥 GANAS!", sub: "Terus gas ke puncak!" } :
-               r.points >= 150 ? { name: "💪 PEJUANG", sub: "Poin terus diakumulasi!" } :
+    var tier = r.points >= 350 ? { name: "👑 CALON JUARA", sub: "Peringkat 1 makin dekat, bestie!" } :
+               r.points >= 250 ? { name: "🔥 MENYALA!", sub: "Terus gas ke puncak!" } :
+               r.points >= 150 ? { name: "💪 GAS TERUS", sub: "Poin terus diakumulasi!" } :
                                  { name: "🎯 PEMANASAN", sub: "Main lagi, kumpulin poin!" };
     var med = $("result-medal");
     med.style.setProperty("--medal", "#ffd93b");
