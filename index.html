@@ -7,6 +7,7 @@
 <meta name="description" content="Latihan ujian online: pilih jenjang & pelajaran, kerjakan dengan timer, dapatkan nilai + pembahasan, adu skor di leaderboard.">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css">
 <link rel="stylesheet" href="css/style.css">
+<script src="https://accounts.google.com/gsi/client" async defer></script>
 </head>
 <body>
 
@@ -15,9 +16,12 @@
     <span class="brand-mark">U</span>
     <span class="brand-name">UjianKu</span>
   </button>
-  <nav class="topnav">
-    <button class="navbtn" data-go="leaderboard">Leaderboard</button>
-  </nav>
+  <div class="topbar-right">
+    <nav class="topnav">
+      <button class="navbtn" data-go="leaderboard">Leaderboard</button>
+    </nav>
+    <div id="auth-area"></div>
+  </div>
 </header>
 
 <main id="app">
@@ -61,10 +65,7 @@
       <p class="kicker" id="start-kicker"></p>
       <h2 id="start-title"></h2>
       <div class="start-meta" id="start-meta"></div>
-      <label class="field">
-        <span>Nama kamu (buat leaderboard)</span>
-        <input id="player-name" type="text" maxlength="20" placeholder="cth: detta" autocomplete="off">
-      </label>
+      <div class="identity" id="start-identity"></div>
       <button class="btn-primary btn-big" id="btn-start-quiz">Mulai Ujian</button>
       <p class="hint">Waktu habis = otomatis dikumpulkan.</p>
     </div>
@@ -138,6 +139,43 @@
     <div id="review-list"></div>
   </section>
 
+  <!-- ============ LOGIN ============ -->
+  <section id="screen-login" class="screen">
+    <button class="backlink" data-go="home">← Beranda</button>
+    <div class="start-card auth-card">
+      <div class="auth-icon">👤</div>
+      <h2>Masuk dulu yuk</h2>
+      <p class="section-sub">Biar skor dan riwayat ujian kesimpan di profil kamu sendiri.</p>
+      <div id="gbtn" class="gbtn-wrap"></div>
+      <div class="divider"><span>atau lanjut tanpa akun Google</span></div>
+      <label class="field" style="text-align:left">
+        <span>Nama tampilan</span>
+        <input id="guest-name" type="text" maxlength="20" placeholder="cth: detta" autocomplete="off">
+      </label>
+      <button class="btn-secondary btn-big" id="btn-guest">Lanjut sebagai tamu →</button>
+    </div>
+  </section>
+
+  <!-- ============ PROFILE ============ -->
+  <section id="screen-profile" class="screen">
+    <button class="backlink" data-go="home">← Beranda</button>
+    <div class="start-card profile-head">
+      <img id="profile-avatar" class="avatar-lg" alt="">
+      <div>
+        <h2 id="profile-name">–</h2>
+        <p class="section-sub" id="profile-email" style="margin:4px 0 0"></p>
+      </div>
+    </div>
+    <div class="stat3">
+      <div class="start-card stat"><b id="pf-count">0</b><span>Ujian selesai</span></div>
+      <div class="start-card stat"><b id="pf-avg">0</b><span>Rata-rata nilai</span></div>
+      <div class="start-card stat"><b id="pf-best">0</b><span>Nilai terbaik</span></div>
+    </div>
+    <h2 class="section-title" style="margin-top:22px">Riwayat ujian</h2>
+    <div id="profile-history"></div>
+    <button class="btn-ghost" id="btn-logout" style="margin-top:14px">Keluar</button>
+  </section>
+
   <!-- ============ LEADERBOARD ============ -->
   <section id="screen-leaderboard" class="screen">
     <button class="backlink" data-go="home">← Beranda</button>
@@ -195,6 +233,7 @@
 <script src="data/sma-bahasa-inggris.js"></script>
 <script src="data/kuliah-matematika-dasar.js"></script>
 <script src="data/kuliah-fisika-dasar.js"></script>
+<script src="js/auth.js"></script>
 <script src="js/app.js"></script>
 </body>
 </html>

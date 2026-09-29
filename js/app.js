@@ -3,7 +3,7 @@
   "use strict";
 
   var $ = function (id) { return document.getElementById(id); };
-  var screens = ["home", "subjects", "start", "quiz", "result", "review", "leaderboard"];
+  var screens = ["home", "subjects", "login", "start", "quiz", "result", "review", "profile", "leaderboard"];
   var state = {
     level: null, bankId: null, bank: null,
     qi: 0, answers: [], startTime: 0, timeLeft: 0, timerId: null,
@@ -12,6 +12,7 @@
 
   /* ---------- helpers ---------- */
   function go(name) {
+    state.screen = name;
     screens.forEach(function (s) { $("screen-" + s).classList.toggle("active", s === name); });
     window.scrollTo({ top: 0, behavior: "smooth" });
   }
@@ -105,10 +106,135 @@
           ? "<p>" + bank.questions.length + " soal · " + fmtDur(bank.duration) + "</p>" +
             '<span class="meta">Mulai ujian →</span>'
           : "<p>Segera hadir</p>");
-      if (bank) btn.addEventListener("click", function () { openStart(b.id); });
+      if (bank) btn.addEventListener("click", function () { requireAuth(b.id); });
       grid.appendChild(btn);
     });
     go("subjects");
+  }
+
+  /* ---------- auth: nama & identitas pemain ---------- */
+  function displayName() {
+    var u = window.Auth && Auth.user();
+    if (u) return (u.name || "Peserta").slice(0, 20);
+    return (localStorage.getItem("ujianku_guest") || "Tamu").slice(0, 20);
+  }
+  function isIdentified() {
+    return !!(window.Auth && (Auth.user() || localStorage.getItem("ujianku_guest")));
+  }
+  function requireAuth(bankId) {
+    if (isIdentified()) { openStart(bankId); return; }
+    state.pendingBank = bankId;
+    go("login");
+  }
+  function renderIdentity() {
+    var box = $("start-identity");
+    box.innerHTML = "";
+    var u = window.Auth && Auth.user();
+    var chip = document.createElement("div");
+    chip.className = "id-chip";
+    if (u && u.picture) {
+      var img = document.createElement("img");
+      img.className = "avatar";
+      img.alt = "";
+      img.src = u.picture;
+      img.onerror = function () { this.style.display = "none"; };
+      chip.appendChild(img);
+    }
+    var sp = document.createElement("span");
+    sp.textContent = displayName() + (u ? "" : " (tamu)");
+    chip.appendChild(sp);
+    var ch = document.createElement("button");
+    ch.className = "linklike";
+    ch.textContent = "ganti";
+    ch.addEventListener("click", function () {
+      state.pendingBank = state.bankId;
+      go("login");
+    });
+    chip.appendChild(ch);
+    box.appendChild(chip);
+  }
+  function onAuthChanged() {
+    updateAuthUI();
+    if (state.screen === "profile" && !(window.Auth && Auth.user())) go("home");
+    if (state.pendingBank && isIdentified()) {
+      var b = state.pendingBank;
+      state.pendingBank = null;
+      openStart(b);
+    }
+  }
+  function updateAuthUI() {
+    var area = $("auth-area");
+    if (!area) return;
+    area.innerHTML = "";
+    var u = window.Auth && Auth.user();
+    if (u) {
+      var b = document.createElement("button");
+      b.className = "avatar-btn";
+      b.setAttribute("aria-label", "Profil saya");
+      var img = document.createElement("img");
+      img.className = "avatar";
+      img.alt = "";
+      img.src = u.picture || "";
+      img.onerror = function () { this.style.display = "none"; };
+      b.appendChild(img);
+      var nm = document.createElement("span");
+      nm.className = "avatar-name";
+      nm.textContent = (u.name || "Saya").split(" ")[0];
+      b.appendChild(nm);
+      b.addEventListener("click", function () { renderProfile(); go("profile"); });
+      area.appendChild(b);
+    } else {
+      var l = document.createElement("button");
+      l.className = "navbtn";
+      l.textContent = "Masuk";
+      l.addEventListener("click", function () { state.pendingBank = null; go("login"); });
+      area.appendChild(l);
+    }
+  }
+  function renderProfile() {
+    var u = window.Auth && Auth.user();
+    if (!u) { go("login"); return; }
+    var av = $("profile-avatar");
+    av.src = u.picture || "";
+    av.style.display = u.picture ? "" : "none";
+    $("profile-name").textContent = u.name || "Peserta";
+    $("profile-email").textContent = u.email || "";
+    var s = Auth.stats();
+    $("pf-count").textContent = s.count;
+    $("pf-avg").textContent = s.avg;
+    $("pf-best").textContent = s.best;
+    var box = $("profile-history");
+    box.innerHTML = "";
+    var h = Auth.getHistory();
+    if (!h.length) {
+      var e = document.createElement("div");
+      e.className = "empty";
+      e.textContent = "Belum ada riwayat ujian. Yuk mulai satu!";
+      box.appendChild(e);
+      return;
+    }
+    h.forEach(function (a) {
+      var d = document.createElement("div");
+      d.className = "hist-item";
+      var left = document.createElement("div");
+      var t = document.createElement("div");
+      t.className = "hist-title";
+      t.textContent = a.subject + " · " + a.level;
+      var dt = document.createElement("div");
+      dt.className = "hist-date";
+      try {
+        dt.textContent = new Date(a.ts).toLocaleDateString("id-ID", { day: "numeric", month: "short", year: "numeric" }) +
+          " · " + a.correct + "/" + a.total + " benar";
+      } catch (err) { dt.textContent = a.correct + "/" + a.total + " benar"; }
+      left.appendChild(t);
+      left.appendChild(dt);
+      var sc = document.createElement("div");
+      sc.className = "hist-score " + (a.score >= 75 ? "good" : a.score >= 60 ? "mid" : "low");
+      sc.textContent = a.score;
+      d.appendChild(left);
+      d.appendChild(sc);
+      box.appendChild(d);
+    });
   }
 
   /* ---------- start ---------- */
@@ -122,16 +248,13 @@
       '<span class="pill">' + b.questions.length + " soal</span>" +
       '<span class="pill">' + fmtDur(b.duration) + "</span>" +
       '<span class="pill">Nilai 0–100</span>';
-    var saved = localStorage.getItem("ujianku_name") || "";
-    $("player-name").value = saved;
+    renderIdentity();
     go("start");
   }
 
   $("btn-start-quiz").addEventListener("click", function () {
-    var name = $("player-name").value.trim().slice(0, 20);
-    if (!name) { toast("Isi nama dulu biar masuk leaderboard."); $("player-name").focus(); return; }
-    localStorage.setItem("ujianku_name", name);
-    startQuiz(name);
+    if (!isIdentified()) { requireAuth(state.bankId); return; }
+    startQuiz(displayName());
   });
 
   /* ---------- quiz ---------- */
@@ -245,6 +368,13 @@
     var score = Math.round((correct / qs.length) * 100);
     var used = Math.round((Date.now() - state.startTime) / 1000);
     state.result = { correct: correct, total: qs.length, score: score, used: used, timeUp: timeUp };
+    if (window.Auth) {
+      var u = Auth.user();
+      if (u) Auth.addAttempt({
+        bankId: state.bankId, level: state.bank.level, subject: state.bank.subject,
+        score: score, correct: correct, total: qs.length, ts: Date.now(),
+      });
+    }
     saveScore(state.result);
     showResult();
   }
@@ -328,7 +458,19 @@
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(entry),
-    }).then(function (r) { if (!r.ok) throw 0; });
+    }).then(function (r) {
+      if (r.status === 401 && entry.id_token) {
+        // token Google kedaluwarsa -> kirim ulang sebagai tamu
+        var retry = {};
+        Object.keys(entry).forEach(function (k) { if (k !== "id_token") retry[k] = entry[k]; });
+        return fetch(LB.api + "/api/score", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(retry),
+        }).then(function (r2) { if (!r2.ok) throw 0; });
+      }
+      if (!r.ok) throw 0;
+    });
   }
 
   function saveScore(r) {
@@ -337,6 +479,10 @@
       score: r.score, correct: r.correct, total: r.total,
       used: r.used, date: new Date().toISOString().slice(0, 10),
     };
+    if (window.Auth) {
+      var t = Auth.idToken();
+      if (t) entry.id_token = t;
+    }
     if (LB.online) {
       apiPost(entry).catch(function () {
         LB.online = false;
@@ -398,7 +544,7 @@
       var tb = $("lb-body");
       tb.innerHTML = "";
       $("lb-empty").classList.toggle("hidden", rows.length > 0);
-      var me = localStorage.getItem("ujianku_name") || "";
+      var me = displayName();
       rows.slice(0, 20).forEach(function (r, i) {
         var tr = document.createElement("tr");
         if (r.name === me) tr.className = "me";
@@ -434,4 +580,21 @@
 
   renderLevels();
   renderStats();
+  if (window.Auth) {
+    updateAuthUI();
+    Auth.initGoogleButton("gbtn");
+    window.App = { onAuthChanged: onAuthChanged };
+  }
+  $("btn-guest").addEventListener("click", function () {
+    var g = $("guest-name").value.trim().slice(0, 20);
+    if (!g) { toast("Isi nama dulu ya."); $("guest-name").focus(); return; }
+    if (window.Auth && Auth.user()) Auth.logout();
+    localStorage.setItem("ujianku_guest", g);
+    onAuthChanged();
+  });
+  $("btn-logout").addEventListener("click", function () {
+    localStorage.removeItem("ujianku_guest");
+    if (window.Auth) Auth.logout();
+    else onAuthChanged();
+  });
 })();

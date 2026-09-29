@@ -14,13 +14,46 @@ CORS terbuka (*) supaya bisa dipanggil dari web statis (Vercel).
 """
 
 import json
+import os
 import sqlite3
 import sys
+import time
+import urllib.parse
+import urllib.request
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from urllib.parse import urlparse, parse_qs
 
 DB = "leaderboard.db"
 PORT = int(sys.argv[1]) if len(sys.argv) > 1 else 8765
+# Client ID yang sama dengan di js/config.js — wajib diisi (env) supaya
+# token Google dari pemain bisa diverifikasi. Tanpa ini, id_token diabaikan.
+GOOGLE_CLIENT_ID = os.environ.get("GOOGLE_CLIENT_ID", "").strip()
+
+
+def verify_google_token(id_token):
+    """Verifikasi Google ID token lewat endpoint tokeninfo.
+    Return dict {sub, name, picture} bila valid, None bila tidak."""
+    if not GOOGLE_CLIENT_ID or not id_token:
+        return None
+    try:
+        url = ("https://oauth2.googleapis.com/tokeninfo?"
+               + urllib.parse.urlencode({"id_token": id_token}))
+        req = urllib.request.Request(url, headers={"User-Agent": "ujianku/1.0"})
+        with urllib.request.urlopen(req, timeout=8) as r:
+            data = json.load(r)
+    except Exception:
+        return None
+    if data.get("aud") != GOOGLE_CLIENT_ID:
+        return None
+    try:
+        if int(data.get("exp", "0")) < int(time.time()):
+            return None
+    except (ValueError, TypeError):
+        return None
+    if not data.get("sub"):
+        return None
+    return {"sub": data["sub"], "name": data.get("name") or "",
+            "picture": data.get("picture") or ""}
 
 
 def db():
@@ -31,8 +64,14 @@ def db():
              bank TEXT NOT NULL, name TEXT NOT NULL,
              score INTEGER NOT NULL, correct INTEGER NOT NULL,
              total INTEGER NOT NULL, used INTEGER NOT NULL,
-             date TEXT NOT NULL, created TIMESTAMP DEFAULT CURRENT_TIMESTAMP)"""
+             date TEXT NOT NULL, sub TEXT DEFAULT NULL,
+             created TIMESTAMP DEFAULT CURRENT_TIMESTAMP)"""
     )
+    # migrasi: DB lama belum punya kolom sub
+    try:
+        con.execute("ALTER TABLE scores ADD COLUMN sub TEXT DEFAULT NULL")
+    except sqlite3.OperationalError:
+        pass
     con.execute("CREATE INDEX IF NOT EXISTS idx_bank ON scores(bank, score DESC)")
     return con
 
@@ -67,11 +106,18 @@ class Handler(BaseHTTPRequestHandler):
                 limit = 20
             con = db()
             rows = con.execute(
-                "SELECT name, score, correct, total, used, date FROM scores "
-                "WHERE bank=? ORDER BY score DESC, used ASC LIMIT ?",
-                (bank, limit),
+                "SELECT name, score, correct, total, used, date, sub FROM scores "
+                "WHERE bank=? ORDER BY score DESC, used ASC LIMIT 200",
+                (bank,),
             ).fetchall()
             con.close()
+            # dedup: 1 pemain (sub Google / nama) hanya tampil 1x dengan skor terbaik
+            best = {}
+            for r in rows:
+                key = ("sub:" + r[6]) if r[6] else ("name:" + r[0])
+                if key not in best:
+                    best[key] = r
+            rows = list(best.values())[:limit]
             return self._send(200, [
                 {"name": r[0], "score": r[1], "correct": r[2],
                  "total": r[3], "used": r[4], "date": r[5]} for r in rows
@@ -96,19 +142,30 @@ class Handler(BaseHTTPRequestHandler):
                 return self._send(400, {"error": "bad payload"})
         except (ValueError, TypeError):
             return self._send(400, {"error": "bad payload"})
+        # verifikasi login Google bila token disertakan
+        sub = None
+        id_token = data.get("id_token")
+        if id_token:
+            v = verify_google_token(str(id_token))
+            if not v:
+                return self._send(401, {"error": "token Google tidak valid"})
+            sub = v["sub"]
+            if v["name"]:
+                name = v["name"][:20]
         con = db()
-        # anti-spam sederhana: 1 nama dibatasi 30 submit per bank per hari
+        # anti-spam sederhana: 1 nama/sub dibatasi 30 submit per bank per hari
+        who = sub if sub else name
         c = con.execute(
-            "SELECT COUNT(*) FROM scores WHERE bank=? AND name=? AND date=?",
-            (bank, name, date),
+            "SELECT COUNT(*) FROM scores WHERE bank=? AND (sub=? OR (sub IS NULL AND name=?)) AND date=?",
+            (bank, who, name, date),
         ).fetchone()[0]
         if c >= 30:
             con.close()
             return self._send(429, {"error": "rate limited"})
         con.execute(
-            "INSERT INTO scores(bank,name,score,correct,total,used,date) "
-            "VALUES(?,?,?,?,?,?,?)",
-            (bank, name, score, correct, total, used, date),
+            "INSERT INTO scores(bank,name,score,correct,total,used,date,sub) "
+            "VALUES(?,?,?,?,?,?,?,?)",
+            (bank, name, score, correct, total, used, date, sub),
         )
         con.commit()
         con.close()

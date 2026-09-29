@@ -5,6 +5,9 @@
  */
 window.APP_CONFIG = {
   LEADERBOARD_API: "",
+  // Google OAuth Client ID (dari Google Cloud Console).
+  // Kosongkan = tombol login Google disembunyikan, hanya mode tamu.
+  GOOGLE_CLIENT_ID: "",
 };
 
 /* Katalog: jenjang -> daftar bank soal (id = key di window.QBANK) */
