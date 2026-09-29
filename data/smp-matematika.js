@@ -1,0 +1,16 @@
+window.QBANK = window.QBANK || {};
+window.QBANK["smp-matematika"] = {
+  level: "SMP", subject: "Matematika", duration: 900,
+  questions: [
+    { q: "Nilai $x$ yang memenuhi $2x + 6 = 18$ adalah ...", options: ["4", "5", "6", "12"], answer: 2, solution: "Langkah 1: pindahkan $6$ ke ruas kanan, menjadi $2x = 18 - 6$. Langkah 2: hitung ruas kanan, $2x = 12$. Langkah 3: $x = 12 : 2 = 6$." },
+    { q: "Hasil dari $-3 + 7 - (-5)$ adalah ...", options: ["-1", "9", "-9", "1"], answer: 1, solution: "Langkah 1: hitung dari kiri, $-3 + 7 = 4$. Langkah 2: ingat $-(-5) = +5$, sehingga $4 - (-5) = 4 + 5$. Langkah 3: $4 + 5 = 9$." },
+    { q: "Himpunan penyelesaian dari $3x - 5 < 16$ untuk $x$ bilangan bulat positif adalah ...", options: ["{1, 2, 3, 4, 5}", "{1, 2, 3, 4, 5, 6}", "{0, 1, 2, 3, 4, 5, 6}", "{1, 2, 3, 4, 5, 6, 7}"], answer: 1, solution: "Langkah 1: pindahkan $-5$ ke ruas kanan, $3x < 16 + 5 = 21$. Langkah 2: bagi kedua ruas dengan 3, $x < 21 : 3 = 7$. Langkah 3: bilangan bulat positif yang kurang dari $7$ adalah $1, 2, 3, 4, 5, 6$." },
+    { q: "Luas segitiga dengan alas $12$ cm dan tinggi $9$ cm adalah ...", options: ["54 cm²", "108 cm²", "45 cm²", "63 cm²"], answer: 0, solution: "Langkah 1: gunakan rumus luas segitiga $L = \\frac{1}{2} \\times a \\times t$. Langkah 2: masukkan angka, $L = \\frac{1}{2} \\times 12 \\times 9$. Langkah 3: $L = 6 \\times 9 = 54$ cm²." },
+    { q: "Keliling persegi panjang dengan panjang $15$ cm dan lebar $8$ cm adalah ...", options: ["120 cm", "46 cm", "23 cm", "92 cm"], answer: 1, solution: "Langkah 1: gunakan rumus $K = 2 \\times (p + l)$. Langkah 2: masukkan angka, $K = 2 \\times (15 + 8) = 2 \\times 23$. Langkah 3: $K = 46$ cm." },
+    { q: "Volume kubus dengan panjang rusuk $7$ cm adalah ...", options: ["343 cm³", "49 cm³", "294 cm³", "147 cm³"], answer: 0, solution: "Langkah 1: gunakan rumus volume kubus $V = r^3$. Langkah 2: masukkan angka, $V = 7^3 = 7 \\times 7 \\times 7$. Langkah 3: $V = 343$ cm³." },
+    { q: "Rata-rata (mean) dari data $5, 7, 8, 6, 9, 7$ adalah ...", options: ["6", "7", "7,5", "8"], answer: 1, solution: "Langkah 1: jumlahkan semua data, $5 + 7 + 8 + 6 + 9 + 7 = 42$. Langkah 2: hitung banyak data, $n = 6$. Langkah 3: mean $= 42 : 6 = 7$." },
+    { q: "Diketahui $2x + y = 11$ dan $x - y = 4$. Nilai $x + y$ adalah ...", options: ["5", "6", "7", "8"], answer: 1, solution: "Langkah 1: jumlahkan kedua persamaan, $(2x + y) + (x - y) = 11 + 4$, diperoleh $3x = 15$ sehingga $x = 5$. Langkah 2: substitusi $x = 5$ ke $x - y = 4$, diperoleh $5 - y = 4$ sehingga $y = 1$. Langkah 3: $x + y = 5 + 1 = 6$." },
+    { q: "Diketahui $A = \\{1, 2, 3, 4\\}$ dan $B = \\{3, 4, 5, 6\\}$. Anggota $A \\cap B$ adalah ...", options: ["{1, 2}", "{3, 4}", "{1, 2, 3, 4, 5, 6}", "{5, 6}"], answer: 1, solution: "Langkah 1: ingat irisan $(\\cap)$ artinya anggota yang dimiliki kedua himpunan sekaligus. Langkah 2: periksa anggota $A$ satu per satu, yang juga ada di $B$ adalah $3$ dan $4$. Langkah 3: jadi $A \\cap B = \\{3, 4\\}$." },
+    { q: "Gradien garis yang melalui titik $(2, 3)$ dan $(6, 11)$ adalah ...", options: ["1/2", "2", "4", "8"], answer: 1, solution: "Langkah 1: gunakan rumus gradien $m = \\frac{y_2 - y_1}{x_2 - x_1}$. Langkah 2: masukkan titik-titiknya, $m = \\frac{11 - 3}{6 - 2} = \\frac{8}{4}$. Langkah 3: $m = 2$." }
+  ]
+};

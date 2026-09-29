@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>UjianKu — Latihan Soal SD, SMP, SMA, Kuliah</title>
+<meta name="description" content="Latihan ujian online: pilih jenjang & pelajaran, kerjakan dengan timer, dapatkan nilai + pembahasan, adu skor di leaderboard.">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<header class="topbar">
+  <button class="brand" data-go="home" aria-label="Beranda">
+    <span class="brand-mark">U</span>
+    <span class="brand-name">UjianKu</span>
+  </button>
+  <nav class="topnav">
+    <button class="navbtn" data-go="leaderboard">Leaderboard</button>
+  </nav>
+</header>
+
+<main id="app">
+
+  <!-- ============ HOME ============ -->
+  <section id="screen-home" class="screen active">
+    <div class="hero-band">
+      <p class="kicker light">Latihan ujian online · gratis</p>
+      <h1>Kerjakan soal.<br>Dapat nilai.<br><em>Lihat pembahasannya.</em></h1>
+      <p class="lede">Bank soal SD sampai Kuliah. Ada timer kayak ujian beneran, nilai otomatis, kunci jawaban + cara ngerjainnya, dan leaderboard buat adu skor.</p>
+      <div class="hero-stats">
+        <div><b id="stat-soal">–</b><span>soal</span></div>
+        <div><b id="stat-pel">–</b><span>pelajaran</span></div>
+        <div><b>4</b><span>jenjang</span></div>
+      </div>
+      <a class="btn-primary" href="#levels" id="hero-cta">Pilih Jenjang →</a>
+    </div>
+
+    <h2 class="section-title" id="levels">Pilih jenjangmu</h2>
+    <div class="level-grid" id="level-grid"></div>
+
+    <div class="how-grid">
+      <div class="how-card"><b>1</b><h3>Pilih</h3><p>Tentukan jenjang & pelajaran.</p></div>
+      <div class="how-card"><b>2</b><h3>Kerjakan</h3><p>Jawab soal dengan timer berjalan.</p></div>
+      <div class="how-card"><b>3</b><h3>Pelajari</h3><p>Dapat nilai + pembahasan tiap soal.</p></div>
+    </div>
+  </section>
+
+  <!-- ============ SUBJECTS ============ -->
+  <section id="screen-subjects" class="screen">
+    <button class="backlink" data-go="home">← Ganti jenjang</button>
+    <h2 class="section-title" id="subjects-title">Pilih pelajaran</h2>
+    <p class="section-sub" id="subjects-sub"></p>
+    <div class="subject-grid" id="subject-grid"></div>
+  </section>
+
+  <!-- ============ START ============ -->
+  <section id="screen-start" class="screen">
+    <button class="backlink" data-go="subjects">← Ganti pelajaran</button>
+    <div class="start-card">
+      <p class="kicker" id="start-kicker"></p>
+      <h2 id="start-title"></h2>
+      <div class="start-meta" id="start-meta"></div>
+      <label class="field">
+        <span>Nama kamu (buat leaderboard)</span>
+        <input id="player-name" type="text" maxlength="20" placeholder="cth: detta" autocomplete="off">
+      </label>
+      <button class="btn-primary btn-big" id="btn-start-quiz">Mulai Ujian</button>
+      <p class="hint">Waktu habis = otomatis dikumpulkan.</p>
+    </div>
+  </section>
+
+  <!-- ============ QUIZ ============ -->
+  <section id="screen-quiz" class="screen">
+    <div class="quiz-top">
+      <div class="quiz-info">
+        <span id="quiz-bank-label"></span>
+        <span id="quiz-progress"></span>
+      </div>
+      <div class="timerbar"><div class="timerfill" id="timer-fill"></div></div>
+      <div class="timerrow">
+        <span id="timer-text">--:--</span>
+        <button class="btn-ghost" id="btn-quiz-menu">Buka peta soal</button>
+      </div>
+    </div>
+
+    <div class="qcard">
+      <p class="qnum" id="q-num"></p>
+      <div class="qtext" id="q-text"></div>
+      <div class="opts" id="q-opts"></div>
+    </div>
+
+    <div class="quiz-nav">
+      <button class="btn-secondary" id="btn-prev">← Sebelumnya</button>
+      <button class="btn-secondary" id="btn-next">Berikutnya →</button>
+    </div>
+    <button class="btn-primary btn-big" id="btn-submit">Kumpulkan Jawaban</button>
+
+    <div class="qmap hidden" id="q-map">
+      <div class="qmap-head">
+        <b>Peta soal</b>
+        <button class="btn-ghost" id="btn-qmap-close">Tutup ✕</button>
+      </div>
+      <div class="qmap-grid" id="qmap-grid"></div>
+      <div class="qmap-legend"><span><i class="dot done"></i>Terjawab</span><span><i class="dot"></i>Belum</span></div>
+    </div>
+  </section>
+
+  <!-- ============ RESULT ============ -->
+  <section id="screen-result" class="screen">
+    <div class="result-card">
+      <p class="kicker" id="result-kicker"></p>
+      <div class="score-ring">
+        <svg viewBox="0 0 120 120">
+          <circle cx="60" cy="60" r="52" class="ring-bg"/>
+          <circle cx="60" cy="60" r="52" class="ring-fg" id="ring-fg"/>
+        </svg>
+        <div class="ring-label"><b id="result-score">0</b><span>/ 100</span></div>
+      </div>
+      <div class="result-stats" id="result-stats"></div>
+      <p class="lb-note" id="lb-note"></p>
+      <div class="result-actions">
+        <button class="btn-primary" id="btn-review">Lihat Pembahasan</button>
+        <button class="btn-secondary" data-go="leaderboard">Leaderboard</button>
+      </div>
+      <div class="result-actions">
+        <button class="btn-secondary" id="btn-retry">Ulangi</button>
+        <button class="btn-ghost" data-go="home">Beranda</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ REVIEW ============ -->
+  <section id="screen-review" class="screen">
+    <button class="backlink" id="btn-review-back">← Kembali ke hasil</button>
+    <h2 class="section-title">Pembahasan</h2>
+    <p class="section-sub" id="review-sub"></p>
+    <div id="review-list"></div>
+  </section>
+
+  <!-- ============ LEADERBOARD ============ -->
+  <section id="screen-leaderboard" class="screen">
+    <button class="backlink" data-go="home">← Beranda</button>
+    <h2 class="section-title">Leaderboard</h2>
+    <p class="section-sub" id="lb-source"></p>
+    <div class="lb-filters">
+      <label class="field inline"><span>Jenjang</span><select id="lb-level"></select></label>
+      <label class="field inline"><span>Pelajaran</span><select id="lb-subject"></select></label>
+    </div>
+    <div class="lb-table-wrap">
+      <table class="lb-table">
+        <thead><tr><th>#</th><th>Nama</th><th>Skor</th><th>Benar</th><th>Waktu</th></tr></thead>
+        <tbody id="lb-body"></tbody>
+      </table>
+      <p class="empty hidden" id="lb-empty">Belum ada skor di sini — jadilah yang pertama!</p>
+    </div>
+  </section>
+
+</main>
+
+<footer class="footer">
+  <p>UjianKu — latihan soal SD · SMP · SMA · Kuliah. Dibuat dengan teliti, dikerjakan dengan jujur ya.</p>
+</footer>
+
+<div class="toast hidden" id="toast"></div>
+
+<div class="modal hidden" id="modal">
+  <div class="modal-card">
+    <h3 id="modal-title"></h3>
+    <p id="modal-text"></p>
+    <div class="modal-actions">
+      <button class="btn-secondary" id="modal-cancel">Batal</button>
+      <button class="btn-primary" id="modal-ok">Ya, kumpulkan</button>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js"></script>
+<script src="js/config.js"></script>
+<!-- bank soal (diisi otomatis) -->
+<script src="data/sd-matematika.js"></script>
+<script src="data/sd-ipa.js"></script>
+<script src="data/sd-bahasa-indonesia.js"></script>
+<script src="data/sd-bahasa-inggris.js"></script>
+<script src="data/smp-matematika.js"></script>
+<script src="data/smp-ipa.js"></script>
+<script src="data/smp-bahasa-indonesia.js"></script>
+<script src="data/smp-bahasa-inggris.js"></script>
+<script src="data/sma-matematika.js"></script>
+<script src="data/sma-fisika.js"></script>
+<script src="data/sma-kimia.js"></script>
+<script src="data/sma-biologi.js"></script>
+<script src="data/sma-bahasa-indonesia.js"></script>
+<script src="data/sma-bahasa-inggris.js"></script>
+<script src="data/kuliah-matematika-dasar.js"></script>
+<script src="data/kuliah-fisika-dasar.js"></script>
+<script src="js/app.js"></script>
+</body>
+</html>
