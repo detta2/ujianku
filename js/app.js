@@ -171,7 +171,7 @@
         '<span class="sub-ico">' + (SUB_ICONS[b.subject] || "📚") + "</span>" +
         "<h3>" + esc(b.subject) + "</h3>" +
         (bank
-          ? "<p>" + bank.questions.length + " soal · " + fmtDur(bank.duration) + "</p>" +
+          ? "<p>" + sessionCount(bank) + " soal acak · " + fmtDur(sessionDur(bank)) + "</p>" +
             '<span class="meta">Mulai bertanding →</span>'
           : "<p>Segera hadir</p>");
       if (bank) btn.addEventListener("click", function () { requireAuth(b.id); });
@@ -322,9 +322,9 @@
     $("start-kicker").textContent = b.level + " · " + b.subject;
     $("start-title").textContent = "Siap bertanding?";
     $("start-meta").innerHTML =
-      '<span class="pill">' + b.questions.length + " soal</span>" +
-      '<span class="pill">' + fmtDur(b.duration) + "</span>" +
-      '<span class="pill">Nilai 0–100</span>';
+      '<span class="pill">' + sessionCount(b) + " soal acak</span>" +
+      '<span class="pill">' + fmtDur(sessionDur(b)) + "</span>" +
+      '<span class="pill">dari ' + b.questions.length + " bank soal</span>";
     renderIdentity();
     go("start");
   }
@@ -335,11 +335,39 @@
   });
 
   /* ---------- quiz ---------- */
+  var SESSION_Q = 15; // soal per sesi, diacak dari bank biar tiap main beda
+  function shuffleArr(a) {
+    for (var i = a.length - 1; i > 0; i--) {
+      var j = Math.floor(Math.random() * (i + 1));
+      var t = a[i]; a[i] = a[j]; a[j] = t;
+    }
+    return a;
+  }
+  function sessionCount(bank) { return Math.min(SESSION_Q, bank.questions.length); }
+  function sessionDur(bank) {
+    return Math.round(bank.duration * sessionCount(bank) / bank.questions.length);
+  }
+  // acak urutan soal + acak urutan opsi (jawaban ikut dipetakan ulang)
+  function buildSession(bank) {
+    var qs = bank.questions.map(function (q) {
+      var idx = q.options.map(function (_, i) { return i; });
+      shuffleArr(idx);
+      return {
+        q: q.q,
+        options: idx.map(function (i) { return q.options[i]; }),
+        answer: idx.indexOf(q.answer),
+        solution: q.solution
+      };
+    });
+    shuffleArr(qs);
+    return qs.slice(0, sessionCount(bank));
+  }
   function startQuiz(name) {
     state.player = name;
+    state.qs = buildSession(state.bank);
     state.qi = 0;
-    state.answers = state.bank.questions.map(function () { return -1; });
-    state.timeLeft = state.bank.duration;
+    state.answers = state.qs.map(function () { return -1; });
+    state.timeLeft = sessionDur(state.bank);
     state.startTime = Date.now();
     applyTheme(state.bank.level);
     setMascot("quiz-buddy-use", catOf(state.bank.level));
@@ -367,11 +395,11 @@
   }
 
   function renderQuestion() {
-    var q = state.bank.questions[state.qi];
-    $("q-num").textContent = "Soal " + (state.qi + 1) + " dari " + state.bank.questions.length;
+    var q = state.qs[state.qi];
+    $("q-num").textContent = "Soal " + (state.qi + 1) + " dari " + state.qs.length;
     $("q-text").textContent = q.q;
     $("quiz-progress").textContent =
-      state.answers.filter(function (a) { return a >= 0; }).length + "/" + state.bank.questions.length + " terjawab";
+      state.answers.filter(function (a) { return a >= 0; }).length + "/" + state.qs.length + " terjawab";
     var box = $("q-opts");
     box.innerHTML = "";
     var letters = ["A", "B", "C", "D", "E"];
@@ -393,14 +421,14 @@
     renderMath($("screen-quiz"));
     $("btn-prev").disabled = state.qi === 0;
     $("btn-prev").style.opacity = state.qi === 0 ? 0.4 : 1;
-    $("btn-next").style.display = state.qi === state.bank.questions.length - 1 ? "none" : "";
+    $("btn-next").style.display = state.qi === state.qs.length - 1 ? "none" : "";
   }
 
   $("btn-prev").addEventListener("click", function () {
     if (state.qi > 0) { state.qi--; renderQuestion(); }
   });
   $("btn-next").addEventListener("click", function () {
-    if (state.qi < state.bank.questions.length - 1) { state.qi++; renderQuestion(); }
+    if (state.qi < state.qs.length - 1) { state.qi++; renderQuestion(); }
   });
   $("btn-quiz-menu").addEventListener("click", function () {
     renderQMap();
@@ -413,7 +441,7 @@
   function renderQMap() {
     var g = $("qmap-grid");
     g.innerHTML = "";
-    state.bank.questions.forEach(function (q, i) {
+    state.qs.forEach(function (q, i) {
       var d = document.createElement("button");
       d.className = "qdot" +
         (state.answers[i] >= 0 ? " done" : "") +
@@ -443,7 +471,7 @@
 
   function finishQuiz(timeUp) {
     clearInterval(state.timerId);
-    var qs = state.bank.questions;
+    var qs = state.qs;
     var correct = 0;
     qs.forEach(function (q, i) { if (state.answers[i] === q.answer) correct++; });
     var score = Math.round((correct / qs.length) * 100);
@@ -512,7 +540,7 @@
   $("btn-retry").addEventListener("click", function () { startQuiz(state.player); });
 
   function renderReview() {
-    var qs = state.bank.questions;
+    var qs = state.qs;
     $("review-sub").textContent =
       state.bank.level + " · " + state.bank.subject + " — " + state.result.correct + "/" + state.result.total + " benar.";
     var list = $("review-list");
