@@ -76,7 +76,7 @@
     var u = $(useId);
     if (u && cat) u.setAttribute("href", "#m-" + cat.mascot);
   }
-  var BUDDY_LINES = ["Semangat!", "Kamu hebat!", "Teruskan!", "Fokus, bisa!", "Ayo, dikit lagi!", "Gampang, kan?"];
+  var BUDDY_LINES = ["Gas!", "Kejar emas!", "Fokus, juara!", "Sikat!", "Dikit lagi!", "Kamu bisa!", "Jangan kasih kendor!"];
   function buddyCheer(hop) {
     var t = $("buddy-text");
     if (t) t.textContent = pick(BUDDY_LINES);
@@ -98,7 +98,7 @@
     requestAnimationFrame(step);
   }
   function confetti(container, n) {
-    var colors = ["#f97316", "#22c55e", "#3b82f6", "#8b5cf6", "#fbbf24", "#ef4444"];
+    var colors = ["#1d4ed8", "#f5b301", "#ffd93b", "#ffffff", "#93c5fd", "#0b2a6b"];
     n = n || 60;
     for (var i = 0; i < n; i++) {
       var p = document.createElement("div");
@@ -135,12 +135,13 @@
       var btn = document.createElement("button");
       btn.className = "level-card theme-" + c.level;
       btn.innerHTML =
+        '<span class="division-badge">' + esc(c.division) + ' · ' + esc(c.divisionMedal) + '</span>' +
         '<span class="level-mascot-name">si ' + esc(c.mascotName) + '</span>' +
         '<span class="mascot mx-bounce"><svg><use href="#m-' + c.mascot + '"/></svg></span>' +
         "<h3>" + esc(c.level) + "</h3>" +
         "<p>" + esc(c.friend) + "</p>" +
         "<p>" + ready + "/" + c.banks.length + " pelajaran</p>" +
-        '<span class="go">Main →</span>';
+        '<span class="go">Bertanding →</span>';
       btn.addEventListener("click", function () { openSubjects(c.level); });
       grid.appendChild(btn);
     });
@@ -158,7 +159,7 @@
     var cat = catOf(level);
     setMascot("subjects-mascot-use", cat);
     $("subjects-title").textContent = "Pelajaran " + level;
-    $("subjects-sub").textContent = cat.tagline + " — " + cat.mascotName + " nemanin kamu.";
+    $("subjects-sub").textContent = cat.tagline + " — " + cat.mascotName + " jadi pelatihmu di arena.";
     var grid = $("subject-grid");
     grid.innerHTML = "";
     cat.banks.forEach(function (b) {
@@ -171,7 +172,7 @@
         "<h3>" + esc(b.subject) + "</h3>" +
         (bank
           ? "<p>" + bank.questions.length + " soal · " + fmtDur(bank.duration) + "</p>" +
-            '<span class="meta">Mulai ujian →</span>'
+            '<span class="meta">Mulai bertanding →</span>'
           : "<p>Segera hadir</p>");
       if (bank) btn.addEventListener("click", function () { requireAuth(b.id); });
       grid.appendChild(btn);
@@ -316,10 +317,10 @@
     var cat = catOf(b.level);
     setMascot("start-mascot-use", cat);
     $("start-speech").textContent = cat
-      ? pick(["Ayo, kamu pasti bisa!", "Siap berpetualang?", "Waktunya bersinar!", "Kita kerjain bareng, ya!"])
-      : "Ayo, kamu pasti bisa!";
+      ? pick(["Gas, rebut medali emas!", "Siap bertanding?", "Fokus, juara!", "Kita menang bareng, ya!"])
+      : "Gas, rebut medali emas!";
     $("start-kicker").textContent = b.level + " · " + b.subject;
-    $("start-title").textContent = "Siap ujian?";
+    $("start-title").textContent = "Siap bertanding?";
     $("start-meta").innerHTML =
       '<span class="pill">' + b.questions.length + " soal</span>" +
       '<span class="pill">' + fmtDur(b.duration) + "</span>" +
@@ -467,16 +468,19 @@
     var mn = cat ? cat.mascotName : "temanmu";
     $("result-kicker").textContent =
       state.bank.level + " · " + state.bank.subject + (r.timeUp ? " · waktu habis" : "");
-    // bintang 0-3
-    var stars = r.score >= 85 ? 3 : r.score >= 65 ? 2 : r.score >= 40 ? 1 : 0;
-    var box = $("result-stars");
-    box.innerHTML = "";
-    for (var i = 0; i < 3; i++) {
-      var s = document.createElement("span");
-      s.className = "star" + (i < stars ? " earned" : "");
-      s.innerHTML = '<svg><use href="#m-star"/></svg>';
-      box.appendChild(s);
-    }
+    // medali: emas / perak / perunggu
+    var medal = r.score >= 85 ? { name: "MEDALI EMAS", c: "#ffd93b", d: "#f5b301", sub: "Luar biasa, juara!" } :
+                r.score >= 65 ? { name: "MEDALI PERAK", c: "#eef2f9", d: "#aebdd6", sub: "Keren, dikit lagi emas!" } :
+                r.score >= 40 ? { name: "MEDALI PERUNGGU", c: "#f6c9a0", d: "#cd7f32", sub: "Bagus, terus naik!" } : null;
+    var med = $("result-medal");
+    med.style.setProperty("--medal", medal ? medal.c : "#e3ebfb");
+    med.style.setProperty("--medal-deep", medal ? medal.d : "#c9d6ef");
+    med.classList.remove("mx-medal-pop");
+    void med.offsetWidth;
+    med.classList.add("mx-medal-pop");
+    $("result-medal-label").innerHTML = medal
+      ? medal.name + '<span class="sub">' + medal.sub + "</span>"
+      : 'BELUM DAPAT MEDALI<span class="sub">Ayo coba lagi, ' + esc(mn) + " yakin kamu bisa!</span>";
     // maskot: joget kalau bagus
     var m = $("result-mascot");
     m.classList.remove("mx-dance", "mx-bounce");
@@ -494,10 +498,10 @@
       '<div class="stat good"><b>' + r.correct + "</b><span>Benar</span></div>" +
       '<div class="stat bad"><b>' + (r.total - r.correct) + "</b><span>Salah</span></div>" +
       '<div class="stat"><b>' + fmtDur(r.used) + "</b><span>Waktu</span></div>";
-    var msg = r.score >= 85 ? "Luar biasa! " + mn + " bangga banget sama kamu." :
-              r.score >= 65 ? "Keren! Dikit lagi sempurna." :
-              r.score >= 40 ? "Bagus, terus latihan ya." :
-              "Jangan menyerah — " + mn + " temenin belajar lagi.";
+    var msg = r.score >= 85 ? "Emas! " + mn + " bangga banget sama kamu." :
+              r.score >= 65 ? "Perak! Dikit lagi emas." :
+              r.score >= 40 ? "Perunggu! Terus latihan biar naik kelas." :
+              "Belum beruntung — " + mn + " temenin latihan lagi.";
     $("lb-note").textContent = msg + " Skormu " + (LB.online ? "masuk leaderboard online." : "tersimpan di leaderboard perangkat ini.");
     go("result");
     if (r.score >= 60) confetti($("result-card"), 70);
