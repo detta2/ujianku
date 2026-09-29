@@ -571,9 +571,12 @@ img{max-width:100%}
   .quiz-stage{flex-direction:column;gap:6px;margin-top:8px;align-items:stretch}
   .topbar{padding:8px 10px}
   .brand-mark{width:36px;height:36px;border-radius:12px}
-  .topbar-right{gap:6px}
-  .topnav{gap:6px}
+  .topbar-right{gap:6px;min-width:0}
+  .topnav{gap:6px;flex-shrink:1;min-width:0}
   .navbtn{padding:6px 10px;font-size:11px;white-space:nowrap}
+  .avatar-name{display:none}
+  .avatar-btn{padding:4px}
+  .avatar{width:30px;height:30px}
   .quiz-top{margin:10px 0}
   .buddy-side{
     width:100%;position:static;flex-direction:row;justify-content:flex-start;align-items:center;gap:8px;
