@@ -570,6 +570,15 @@ img{max-width:100%}
   .hero-medals .mascot{width:72px;height:72px}
   .hero-medals .mascot.gold{width:104px;height:104px}
 }
+/* kartu pelajaran digedein di versi web biar nggak kosong */
+@media (min-width:900px){
+  .subject-grid{grid-template-columns:repeat(3,1fr);gap:18px;margin-top:18px}
+  .subject-card{padding:28px 24px;border-radius:20px}
+  .subject-card .sub-ico{width:64px;height:64px;font-size:32px;border-radius:18px;margin-bottom:14px}
+  .subject-card h3{font-size:23px;margin-bottom:8px}
+  .subject-card p{font-size:14px}
+  .subject-card .meta{font-size:14px;margin-top:14px}
+}
 @media (max-width:560px){
   .hero{padding:26px 18px}
   .hero-arena .trophy{width:96px;height:96px}
