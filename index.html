@@ -146,7 +146,10 @@
         <h1>ARENA<br><span class="hl">PINTAR</span></h1>
         <p class="lede">Pilih divisimu, kerjakan soal dengan timer kayak lomba beneran, rebut medali emas, dan adu skor di leaderboard.</p>
         <div class="hero-marquee" aria-hidden="true"><div class="marquee-track" id="marquee-track"></div></div>
-        <a class="btn-gold btn-primary" href="#levels" id="hero-cta" style="border:3px solid #0b2a6b">Masuk Arena →</a>
+        <div class="hero-ctas">
+          <a class="btn-gold btn-primary" href="#levels" id="hero-cta" style="border:3px solid #0b2a6b">Masuk Arena →</a>
+          <button class="btn-ranked" id="hero-ranked">⚔️ Mode Ranked</button>
+        </div>
       </div>
       <div class="hero-arena" aria-hidden="true">
         <span class="mascot mx-bounce"><svg><use href="#m-dino"/></svg></span>
@@ -171,6 +174,14 @@
       <div class="how-card"><span class="step">2</span><h3>Bertanding</h3><p>Jawab soal secepat & setepat mungkin sebelum waktu habis.</p></div>
       <div class="how-card"><span class="step">3</span><h3>Rebut Medali</h3><p>Nilai tinggi = medali emas, perak, atau perunggu. Kumpulkan semuanya!</p></div>
     </div>
+  </section>
+
+  <!-- ============ RANKED ============ -->
+  <section id="screen-ranked" class="screen">
+    <button class="backlink" data-go="home">← Beranda</button>
+    <h2 class="section-title">⚔️ Mode Ranked</h2>
+    <p class="section-sub">30 soal acak dari <b>semua</b> pelajaran divisimu. Cuma 15 detik per soal — jawab cepat buat bonus poin. Poin diakumulasi terus, kejar peringkat 1!</p>
+    <div class="level-grid" id="ranked-grid"></div>
   </section>
 
   <!-- ============ SUBJECTS ============ -->
@@ -265,7 +276,7 @@
           <circle cx="60" cy="60" r="52" class="ring-bg"/>
           <circle cx="60" cy="60" r="52" class="ring-fg" id="ring-fg"/>
         </svg>
-        <div class="ring-label"><b id="result-score">0</b><span>/ 100</span></div>
+        <div class="ring-label"><b id="result-score">0</b><span id="result-score-max">/ 100</span></div>
       </div>
       <div class="result-stats" id="result-stats"></div>
       <p class="lb-note" id="lb-note"></p>
@@ -335,6 +346,10 @@
     <button class="backlink" data-go="home">← Beranda</button>
     <h2 class="section-title">Leaderboard</h2>
     <p class="section-sub" id="lb-source"></p>
+    <div class="lb-tabs" id="lb-tabs">
+      <button class="lb-tab active" data-lbmode="normal">🎮 Normal</button>
+      <button class="lb-tab" data-lbmode="ranked">⚔️ Ranked</button>
+    </div>
     <div class="lb-filters">
       <label class="field inline"><span>Jenjang</span><select id="lb-level"></select></label>
       <label class="field inline"><span>Pelajaran</span><select id="lb-subject"></select></label>

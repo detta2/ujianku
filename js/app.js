@@ -3,11 +3,13 @@
   "use strict";
 
   var $ = function (id) { return document.getElementById(id); };
-  var screens = ["home", "subjects", "login", "start", "quiz", "result", "review", "profile", "leaderboard"];
+  var screens = ["home", "ranked", "subjects", "login", "start", "quiz", "result", "review", "profile", "leaderboard"];
   var state = {
     level: null, bankId: null, bank: null,
+    mode: "normal", rankedLevel: null,
     qi: 0, answers: [], startTime: 0, timeLeft: 0, timerId: null,
-    result: null, lbLevel: null, lbSubject: null,
+    qTimeLeft: 0, qLock: false, qPoints: 0,
+    result: null, lbLevel: null, lbSubject: null, lbMode: null,
   };
 
   /* ---------- helpers ---------- */
@@ -249,7 +251,8 @@
     ch.className = "linklike";
     ch.textContent = "ganti";
     ch.addEventListener("click", function () {
-      state.pendingBank = state.bankId;
+      if (state.mode === "ranked") { state.pendingRanked = state.rankedLevel; state.pendingBank = null; }
+      else { state.pendingBank = state.bankId; state.pendingRanked = null; }
       go("login");
     });
     chip.appendChild(ch);
@@ -258,6 +261,12 @@
   function onAuthChanged() {
     updateAuthUI();
     if (state.screen === "profile" && !(window.Auth && Auth.user())) go("home");
+    if (state.pendingRanked && isIdentified()) {
+      var rl = state.pendingRanked;
+      state.pendingRanked = null;
+      openRankedStart(rl);
+      return;
+    }
     if (state.pendingBank && isIdentified()) {
       var b = state.pendingBank;
       state.pendingBank = null;
@@ -342,10 +351,249 @@
     });
   }
 
+  /* ---------- ranked ---------- */
+  function rankedTotals(level) {
+    try { return JSON.parse(localStorage.getItem("ujianku_ranked_" + level) || '{"points":0,"matches":0,"best":0}'); }
+    catch (e) { return { points: 0, matches: 0, best: 0 }; }
+  }
+  function saveRankedTotals(level, t) {
+    try { localStorage.setItem("ujianku_ranked_" + level, JSON.stringify(t)); } catch (e) {}
+  }
+  function rankedLbKey(level) { return "ujianku_ranked_lb_" + level; }
+  function rankedLb(level) {
+    try { return JSON.parse(localStorage.getItem(rankedLbKey(level)) || "[]"); }
+    catch (e) { return []; }
+  }
+  function renderRankedLevels() {
+    var grid = $("ranked-grid");
+    grid.innerHTML = "";
+    window.CATALOG.forEach(function (c) {
+      var t = rankedTotals(c.level);
+      var btn = document.createElement("button");
+      btn.className = "level-card theme-" + c.level;
+      btn.innerHTML =
+        '<span class="division-badge">⚔️ Ranked · ' + esc(c.divisionMedal) + '</span>' +
+        '<span class="level-mascot-name">si ' + esc(c.mascotName) + '</span>' +
+        '<span class="mascot mx-bounce"><svg><use href="#m-' + c.mascot + '"/></svg></span>' +
+        "<h3>" + esc(c.level) + "</h3>" +
+        "<p>30 soal acak · 15 dtk/soal</p>" +
+        (t.points > 0
+          ? "<p>⭐ " + t.points + " poin · " + t.matches + " match</p>"
+          : "<p>Belum ada poin — mulai dari sini!</p>") +
+        '<span class="go">Mulai Ranked →</span>';
+      btn.addEventListener("click", function () { requireRankedAuth(c.level); });
+      grid.appendChild(btn);
+    });
+  }
+  function requireRankedAuth(level) {
+    ensureLevel(level).then(function () {
+      if (isIdentified()) { openRankedStart(level); return; }
+      state.pendingRanked = level;
+      state.pendingBank = null;
+      go("login");
+    }, function () {
+      toast("Gagal memuat soal. Cek koneksi lalu coba lagi.");
+    });
+  }
+  function openRankedStart(level) {
+    state.mode = "ranked";
+    state.rankedLevel = level;
+    state.bankId = null;
+    state.bank = null;
+    applyTheme(level);
+    var cat = catOf(level);
+    setMascot("start-mascot-use", cat);
+    $("start-speech").textContent = pick(["Ranked itu perang kilat!", "Cepat & tepat, juara!", "30 soal, jangan kasih kendor!", "Kejar peringkat 1!"]);
+    $("start-kicker").textContent = "⚔️ MODE RANKED · " + level;
+    $("start-title").textContent = "Siap naik peringkat?";
+    var t = rankedTotals(level);
+    $("start-meta").innerHTML =
+      '<span class="pill">' + RANKED_Q + " soal acak</span>" +
+      '<span class="pill">⏱ ' + RANKED_SEC + " detik/soal</span>" +
+      '<span class="pill">dari ' + cat.banks.length + " pelajaran</span>" +
+      (t.points > 0 ? '<span class="pill">⭐ ' + t.points + " poin terkumpul</span>" : "");
+    var back = document.querySelector("#screen-start .backlink");
+    back.setAttribute("data-go", "ranked");
+    back.textContent = "← Ganti divisi";
+    $("btn-start-quiz").textContent = "⚔️ Mulai Ranked";
+    renderIdentity();
+    go("start");
+  }
+
+  function startRankedQuiz(name) {
+    state.mode = "ranked";
+    state.player = name;
+    state.qs = buildRankedSession(state.rankedLevel);
+    state.qi = 0;
+    state.answers = state.qs.map(function () { return -1; });
+    state.qPoints = 0;
+    state.qLock = false;
+    state.startTime = Date.now();
+    applyTheme(state.rankedLevel);
+    setMascot("quiz-buddy-use", catOf(state.rankedLevel));
+    buddyCheer(false);
+    $("quiz-bank-label").textContent = "⚔️ RANKED · " + state.rankedLevel;
+    $("btn-prev").style.display = "none";
+    $("btn-next").style.display = "none";
+    $("btn-submit").style.display = "none";
+    $("btn-quiz-menu").style.display = "none";
+    renderRankedQuestion();
+    go("quiz");
+  }
+  function updateRankedTimerUI() {
+    var s = Math.max(0, state.qTimeLeft);
+    $("timer-text").textContent = "0:" + (s < 10 ? "0" : "") + s;
+    $("timer-fill").style.width = (s / RANKED_SEC) * 100 + "%";
+    var low = s <= 5;
+    $("timer-fill").classList.toggle("low", low);
+    $("timer-text").classList.toggle("low", low);
+  }
+  function renderRankedQuestion() {
+    var q = state.qs[state.qi];
+    state.qLock = false;
+    state.qTimeLeft = RANKED_SEC;
+    var sub = q.subject
+      ? ' <span class="q-subject">' + (SUB_ICONS[q.subject] || "📚") + " " + esc(q.subject) + "</span>"
+      : "";
+    $("q-num").innerHTML = "Soal " + (state.qi + 1) + " dari " + state.qs.length + sub;
+    $("q-text").textContent = q.q;
+    $("quiz-progress").textContent = "⭐ " + state.qPoints + " poin";
+    var box = $("q-opts");
+    box.innerHTML = "";
+    var letters = ["A", "B", "C", "D", "E"];
+    q.options.forEach(function (opt, i) {
+      var b = document.createElement("button");
+      b.className = "opt";
+      b.innerHTML = '<span class="letter">' + letters[i] + "</span>";
+      var span = document.createElement("span");
+      span.className = "opt-text";
+      span.textContent = opt;
+      b.appendChild(span);
+      b.addEventListener("click", function () { lockRankedAnswer(i); });
+      box.appendChild(b);
+    });
+    renderMath($("screen-quiz"));
+    updateRankedTimerUI();
+    clearInterval(state.timerId);
+    state.timerId = setInterval(function () {
+      state.qTimeLeft -= 1;
+      updateRankedTimerUI();
+      if (state.qTimeLeft <= 0) { lockRankedAnswer(-1); }
+    }, 1000);
+  }
+  function lockRankedAnswer(i) {
+    if (state.qLock) return;
+    state.qLock = true;
+    clearInterval(state.timerId);
+    var q = state.qs[state.qi];
+    state.answers[state.qi] = i;
+    var ok = i === q.answer;
+    if (ok) {
+      var bonus = Math.ceil(RANKED_BONUS * Math.max(0, state.qTimeLeft) / RANKED_SEC);
+      state.qPoints += RANKED_BASE + bonus;
+      buddyCheer(true);
+    } else {
+      var bt = $("buddy-text");
+      if (bt) bt.textContent = i < 0 ? "⏰ Waktu habis!" : pick(["Yah, meleset!", "Ayo kejar lagi!", "Fokus, lanjut!"]);
+    }
+    var btns = $("q-opts").querySelectorAll(".opt");
+    btns.forEach(function (b, bi) {
+      b.disabled = true;
+      if (bi === q.answer) b.classList.add("correct");
+      else if (bi === i) b.classList.add("wrong");
+    });
+    $("quiz-progress").textContent = "⭐ " + state.qPoints + " poin";
+    setTimeout(nextRanked, 800);
+  }
+  function nextRanked() {
+    if (state.qi < state.qs.length - 1) {
+      state.qi++;
+      renderRankedQuestion();
+    } else {
+      finishRanked();
+    }
+  }
+  function finishRanked() {
+    clearInterval(state.timerId);
+    var qs = state.qs;
+    var correct = 0;
+    qs.forEach(function (q, i) { if (state.answers[i] === q.answer) correct++; });
+    var used = Math.round((Date.now() - state.startTime) / 1000);
+    var pts = state.qPoints;
+    state.result = { correct: correct, total: qs.length, points: pts, used: used, ranked: true };
+    // akumulasi poin pemain
+    var t = rankedTotals(state.rankedLevel);
+    t.points += pts;
+    t.matches += 1;
+    if (pts > t.best) t.best = pts;
+    saveRankedTotals(state.rankedLevel, t);
+    // papan peringkat ranked per divisi (total poin akumulasi)
+    var arr = rankedLb(state.rankedLevel);
+    var me = null;
+    arr.forEach(function (e) { if (e.name === state.player) me = e; });
+    if (!me) { me = { name: state.player, points: 0, matches: 0, best: 0 }; arr.push(me); }
+    me.points += pts;
+    me.matches += 1;
+    if (pts > me.best) me.best = pts;
+    arr.sort(function (a, b) { return b.points - a.points || b.best - a.best; });
+    arr = arr.slice(0, 50);
+    try { localStorage.setItem(rankedLbKey(state.rankedLevel), JSON.stringify(arr)); } catch (e) {}
+    var rank = 0;
+    arr.forEach(function (e, i) { if (e.name === state.player && rank === 0) rank = i + 1; });
+    state.result.rank = rank;
+    state.result.totalPlayers = arr.length;
+    state.result.allPoints = t.points;
+    showResult();
+  }
+  function showRankedResult() {
+    var r = state.result;
+    var level = state.rankedLevel;
+    var cat = catOf(level);
+    setMascot("result-mascot-use", cat);
+    var maxPts = RANKED_Q * (RANKED_BASE + RANKED_BONUS);
+    $("result-kicker").textContent = "⚔️ RANKED · " + level;
+    var tier = r.points >= 350 ? { name: "👑 CALON JUARA", sub: "Peringkat 1 makin dekat!" } :
+               r.points >= 250 ? { name: "🔥 GANAS!", sub: "Terus gas ke puncak!" } :
+               r.points >= 150 ? { name: "💪 PEJUANG", sub: "Poin terus diakumulasi!" } :
+                                 { name: "🎯 PEMANASAN", sub: "Main lagi, kumpulin poin!" };
+    var med = $("result-medal");
+    med.style.setProperty("--medal", "#ffd93b");
+    med.style.setProperty("--medal-deep", "#f5b301");
+    med.classList.remove("mx-medal-pop");
+    void med.offsetWidth;
+    med.classList.add("mx-medal-pop");
+    $("result-medal-label").innerHTML = tier.name + '<span class="sub">' + tier.sub + "</span>";
+    var m = $("result-mascot");
+    m.classList.remove("mx-dance", "mx-bounce");
+    m.classList.add(r.points >= 250 ? "mx-dance" : "mx-bounce");
+    countUp($("result-score"), r.points);
+    $("result-score-max").textContent = "/ " + maxPts;
+    var frac = r.points / maxPts;
+    requestAnimationFrame(function () {
+      $("ring-fg").style.strokeDashoffset = 326.7 * (1 - frac);
+    });
+    setTimeout(function () {
+      $("ring-fg").style.strokeDashoffset = 326.7 * (1 - frac);
+    }, 60);
+    $("result-stats").innerHTML =
+      '<div class="stat good"><b>' + r.correct + "</b><span>Benar</span></div>" +
+      '<div class="stat bad"><b>' + (r.total - r.correct) + '</b><span>Salah</span></div>' +
+      '<div class="stat"><b>+' + r.points + "</b><span>Poin</span></div>";
+    $("lb-note").textContent = "Total poin rankedmu: " + r.allPoints +
+      " — peringkat #" + r.rank + " dari " + r.totalPlayers + " pemain di Divisi " + level + ".";
+    go("result");
+    if (r.points >= 200) confetti($("result-card"), 70);
+  }
+
   /* ---------- start ---------- */
   function openStart(bankId) {
     state.bankId = bankId;
     state.bank = bankById(bankId);
+    state.mode = "normal";
+    var back = document.querySelector("#screen-start .backlink");
+    back.setAttribute("data-go", "subjects");
+    back.textContent = "← Ganti pelajaran";
+    $("btn-start-quiz").textContent = "Masuk Arena";
     var b = state.bank;
     applyTheme(b.level);
     var cat = catOf(b.level);
@@ -364,6 +612,11 @@
   }
 
   $("btn-start-quiz").addEventListener("click", function () {
+    if (state.mode === "ranked") {
+      if (!isIdentified()) { requireRankedAuth(state.rankedLevel); return; }
+      startRankedQuiz(displayName());
+      return;
+    }
     if (!isIdentified()) { requireAuth(state.bankId); return; }
     startQuiz(displayName());
   });
@@ -371,6 +624,10 @@
   /* ---------- quiz ---------- */
   var SESSION_Q = 15; // soal per sesi, diacak dari bank biar tiap main beda
   var SEC_PER_Q = 30; // 30 detik per soal
+  var RANKED_Q = 30;    // soal per match ranked (acak dari semua pelajaran divisi)
+  var RANKED_SEC = 15;  // detik per soal di ranked
+  var RANKED_BASE = 10; // poin dasar jawaban benar
+  var RANKED_BONUS = 5; // bonus kecepatan maksimal per soal
   function shuffleArr(a) {
     for (var i = a.length - 1; i > 0; i--) {
       var j = Math.floor(Math.random() * (i + 1));
@@ -382,22 +639,37 @@
   function sessionDur(bank) {
     return sessionCount(bank) * SEC_PER_Q;
   }
-  // acak urutan soal + acak urutan opsi (jawaban ikut dipetakan ulang)
+  // acak urutan opsi satu soal (jawaban ikut dipetakan ulang)
+  function shuffleQuestion(q, subject) {
+    var idx = q.options.map(function (_, i) { return i; });
+    shuffleArr(idx);
+    return {
+      q: q.q,
+      options: idx.map(function (i) { return q.options[i]; }),
+      answer: idx.indexOf(q.answer),
+      solution: q.solution,
+      subject: subject || null
+    };
+  }
+  // acak urutan soal + acak urutan opsi
   function buildSession(bank) {
-    var qs = bank.questions.map(function (q) {
-      var idx = q.options.map(function (_, i) { return i; });
-      shuffleArr(idx);
-      return {
-        q: q.q,
-        options: idx.map(function (i) { return q.options[i]; }),
-        answer: idx.indexOf(q.answer),
-        solution: q.solution
-      };
-    });
+    var qs = bank.questions.map(function (q) { return shuffleQuestion(q); });
     shuffleArr(qs);
     return qs.slice(0, sessionCount(bank));
   }
+  // ranked: campur semua soal dari semua pelajaran dalam satu divisi
+  function buildRankedSession(level) {
+    var pool = [];
+    catOf(level).banks.forEach(function (b) {
+      var bank = bankById(b.id);
+      if (!bank) return;
+      bank.questions.forEach(function (q) { pool.push(shuffleQuestion(q, b.subject)); });
+    });
+    shuffleArr(pool);
+    return pool.slice(0, Math.min(RANKED_Q, pool.length));
+  }
   function startQuiz(name) {
+    state.mode = "normal";
     state.player = name;
     state.qs = buildSession(state.bank);
     state.qi = 0;
@@ -408,6 +680,10 @@
     setMascot("quiz-buddy-use", catOf(state.bank.level));
     buddyCheer(false);
     $("quiz-bank-label").textContent = state.bank.level + " · " + state.bank.subject;
+    $("btn-prev").style.display = "";
+    $("btn-next").style.display = "";
+    $("btn-submit").style.display = "";
+    $("btn-quiz-menu").style.display = "";
     renderQuestion();
     updateTimerUI();
     clearInterval(state.timerId);
@@ -526,6 +802,8 @@
   /* ---------- result ---------- */
   function showResult() {
     var r = state.result;
+    if (r.ranked) { showRankedResult(); return; }
+    $("result-score-max").textContent = "/ 100";
     var cat = catOf(state.bank.level);
     setMascot("result-mascot-use", cat);
     var mn = cat ? cat.mascotName : "temanmu";
@@ -572,7 +850,10 @@
 
   $("btn-review").addEventListener("click", function () { renderReview(); go("review"); });
   $("btn-review-back").addEventListener("click", function () { go("result"); });
-  $("btn-retry").addEventListener("click", function () { startQuiz(state.player); });
+  $("btn-retry").addEventListener("click", function () {
+    if (state.mode === "ranked") startRankedQuiz(state.player);
+    else startQuiz(state.player);
+  });
 
   function renderReview() {
     var qs = state.qs;
@@ -587,7 +868,9 @@
       var div = document.createElement("div");
       div.className = "rev-item";
       div.innerHTML =
-        '<p class="rev-q">' + (i + 1) + ". " + esc(q.q) + "</p>" +
+        '<p class="rev-q">' + (i + 1) + ". " +
+        (q.subject ? '<span class="q-subject">' + (SUB_ICONS[q.subject] || "📚") + " " + esc(q.subject) + "</span> " : "") +
+        esc(q.q) + "</p>" +
         '<div class="rev-ans">' +
           '<div class="row"><span class="badge ' + (ok ? "ok" : "no") + '">' + (ok ? "Benar" : "Salah") + "</span>" +
           "<span>Jawabanmu: <b>" + (mine >= 0 ? letters[mine] + ". " + esc(q.options[mine]) : "<i>tidak dijawab</i>") + "</b></span></div>" +
@@ -673,9 +956,33 @@
     });
     if (!state.lbLevel) state.lbLevel = state.level || window.CATALOG[0].level;
     lvSel.value = state.lbLevel;
-    fillLbSubjects();
-    lvSel.onchange = function () { state.lbLevel = lvSel.value; state.lbSubject = null; fillLbSubjects(); };
+    if (!state.lbMode) state.lbMode = "normal";
+    var tabs = document.querySelectorAll("#lb-tabs .lb-tab");
+    tabs.forEach(function (tb) {
+      tb.classList.toggle("active", state.lbMode === tb.getAttribute("data-lbmode"));
+      tb.onclick = function () {
+        state.lbMode = tb.getAttribute("data-lbmode");
+        initLeaderboard();
+      };
+    });
+    var headRow = document.querySelector("#screen-leaderboard thead tr");
+    var subLabel = subSel.closest("label");
+    lvSel.onchange = function () {
+      state.lbLevel = lvSel.value; state.lbSubject = null;
+      if (state.lbMode === "ranked") loadRankedLb(); else fillLbSubjects();
+    };
     subSel.onchange = function () { state.lbSubject = subSel.value; loadLb(); };
+    if (state.lbMode === "ranked") {
+      LB.online = false;
+      subLabel.style.display = "none";
+      headRow.innerHTML = "<th>#</th><th>Nama</th><th>Total Poin</th><th>Main</th><th>Terbaik</th>";
+      loadRankedLb();
+      $("lb-source").textContent = "⚔️ Papan peringkat Ranked — total poin akumulasi per divisi, tersimpan di perangkat ini.";
+      return;
+    }
+    subLabel.style.display = "";
+    headRow.innerHTML = "<th>#</th><th>Nama</th><th>Skor</th><th>Benar</th><th>Waktu</th>";
+    fillLbSubjects();
     if (api) {
       // uji koneksi: ambil skor bank pertama
       var first = window.CATALOG[0].banks[0].id;
@@ -687,6 +994,25 @@
     $("lb-source").textContent = api
       ? "Mode online — bersaing dengan semua pemain."
       : "Mode lokal — skor tersimpan di perangkat ini. Deploy backend buat leaderboard antar-pemain.";
+  }
+
+  function loadRankedLb() {
+    var rows = rankedLb(state.lbLevel);
+    var tb = $("lb-body");
+    tb.innerHTML = "";
+    $("lb-empty").classList.toggle("hidden", rows.length > 0);
+    var me = displayName();
+    rows.slice(0, 20).forEach(function (r, i) {
+      var tr = document.createElement("tr");
+      if (r.name === me) tr.className = "me";
+      tr.innerHTML =
+        '<td class="rank">' + (i + 1) + "</td>" +
+        "<td>" + esc(r.name) + "</td>" +
+        '<td class="score">' + r.points + "</td>" +
+        "<td>" + r.matches + "×</td>" +
+        "<td>+" + r.best + "</td>";
+      tb.appendChild(tr);
+    });
   }
 
   function fillLbSubjects() {
@@ -748,6 +1074,10 @@
 
   renderLevels();
   renderMarquee();
+  $("hero-ranked").addEventListener("click", function () {
+    renderRankedLevels();
+    go("ranked");
+  });
   /* pra-muat semua bank di latar belakang (berurutan, biar ringan),
      jadi pas user buka pelajaran soalnya sudah siap */
   setTimeout(function () {
