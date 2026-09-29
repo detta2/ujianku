@@ -1,6 +1,6 @@
 /* POST /api/presence — heartbeat: tandai klien ini sedang online (TTL 45 dtk).
    Publik tanpa auth; body { cid: "<id acak dari localStorage>" }. */
-var lib = require("./lib/apilib");
+var lib = require("../lib/apilib");
 
 module.exports = async function (req, res) {
   try {
