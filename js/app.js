@@ -228,7 +228,7 @@
       btn.className = "level-card theme-" + c.level;
       btn.innerHTML =
         '<span class="division-badge">' + esc(c.division) + ' · ' + esc(c.divisionMedal) + '</span>' +
-        '<span class="level-mascot-name">si ' + esc(c.mascotName) + '</span>' +
+        '<span class="level-mascot-name">' + esc(c.mascotName) + '</span>' +
         '<span class="mascot mx-bounce"><img src="img/maskot-' + c.mascot + '.png" alt=""></span>' +
         "<h3>" + esc(c.level) + "</h3>" +
         "<p>" + esc(c.friend) + "</p>" +
@@ -477,7 +477,7 @@
       btn.className = "level-card theme-" + c.level;
       btn.innerHTML =
         '<span class="division-badge">⚔️ Ranked · ' + esc(c.divisionMedal) + "</span>" +
-        '<span class="level-mascot-name">si ' + esc(c.mascotName) + "</span>" +
+        '<span class="level-mascot-name">' + esc(c.mascotName) + "</span>" +
         '<span class="mascot mx-bounce"><img src="img/maskot-' + c.mascot + '.png" alt=""></span>' +
         "<h3>" + esc(c.level) + "</h3>" +
         "<p>30 soal acak · 15 dtk/soal</p>" +
