@@ -322,7 +322,7 @@ img{max-width:100%}
 .start-mascot-zone{position:relative;display:inline-block;margin-bottom:2px}
 .start-mascot-zone .mascot{width:130px;height:130px}
 .speech{
-  position:absolute;top:-8px;right:-118px;max-width:150px;
+  position:absolute;top:-8px;right:-136px;max-width:150px;
   background:#fff;border:var(--bd);border-radius:16px;padding:10px 12px;
   font-weight:800;font-size:13px;text-align:left;box-shadow:0 3px 0 var(--ink);
   animation:speech-wiggle 3s ease-in-out infinite;
@@ -609,7 +609,7 @@ img{max-width:100%}
   .hero-medals{gap:10px}
   .hero-medals .mascot{width:48px;height:48px}
   .hero-medals .mascot.gold{width:70px;height:70px}
-  .speech{right:-84px;max-width:120px;font-size:12px}
+  .speech{right:-98px;max-width:106px;font-size:12px;top:2px}
   .start-mascot-zone .mascot{width:104px;height:104px}
   .stat3{grid-template-columns:repeat(3,1fr);gap:8px}
   .result-actions{flex-direction:column}
