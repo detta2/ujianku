@@ -660,6 +660,7 @@
     var q = state.qs[state.qi];
     state.answers[state.qi] = i;
     var ok = i === q.answer;
+    if (window.Sfx) { if (ok) Sfx.correct(); else Sfx.wrong(); }
     if (ok) {
       var bonus = Math.ceil(RANKED_BONUS * Math.max(0, state.qTimeLeft) / RANKED_SEC);
       state.qPoints += RANKED_BASE + bonus;
