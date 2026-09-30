@@ -20,6 +20,7 @@
     if (name === "badges") renderBadges();
     if (name === "admin") renderAdmin();
     if (name === "ranked") refreshRankedStamina();
+    if (name !== "quiz") stopStaminaWatch();
     /* BGM: ranked -> track tegang, selain itu track chill */
     if (window.Bgm) {
       if (name === "quiz") Bgm.play(state.mode === "ranked" ? "ranked" : "chill");
@@ -59,6 +60,10 @@
       if (!menu.hidden && !e.target.closest(".settings-wrap")) close();
     });
     document.addEventListener("keydown", function (e) { if (e.key === "Escape") close(); });
+    /* Balik ke tab saat laga ranked: cek ulang stamina langsung. */
+    document.addEventListener("visibilitychange", function () {
+      if (!document.hidden && state.screen === "quiz" && state.mode === "ranked") pollQuizStamina();
+    });
     menu.addEventListener("click", function (e) { if (e.target.closest("button")) close(); });
   })();
 
@@ -591,8 +596,39 @@
     });
   }
 
+  /* Cek stamina terus selama laga ranked + tampilkan di atas layar kuis. */
+  var staminaWatchId = null;
+  function paintQuizStamina(b) {
+    var el = $("quiz-stamina");
+    if (!el) return;
+    if (state.mode === "ranked" && b && b.ok) {
+      el.hidden = false;
+      el.textContent = "⚡ " + b.stamina + "/" + b.maxStamina;
+      state.stamina = b.stamina;
+    } else {
+      el.hidden = true;
+    }
+  }
+  function pollQuizStamina() {
+    if (state.mode !== "ranked" || !loggedIn()) return;
+    srvApi("/api/ranked/stamina").then(function (r) { paintQuizStamina(r.body); })
+      .catch(function () { /* biarkan angka terakhir tetap tampil */ });
+  }
+  function startStaminaWatch() {
+    stopStaminaWatch();
+    if (state.mode !== "ranked" || !loggedIn()) return;
+    pollQuizStamina();
+    staminaWatchId = setInterval(pollQuizStamina, 20000);
+  }
+  function stopStaminaWatch() {
+    if (staminaWatchId) { clearInterval(staminaWatchId); staminaWatchId = null; }
+    var el = $("quiz-stamina");
+    if (el) el.hidden = true;
+  }
+
   function startRankedQuiz(name) {
     state.mode = "ranked";
+    startStaminaWatch();
     state.player = name;
     state.qs = buildRankedSession(state.rankedLevel);
     state.qi = 0;
@@ -1257,6 +1293,7 @@
   }
   function startQuiz(name) {
     state.mode = "normal";
+    stopStaminaWatch();
     state.player = name;
     state.qs = buildSession(state.bank);
     state.qi = 0;
@@ -1373,6 +1410,7 @@
 
   function finishQuiz(timeUp) {
     clearInterval(state.timerId);
+    stopStaminaWatch();
     var qs = state.qs;
     var correct = 0;
     qs.forEach(function (q, i) { if (state.answers[i] === q.answer) correct++; });
