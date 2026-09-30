@@ -1,8 +1,19 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
-      <rect x="3" y="3" width="58" height="58" rx="17" fill="#1d4ed8" stroke="#0b2a6b" stroke-width="3.5"/>
-      <circle cx="32" cy="31" r="18" fill="#ffd93b" stroke="#0b2a6b" stroke-width="3"/>
-      <circle cx="25.5" cy="29" r="2.6" fill="#0b2a6b"/>
-      <circle cx="38.5" cy="29" r="2.6" fill="#0b2a6b"/>
-      <ellipse cx="32" cy="39" rx="7" ry="5" fill="#ff9f1a" stroke="#0b2a6b" stroke-width="2.5"/>
-      <line x1="32" y1="34.5" x2="32" y2="43.5" stroke="#0b2a6b" stroke-width="1.8"/>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256">
+  <title>Logo SiPintar — kepala bebek Kiki</title>
+  <!-- Konsep A v4: urutan gambar dibalik — lidah topi dulu, dome menutup atasnya = satu topi utuh -->
+  <rect x="8" y="8" width="240" height="240" rx="64" fill="#1d4ed8"/>
+  <!-- kepala -->
+  <circle cx="128" cy="160" r="66" fill="#ffd93b" stroke="#0b2a6b" stroke-width="10"/>
+  <!-- lidah topi (digambar dulu) -->
+  <rect x="90" y="116" width="76" height="28" rx="14" fill="#f04e6a" stroke="#0b2a6b" stroke-width="9"/>
+  <!-- dome topi menutup bagian atas lidah = topi utuh -->
+  <path d="M 62 128 A 66 66 0 0 1 194 128 Z" fill="#f04e6a" stroke="#0b2a6b" stroke-width="10" stroke-linejoin="round"/>
+  <!-- mata -->
+  <circle cx="103" cy="158" r="12" fill="#0b2a6b"/>
+  <circle cx="153" cy="158" r="12" fill="#0b2a6b"/>
+  <!-- paruh bebek -->
+  <path d="M 84 188 C 84 178 102 172 128 172 C 154 172 172 178 172 188 C 172 202 152 210 128 210 C 104 210 84 202 84 188 Z"
+        fill="#ff9f1a" stroke="#0b2a6b" stroke-width="9" stroke-linejoin="round"/>
+  <!-- senyum khas Kiki -->
+  <path d="M 100 192 Q 128 204 156 192" fill="none" stroke="#0b2a6b" stroke-width="6" stroke-linecap="round"/>
 </svg>
