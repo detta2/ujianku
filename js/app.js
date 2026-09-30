@@ -598,16 +598,32 @@
 
   /* Cek stamina terus selama laga ranked + tampilkan di atas layar kuis. */
   var staminaWatchId = null;
+  var staminaTickId = null;
+  var staminaRefillAt = 0;
   function paintQuizStamina(b) {
     var el = $("quiz-stamina");
     if (!el) return;
     if (state.mode === "ranked" && b && b.ok) {
       el.hidden = false;
-      el.textContent = "⚡ " + b.stamina + "/" + b.maxStamina;
       state.stamina = b.stamina;
+      staminaRefillAt = b.stamina >= b.maxStamina ? 0 : Date.now() + (b.nextRefillInMs || 0);
+      tickQuizStamina();
+      if (!staminaTickId) staminaTickId = setInterval(tickQuizStamina, 1000);
     } else {
       el.hidden = true;
     }
+  }
+  /* Detik recharge jalan live: ⚡ 28/30 · +1 dalam 14:32 */
+  function tickQuizStamina() {
+    var el = $("quiz-stamina");
+    if (!el || el.hidden) return;
+    var txt = "⚡ " + (state.stamina != null ? state.stamina : "–") + "/30";
+    if (staminaRefillAt > 0) {
+      var left = staminaRefillAt - Date.now();
+      if (left <= 0) { pollQuizStamina(); return; }
+      txt += " · +1 dalam " + fmtCountdown(left);
+    }
+    el.textContent = txt;
   }
   function pollQuizStamina() {
     if (state.mode !== "ranked" || !loggedIn()) return;
@@ -622,6 +638,8 @@
   }
   function stopStaminaWatch() {
     if (staminaWatchId) { clearInterval(staminaWatchId); staminaWatchId = null; }
+    if (staminaTickId) { clearInterval(staminaTickId); staminaTickId = null; }
+    staminaRefillAt = 0;
     var el = $("quiz-stamina");
     if (el) el.hidden = true;
   }
