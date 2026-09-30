@@ -610,6 +610,8 @@ img{max-width:100%}
   .hero-medals .mascot{width:48px;height:48px}
   .hero-medals .mascot.gold{width:70px;height:70px}
   .speech{right:-98px;max-width:106px;font-size:12px;top:2px}
+  /* tag nama maskot jadi stiker di posisi tetap atas maskot: jarak konsisten di semua kartu */
+  .level-mascot-name{left:54px;right:auto;top:86px;font-size:11px;padding:2px 8px;max-width:calc(100% - 64px)}
   .start-mascot-zone .mascot{width:104px;height:104px}
   .stat3{grid-template-columns:repeat(3,1fr);gap:8px}
   .result-actions{flex-direction:column}
