@@ -843,3 +843,28 @@ main#app{position:relative;z-index:1}
   content:"";position:absolute;left:0;right:0;bottom:-1px;height:14px;pointer-events:none;
   background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1440 20' preserveAspectRatio='none'%3E%3Cpath d='M0,10 Q60,20 120,10 T240,10 T360,10 T480,10 T600,10 T720,10 T840,10 T960,10 T1080,10 T1200,10 T1320,10 T1440,10 L1440,20 L0,20 Z' fill='%23ffffff'/%3E%3C/svg%3E") no-repeat bottom/100% 100%;
 }
+
+/* ============ TEMA PANTAI: seluruh aplikasi ============ */
+body{
+  background-color:#f3ecd9;
+  background-image:
+    linear-gradient(180deg,#bfe9e2 0%,#ddf3ec 30%,#f7efdb 75%,#f3e8cf 100%),
+    radial-gradient(rgba(42,168,143,.10) 2px, transparent 2.4px);
+  background-size:auto,30px 30px;
+}
+body[data-level="SD"]{background-color:#f7efdb}
+body[data-level="SMP"]{background-color:#f5ecd4}
+body[data-level="SMA"]{background-color:#f9f1dc}
+body[data-level="Kuliah"]{background-color:#f4e9cf}
+
+/* ombak dekor jadi toska */
+.sea-wave-top path{fill:#2aa88f}
+.sea-wave-bottom path{fill:#1f8a73}
+
+/* hero nuansa pantai */
+.hero{
+  background:linear-gradient(135deg,#ffffff 0%,#fef6df 60%,#fdeecb 100%);
+}
+.hero::after{
+  background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1440 60' preserveAspectRatio='none'%3E%3Cpath d='M0,30 C240,60 480,0 720,30 C960,60 1200,0 1440,30 L1440,60 L0,60 Z' fill='%232aa88f' fill-opacity='0.25'/%3E%3C/svg%3E") no-repeat bottom/100% 100%;
+}
