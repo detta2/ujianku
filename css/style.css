@@ -868,3 +868,11 @@ body[data-level="Kuliah"]{background-color:#f4e9cf}
 .hero::after{
   background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1440 60' preserveAspectRatio='none'%3E%3Cpath d='M0,30 C240,60 480,0 720,30 C960,60 1200,0 1440,30 L1440,60 L0,60 Z' fill='%232aa88f' fill-opacity='0.25'/%3E%3C/svg%3E") no-repeat bottom/100% 100%;
 }
+
+/* ===== kartu mapel: Pantai ===== */
+.subject-card{
+  background:linear-gradient(180deg,#fffef9 0%,#fdf3d8 100%);
+}
+.subject-card .sub-ico{
+  background:linear-gradient(180deg,#4fd1c5 0%,#38b2ac 100%);
+}
