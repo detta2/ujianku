@@ -1,19 +1,19 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256">
-  <title>Logo SiPintar — kepala bebek Kiki</title>
-  <!-- Konsep A v4: urutan gambar dibalik — lidah topi dulu, dome menutup atasnya = satu topi utuh -->
+  <title>Logo SiPintar — orca</title>
   <rect x="8" y="8" width="240" height="240" rx="64" fill="#1d4ed8"/>
-  <!-- kepala -->
-  <circle cx="128" cy="160" r="66" fill="#ffd93b" stroke="#0b2a6b" stroke-width="10"/>
-  <!-- lidah topi (digambar dulu) -->
-  <rect x="90" y="116" width="76" height="28" rx="14" fill="#f04e6a" stroke="#0b2a6b" stroke-width="9"/>
-  <!-- dome topi menutup bagian atas lidah = topi utuh -->
-  <path d="M 62 128 A 66 66 0 0 1 194 128 Z" fill="#f04e6a" stroke="#0b2a6b" stroke-width="10" stroke-linejoin="round"/>
+  <!-- kepala orca -->
+  <ellipse cx="128" cy="152" rx="72" ry="70" fill="#26344e" stroke="#0b2a6b" stroke-width="10"/>
+  <!-- bercak putih khas orca di atas mata -->
+  <ellipse cx="96" cy="118" rx="20" ry="13" fill="#ffffff" transform="rotate(-18 96 118)"/>
+  <ellipse cx="160" cy="118" rx="20" ry="13" fill="#ffffff" transform="rotate(18 160 118)"/>
   <!-- mata -->
-  <circle cx="103" cy="158" r="12" fill="#0b2a6b"/>
-  <circle cx="153" cy="158" r="12" fill="#0b2a6b"/>
-  <!-- paruh bebek -->
-  <path d="M 84 188 C 84 178 102 172 128 172 C 154 172 172 178 172 188 C 172 202 152 210 128 210 C 104 210 84 202 84 188 Z"
-        fill="#ff9f1a" stroke="#0b2a6b" stroke-width="9" stroke-linejoin="round"/>
-  <!-- senyum khas Kiki -->
-  <path d="M 100 192 Q 128 204 156 192" fill="none" stroke="#0b2a6b" stroke-width="6" stroke-linecap="round"/>
+  <circle cx="104" cy="152" r="12" fill="#0b2a6b"/>
+  <circle cx="152" cy="152" r="12" fill="#0b2a6b"/>
+  <circle cx="108" cy="148" r="4" fill="#ffffff"/>
+  <circle cx="156" cy="148" r="4" fill="#ffffff"/>
+  <!-- rahang/dagu putih -->
+  <path d="M 70 178 C 70 168 96 162 128 162 C 160 162 186 168 186 178 C 186 196 160 208 128 208 C 96 208 70 196 70 178 Z"
+        fill="#ffffff" stroke="#0b2a6b" stroke-width="9" stroke-linejoin="round"/>
+  <!-- senyum -->
+  <path d="M 102 186 Q 128 198 154 186" fill="none" stroke="#0b2a6b" stroke-width="6" stroke-linecap="round"/>
 </svg>
