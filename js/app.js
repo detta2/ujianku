@@ -1774,6 +1774,7 @@
     Auth.initGoogleButton("gbtn");
     window.App = { onAuthChanged: onAuthChanged };
     syncServerState();
+    refreshTopbarStamina();
   }
   $("btn-guest").addEventListener("click", function () {
     var g = $("guest-name").value.trim().slice(0, 20);
