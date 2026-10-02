@@ -51,6 +51,13 @@ module.exports = async function (req, res) {
     }
     if (req.method !== "POST") return lib.send(res, 405, { ok: false, error: "GET/POST saja" });
 
+    /* Admin bypass: pemilik nggak kena limit stamina */
+    if (lib.isAdminEmail(u.email)) {
+      var ca = info(compute({ stamina: MAX, staminaTs: now }, now));
+      ca.stamina = MAX; ca.adminBypass = true;
+      return lib.send(res, 200, ca);
+    }
+
     /* POST: pakai stamina untuk 1 match. HINCRBY atomik; kalau minus, kembalikan & tolak. */
     await lib.kvcmd("HSET", "p:" + u.sub, "stamina", String(c.stamina), "staminaTs", String(c.ts));
     if (c.stamina < COST) {
