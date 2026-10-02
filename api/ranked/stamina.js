@@ -47,7 +47,9 @@ module.exports = async function (req, res) {
 
     if (req.method === "GET") {
       await lib.kvcmd("HSET", "p:" + u.sub, "stamina", String(c.stamina), "staminaTs", String(c.ts));
-      return lib.send(res, 200, info(c));
+      var gi = info(c);
+      if (lib.isAdminEmail(u.email)) { gi.stamina = MAX; gi.adminBypass = true; }
+      return lib.send(res, 200, gi);
     }
     if (req.method !== "POST") return lib.send(res, 405, { ok: false, error: "GET/POST saja" });
 

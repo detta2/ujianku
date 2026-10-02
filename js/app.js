@@ -363,6 +363,7 @@
   function onAuthChanged() {
     updateAuthUI();
     syncServerState();
+    refreshTopbarStamina();
     if (state.screen === "profile" && !(window.Auth && Auth.user())) go("home");
     if (state.pendingRanked && isIdentified()) {
       var rl = state.pendingRanked;
@@ -532,10 +533,27 @@
   }
 
   /* ---------- stamina ranked (anti adiktif) ---------- */
+  function paintTopbarStamina(b) {
+    var el = $("topbar-stamina");
+    if (!el) return;
+    if (!b || !b.ok) { el.hidden = true; return; }
+    el.hidden = false;
+    el.textContent = b.adminBypass ? "⚡ ∞" : "⚡ " + b.stamina + "/" + b.maxStamina;
+  }
+  function refreshTopbarStamina() {
+    var el = $("topbar-stamina");
+    if (!el) return;
+    if (!loggedIn()) { el.hidden = true; return; }
+    el.hidden = false;
+    el.textContent = "⚡ …";
+    srvApi("/api/ranked/stamina").then(function (r) { paintTopbarStamina(r.body); })
+      .catch(function () { el.textContent = "⚡ --"; });
+  }
   function setStaminaPill(b) {
     var el = $("stamina-pill");
     if (el && b && b.ok) el.textContent = "⚡ " + b.stamina + "/" + b.maxStamina + " · -" + b.costPerMatch + "/laga";
     if (b && b.ok) state.stamina = b.stamina;
+    paintTopbarStamina(b);
   }
   function refreshStartStamina(force) {
     var meta = $("start-meta");
